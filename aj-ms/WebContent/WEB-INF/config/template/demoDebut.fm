@@ -1,0 +1,7 @@
+<div style="background: none transparent scroll repeat 0% 0%;height: 25px;"></div>
+<div>
+	<div>
+		<strong><span style="font-size: 20px;color: #5d6469;">${title}</span></strong>
+	</div>
+	
+</div>

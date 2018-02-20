@@ -1,0 +1,252 @@
+package com.spt.score.action;
+
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Logger;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.Font;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.frame.core.action.FtpImgDownUploadAction;
+import com.frame.core.util.DateUtil;
+import com.frame.core.util.StringUtil;
+import com.frame.core.vo.DataModel;
+import com.spt.score.service.impl.ScoreServiceImpl;
+import com.spt.score.vo.ScoreLimitKey;
+
+import net.sf.json.JSONObject;
+
+
+@Controller
+@RequestMapping("/score")
+@Scope("prototype")
+public class ScoreAction extends FtpImgDownUploadAction {
+	@Autowired
+	private ScoreServiceImpl scoreService;
+	
+	private Logger logger = Logger.getLogger(this.getClass());
+	
+	
+	@RequestMapping("/list")
+	@ResponseBody
+	public DataModel<Map<String, Object>> getList(ScoreLimitKey limitKey){
+		
+		logger.info("getList request：" + JSONObject.fromObject(limitKey));
+		
+		DataModel<Map<String, Object>> dataModel = scoreService.getList(limitKey);
+		return dataModel;
+	}
+	
+	
+	
+	
+	@RequestMapping("/export")
+    public void export(ScoreLimitKey limitKey, HttpServletRequest request, HttpServletResponse response){
+		try{
+    		HSSFWorkbook workbook=new HSSFWorkbook();//创建一个webbook，对应一个Excel文件
+    		HSSFSheet sheet=workbook.createSheet("demo");//在webbook中添加一个sheet
+    		
+    		sheet.setDefaultColumnWidth((short) 15);
+    		
+    		HSSFCellStyle style=workbook.createCellStyle();//第四步，创建单元格，并设置值表头 设置表头居中
+    		Font font=workbook.createFont();
+    		this.setFontStyle(font);
+    		style.setFont(font);
+    		this.setHeadStyle(style);
+    		
+			HSSFRow firstRow=sheet.createRow(0);//在sheet中添加表头第0行,注意老版本poi对Excel的行数列数有限制short
+			firstRow.setHeight((short)300);
+			int h=0;
+			HSSFCell cell=firstRow.createCell(h++);//第一列
+			cell.setCellValue("参赛号码");
+			cell.setCellStyle(style);
+			
+			cell=firstRow.createCell(h++);
+			cell.setCellValue("跑者姓名");
+			cell.setCellStyle(style);
+			
+			cell=firstRow.createCell(h++);
+			cell.setCellValue("手机号码");
+			cell.setCellStyle(style);
+			
+			cell=firstRow.createCell(h++);
+			cell.setCellValue("证件号码");
+			cell.setCellStyle(style);
+			
+			cell=firstRow.createCell(h++);
+			cell.setCellValue("团队名称");
+			cell.setCellStyle(style);
+			
+			cell=firstRow.createCell(h++);
+			cell.setCellValue("计时点1");
+			cell.setCellStyle(style);
+			
+			cell=firstRow.createCell(h++);
+			cell.setCellValue("计时点2");
+			cell.setCellStyle(style);
+			
+			cell=firstRow.createCell(h++);
+			cell.setCellValue("计时点3");
+			cell.setCellStyle(style);
+			
+			cell=firstRow.createCell(h++);
+			cell.setCellValue("净计时");
+			cell.setCellStyle(style);
+			
+			cell=firstRow.createCell(h++);
+			cell.setCellValue("排名");
+			cell.setCellStyle(style);
+			
+			cell=firstRow.createCell(h++);
+			cell.setCellValue("证书状态");
+			cell.setCellStyle(style);
+			
+			int i = 1;
+			HSSFCellStyle cellDataStyle=workbook.createCellStyle();
+			cellDataStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT);
+			cellDataStyle.setWrapText(true);
+			 //设定标题框格式 
+			cellDataStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);    
+			cellDataStyle.setBottomBorderColor(HSSFColor.BLACK.index);    
+			cellDataStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);    
+			cellDataStyle.setLeftBorderColor(HSSFColor.BLACK.index);    
+			cellDataStyle.setBorderRight(HSSFCellStyle.BORDER_THIN);    
+			cellDataStyle.setRightBorderColor(HSSFColor.BLACK.index); 
+			
+			DataModel<Map<String, Object>> dataModel = scoreService.getList(limitKey);
+			
+			List<Map<String, Object>> list = dataModel.getRows();
+			for(Map<String, Object> map : list){
+				if(map != null){
+					HSSFRow row=sheet.createRow(i++);
+					
+					int j = 0;
+					
+					HSSFCell cel=row.createCell(j++);//编号
+					cel.setCellValue(trimNull(map.get("GAMECODE")));
+					cel.setCellStyle(cellDataStyle);
+					
+					cel=row.createCell(j++);  //跑者姓名
+					cel.setCellValue(trimNull(map.get("TRUENAME")));
+					cel.setCellStyle(cellDataStyle);
+					
+					cel=row.createCell(j++);  //手机号码
+					cel.setCellValue(trimNull(map.get("MOBILE")));
+					cel.setCellStyle(cellDataStyle);
+					
+					cel=row.createCell(j++);  //证件号码
+					cel.setCellValue(trimNull(map.get("CERTNO")));
+					cel.setCellStyle(cellDataStyle);
+					
+					cel=row.createCell(j++);  //团队名称
+					cel.setCellValue(trimNull(map.get("TEAM_NAME")));
+					cel.setCellStyle(cellDataStyle);
+					
+					cel=row.createCell(j++);  //计时点1
+					cel.setCellValue(trimNull(map.get("SCORE_TIME1")));
+					cel.setCellStyle(cellDataStyle);
+					cel=row.createCell(j++);  //计时点2
+					cel.setCellValue(trimNull(map.get("SCORE_TIME2")));
+					cel.setCellStyle(cellDataStyle);
+					cel=row.createCell(j++);  //计时点3
+					cel.setCellValue(trimNull(map.get("SCORE_TIME3")));
+					cel.setCellStyle(cellDataStyle);
+					cel=row.createCell(j++);  //净计时
+					cel.setCellValue(trimNull(map.get("SCORE_TIME")));
+					cel.setCellStyle(cellDataStyle);
+					
+					cel=row.createCell(j++);  //排名
+					cel.setCellValue(trimNull(map.get("SCORE_RANK")));
+					cel.setCellStyle(cellDataStyle);
+					
+					
+
+					cel=row.createCell(j++);  //证书状态(0-无证书，1-带生成，2-已生成，3-生成失败)
+					
+					if(StringUtil.equals("0", trimNull(map.get("CERT_STATUS")))){
+						cel.setCellValue("无证书");
+					} else if(StringUtil.equals("1", trimNull(map.get("CERT_STATUS")))){
+						cel.setCellValue("待生成");
+					} else if(StringUtil.equals("1", trimNull(map.get("CERT_IF_DOWN")))){
+						cel.setCellValue("已下载");
+					} else if(StringUtil.equals("2", trimNull(map.get("CERT_STATUS")))){
+						cel.setCellValue("已生成");
+					} else if(StringUtil.equals("3", trimNull(map.get("CERT_STATUS")))){
+						cel.setCellValue("生成失败");
+					}  else {
+						cel.setCellValue("");
+					}
+					
+					cel.setCellStyle(cellDataStyle);
+					
+					/*cel=row.createCell(j++);  //时间
+					cel.setCellValue(trimNull(map.get("getDtText")));
+					cel.setCellStyle(cellDataStyle);*/
+					
+				}
+			}
+    		OutputStream out=response.getOutputStream();
+    		String fileName="score"+DateUtil.dateFromat(new Date(), DateUtil.DATE_TIME_PATTERN4)+".xls";
+    		//response.addHeader("Content-Disposition","attachment;filename=\""+URLEncoder.encode(fileName,"UTF-8")+"\"");
+    		response.addHeader("Content-Disposition","attachment;filename=\""+fileName+"\"");
+    		response.setContentType("application/msexcel");
+    		out.flush();
+			workbook.write(out);
+			out.close();
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+    }
+	
+	private String trimNull(Object o) {
+		if (o == null) {
+			return "";
+		}
+		return o.toString();
+	}
+	
+	 private void setFontStyle(Font font){
+    	font.setFontHeightInPoints((short)12);
+		font.setFontName("新宋体");
+		font.setColor(HSSFColor.BLACK.index); 
+		font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+    }
+	 
+	 private void setHeadStyle(HSSFCellStyle style){
+    	style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER); // 垂直      
+    	style.setAlignment(HSSFCellStyle.ALIGN_CENTER);// 水平  
+
+		style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+		style.setFillForegroundColor(HSSFColor.LIGHT_GREEN.index);
+		 //设定标题框格式 
+		style.setBorderBottom(HSSFCellStyle.BORDER_THIN);    
+		style.setBottomBorderColor(HSSFColor.BLACK.index);    
+		style.setBorderLeft(HSSFCellStyle.BORDER_THIN);    
+		style.setLeftBorderColor(HSSFColor.BLACK.index);    
+		style.setBorderRight(HSSFCellStyle.BORDER_THIN);    
+		style.setRightBorderColor(HSSFColor.BLACK.index);    
+		style.setBorderTop(HSSFCellStyle.BORDER_THIN);    
+		style.setTopBorderColor(HSSFColor.BLACK.index);
+		style.setWrapText(true);
+    }
+	
+	
+	
+	
+}

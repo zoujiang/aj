@@ -1,0 +1,281 @@
+package com.spt.get.action;
+
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Logger;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.Font;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.frame.core.action.FtpImgDownUploadAction;
+import com.frame.core.util.DateUtil;
+import com.frame.core.util.StringUtil;
+import com.frame.core.vo.DataModel;
+import com.frame.core.vo.MsgVo;
+import com.spt.get.service.impl.GetServiceImpl;
+import com.spt.get.vo.GetLimitKey;
+
+import net.sf.json.JSONObject;
+
+
+@Controller
+@RequestMapping("/get")
+@Scope("prototype")
+public class GetAction extends FtpImgDownUploadAction {
+	@Autowired
+	private GetServiceImpl getService;
+	
+	private Logger logger = Logger.getLogger(this.getClass());
+	
+	
+	@RequestMapping("/list")
+	@ResponseBody
+	public DataModel<Map<String, Object>> getList(GetLimitKey limitKey){
+		
+		logger.info("getList request：" + JSONObject.fromObject(limitKey));
+		
+		DataModel<Map<String, Object>> dataModel = getService.getListOrder(limitKey);
+		return dataModel;
+	}
+	
+	@RequestMapping("/checkList")
+	@ResponseBody
+	public DataModel<Map<String, Object>> getCheckList(String ps){
+		
+		logger.info("getCheckList request：" + ps);
+		
+		
+		if (StringUtil.isEmpty(ps)) {
+			return new DataModel<Map<String, Object>>(null, 0);
+		}
+		GetLimitKey key = new GetLimitKey();
+		key.setOffset(0);
+		key.setLimit(9999);
+		key.setSearchText(ps);
+		
+		DataModel<Map<String, Object>> dataModel = getService.getListOrder(key);
+		return dataModel;
+	}
+	
+	@RequestMapping("/batchGet")
+	@ResponseBody
+	public MsgVo doBatchGet(String ps){
+		
+		logger.info("getCheckList request：" + ps);
+		
+		
+		if (StringUtil.isEmpty(ps)) {
+			return new MsgVo("请求有误");
+		}
+		
+		return getService.exeBatchGet(ps);
+	}
+	
+	
+	@RequestMapping("/doGet")
+	@ResponseBody
+	public MsgVo doGet(String id, String isGet){
+		
+		return getService.exeGet(id, isGet);
+		
+	}
+	
+	
+	@RequestMapping("/export")
+    public void export(GetLimitKey limitKey, HttpServletRequest request, HttpServletResponse response){
+		try{
+    		HSSFWorkbook workbook=new HSSFWorkbook();//创建一个webbook，对应一个Excel文件
+    		HSSFSheet sheet=workbook.createSheet("demo");//在webbook中添加一个sheet
+    		
+    		sheet.setDefaultColumnWidth((short) 15);
+    		
+    		HSSFCellStyle style=workbook.createCellStyle();//第四步，创建单元格，并设置值表头 设置表头居中
+    		Font font=workbook.createFont();
+    		this.setFontStyle(font);
+    		style.setFont(font);
+    		this.setHeadStyle(style);
+    		
+			HSSFRow firstRow=sheet.createRow(0);//在sheet中添加表头第0行,注意老版本poi对Excel的行数列数有限制short
+			firstRow.setHeight((short)300);
+			
+			HSSFCell cell=firstRow.createCell(0);//第一列
+			cell.setCellValue("参赛号码");
+			cell.setCellStyle(style);
+			
+			cell=firstRow.createCell(1);
+			cell.setCellValue("组别名称");
+			cell.setCellStyle(style);
+			
+			cell=firstRow.createCell(2);
+			cell.setCellValue("订单ID");
+			cell.setCellStyle(style);
+			
+			cell=firstRow.createCell(3);
+			cell.setCellValue("订单信息");
+			cell.setCellStyle(style);
+			
+			cell=firstRow.createCell(4);
+			cell.setCellValue("支付信息");
+			cell.setCellStyle(style);
+			
+			cell=firstRow.createCell(5);
+			cell.setCellValue("跑者姓名");
+			cell.setCellStyle(style);
+			
+			cell=firstRow.createCell(6);
+			cell.setCellValue("手机号码");
+			cell.setCellStyle(style);
+			
+			cell=firstRow.createCell(7);
+			cell.setCellValue("证件号码");
+			cell.setCellStyle(style);
+			
+			cell=firstRow.createCell(8);
+			cell.setCellValue("团队名称");
+			cell.setCellStyle(style);
+			
+			cell=firstRow.createCell(9);
+			cell.setCellValue("是否领物");
+			cell.setCellStyle(style);
+			
+			cell=firstRow.createCell(10);
+			cell.setCellValue("领物时间");
+			cell.setCellStyle(style);
+			
+			int i = 1;
+			HSSFCellStyle cellDataStyle=workbook.createCellStyle();
+			cellDataStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT);
+			cellDataStyle.setWrapText(true);
+			 //设定标题框格式 
+			cellDataStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);    
+			cellDataStyle.setBottomBorderColor(HSSFColor.BLACK.index);    
+			cellDataStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);    
+			cellDataStyle.setLeftBorderColor(HSSFColor.BLACK.index);    
+			cellDataStyle.setBorderRight(HSSFCellStyle.BORDER_THIN);    
+			cellDataStyle.setRightBorderColor(HSSFColor.BLACK.index); 
+			
+			DataModel<Map<String, Object>> dataModel = getService.getListOrder(limitKey);
+			
+			List<Map<String, Object>> list = dataModel.getRows();
+			for(Map<String, Object> map : list){
+				if(map != null){
+					HSSFRow row=sheet.createRow(i++);
+					
+					int j = 0;
+					
+					HSSFCell cel=row.createCell(j++);//编号
+					cel.setCellValue(trimNull(map.get("GAMECODE")));
+					cel.setCellStyle(cellDataStyle);
+					
+					cel=row.createCell(j++);//组别
+					cel.setCellValue(trimNull(map.get("GROUP_NAME")));
+					cel.setCellStyle(cellDataStyle);
+					
+					cel=row.createCell(j++);//订单ID
+					cel.setCellValue(trimNull(map.get("ORDER_ID")));
+					cel.setCellStyle(cellDataStyle);
+					
+					cel=row.createCell(j++);  //订单信息 sports_name ||GROUP_NAME  ||  truename
+					cel.setCellValue(trimNull(map.get("SPORT_NAME")) + trimNull(map.get("GROUP_NAME")) + trimNull(map.get("TRUENAME")));
+					cel.setCellStyle(cellDataStyle);
+					
+					cel=row.createCell(j++);  //支付信息
+					cel.setCellValue(trimNull(map.get("PAY_FEE")));
+					cel.setCellStyle(cellDataStyle);
+					
+					cel=row.createCell(j++);  //跑者姓名
+					cel.setCellValue(trimNull(map.get("TRUENAME")));
+					cel.setCellStyle(cellDataStyle);
+					
+					cel=row.createCell(j++);  //手机号码
+					cel.setCellValue(trimNull(map.get("MOBILE")));
+					cel.setCellStyle(cellDataStyle);
+					
+					cel=row.createCell(j++);  //证件号码
+					cel.setCellValue(trimNull(map.get("CERTNO")));
+					cel.setCellStyle(cellDataStyle);
+					
+					cel=row.createCell(j++);  //团队名称
+					cel.setCellValue(trimNull(map.get("TEAM_NAME")));
+					cel.setCellStyle(cellDataStyle);
+
+					cel=row.createCell(j++);  //是否领物
+					if(StringUtil.equals("1", trimNull(map.get("IS_GET")))){
+						cel.setCellValue("是");
+					} else {
+						cel.setCellValue("否");
+					}
+					
+					cel.setCellStyle(cellDataStyle);
+					
+					cel=row.createCell(j++);  //领物时间
+					cel.setCellValue(trimNull(map.get("getDtText")));
+					cel.setCellStyle(cellDataStyle);
+					
+				}
+			}
+    		OutputStream out=response.getOutputStream();
+    		String fileName="get"+DateUtil.dateFromat(new Date(), DateUtil.DATE_TIME_PATTERN4)+".xls";
+    		//response.addHeader("Content-Disposition","attachment;filename=\""+URLEncoder.encode(fileName,"UTF-8")+"\"");
+    		response.addHeader("Content-Disposition","attachment;filename=\""+fileName+"\"");
+    		response.setContentType("application/msexcel");
+    		out.flush();
+			workbook.write(out);
+			out.close();
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+    }
+	
+	private String trimNull(Object o) {
+		if (o == null) {
+			return "";
+		}
+		return o.toString();
+	}
+	
+	 private void setFontStyle(Font font){
+    	font.setFontHeightInPoints((short)12);
+		font.setFontName("新宋体");
+		font.setColor(HSSFColor.BLACK.index); 
+		font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+    }
+	 
+	 private void setHeadStyle(HSSFCellStyle style){
+    	style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER); // 垂直      
+    	style.setAlignment(HSSFCellStyle.ALIGN_CENTER);// 水平  
+
+		style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+		style.setFillForegroundColor(HSSFColor.LIGHT_GREEN.index);
+		 //设定标题框格式 
+		style.setBorderBottom(HSSFCellStyle.BORDER_THIN);    
+		style.setBottomBorderColor(HSSFColor.BLACK.index);    
+		style.setBorderLeft(HSSFCellStyle.BORDER_THIN);    
+		style.setLeftBorderColor(HSSFColor.BLACK.index);    
+		style.setBorderRight(HSSFCellStyle.BORDER_THIN);    
+		style.setRightBorderColor(HSSFColor.BLACK.index);    
+		style.setBorderTop(HSSFCellStyle.BORDER_THIN);    
+		style.setTopBorderColor(HSSFColor.BLACK.index);
+		style.setWrapText(true);
+    }
+	
+	
+	
+	
+}

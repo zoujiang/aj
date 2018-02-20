@@ -1,0 +1,38 @@
+<!-- 信息部分  改变 参赛编号：H/T/MXXXX-->
+<div class="wy-number">
+	<div class="wy-number-xx">
+		<!-- 大人信息 -->
+		<ul class="wy-xx-dr">
+			<li><span class="wy-xx-mc">以下是您的查询结果 : </span></li>
+			<li><span class="wy-xx-mc">参赛项目 : </span><span class="wy-xx-xx">${apply.groupName}</span></li>
+			<li><span class="wy-xx-mc">参赛号码 : </span><span class="wy-xx-xx">${apply.gameCode}</span></li>
+			<li><span class="wy-xx-mc">选手姓名 : </span><span class="wy-xx-xx">${apply.trueName}</span></li>
+			<li><span class="wy-xx-mc">选手性别 : </span><span class="wy-xx-xx">${apply.sex}</span></li>
+			<li><span class="wy-xx-mc">证件类型 : </span><span class="wy-xx-xx">${apply.certType}</span></li>
+			<li><span class="wy-xx-mc">证件号码 : </span><span class="wy-xx-xx">${apply.certNo}</span></li>
+		</ul>
+		<!-- 成绩信息 -->
+		<#if apply.groupName?contains("迷你")>
+		<#else>
+			<ul class="wy-xx-dr" style="border-top: 0.02rem solid #ddd">
+				<li><span class="wy-xx-mc">成绩信息如下 :</span><span class="wy-xx-xx"></span></li>
+				<#if apply.groupName?contains("10")>
+					<li><span class="wy-xx-mc">5KM净计时 :</span><span class="wy-xx-xx">${score.scoreTime1!''}</span></li>
+				<#else>
+					<li><span class="wy-xx-mc">5KM净计时 :</span><span class="wy-xx-xx">${score.scoreTime1!''}</span></li>
+					<li><span class="wy-xx-mc">15.5KM净计时 :</span><span class="wy-xx-xx">${score.scoreTime2!''}</span></li>
+				</#if>
+				<li><span class="wy-xx-mc">净计时 :</span><span class="wy-xx-xx">${score.scoreTime!''}</span></li>
+				<li><span class="wy-xx-mc">净计时排名 :</span><span class="wy-xx-xx">${score.scoreRank!''}</span></li>
+			</ul>
+		</#if>
+	</div>
+	<#if score.certUrl??>
+		<div class="wy-xx-zp">
+			<p><a href="${basePath}service/web/downloadCert?applyId=${score.applyId}">点击下载高清图片</a></p>
+			<div class="wy-k-img">
+				<img src="${score.certUrl}" alt="" style="width:100%;"/>
+			</div>
+		</div>
+	</#if>
+</div>

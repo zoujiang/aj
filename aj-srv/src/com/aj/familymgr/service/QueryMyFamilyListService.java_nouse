@@ -1,0 +1,100 @@
+package com.aj.familymgr.service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
+
+import com.aam.model.TUser;
+import com.frame.core.dao.GenericDAO;
+import com.frame.core.util.SystemConfig;
+import com.frame.ifpr.exception.PublicException;
+import com.frame.ifpr.service.PublishService;
+import com.util.Constant;
+
+
+/**
+ * 查看我的家人
+ * */
+
+@Service("myFamilyList")
+public class QueryMyFamilyListService implements PublishService{
+
+	private Logger log = Logger.getLogger(QueryMyFamilyListService.class);
+	
+	@Resource
+	private GenericDAO baseDAO;
+	
+	@Override
+	public Object publishService(Object obj) throws PublicException {
+		
+		JSONObject json = JSONObject.fromObject(obj);
+		
+		String serviceName = json.optString("serviceName");
+		JSONObject params = json.optJSONObject("params");
+		String userId = params.optString("userId");
+		
+		JSONObject returnJSON = new JSONObject();
+		returnJSON.put("serviceName", serviceName);
+		JSONObject result = new JSONObject();
+		if(userId == null || "".equals(userId)){
+			returnJSON.put("returnCode", Constant.RETURNCODE_FAILED);
+			returnJSON.put("result", result);
+			returnJSON.put("errorMsg", "userId为空！");
+			return returnJSON.toString();
+		}
+		String sql = "SELECT u.FAMILYID FROM t_family_relationship r LEFT JOIN t_call_enum c ON r.CALL_ID = c.ID , t_user u  WHERE  r.RELATION_USER_ID = u.ID AND  ( c.IS_SHOW = 0  OR c.IS_SHOW IS NULL) AND r.IS_CONFIRM = 0 and r.IS_DEL <> 0 AND r.CALL_ID NOT IN (31,32,33)  AND r.CREATE_USER_ID = ?  GROUP BY u.FAMILYID  ";
+		List<Map<String, Object>> familyList = baseDAO.getGenericBySQL(sql, new Object[]{ Integer.parseInt(userId)});
+		JSONArray ja=new JSONArray();
+		//if(familyList.size()==0){
+		//把自己的家庭号设置进去
+		String hsql = "from TUser where id = ?";
+		TUser user =  (TUser) baseDAO.getGenericByHql(hsql,  Integer.parseInt(userId)).get(0);
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("FAMILYID", user.getFamilyId());
+		if(!familyList.contains(map)){
+			familyList.add(map);
+		}
+		//}
+		for(int i=0;i<familyList.size();i++){
+			JSONObject jo = new JSONObject();
+			if(familyList.get(i).get("FAMILYID") == null){
+				continue;
+			}else{
+				String familyId = familyList.get(i).get("FAMILYID").toString();
+				//通过familyId查询user
+				String imgUrl= SystemConfig.getValue("img.http.url");
+				String querySql = "SELECT u.id userId, CONCAT('"+imgUrl+"',u.PHOTO) photo , u.IS_MARRIED isMarried, "+ 
+						" (SELECT c.id FROM t_call_enum c, t_family_relationship r  WHERE c.id = r.CALL_ID AND r.is_confirm = 0 AND r.CREATE_USER_ID = ? AND r.RELATION_USER_ID = u.ID )  callId, "+
+						" (SELECT c.NAME FROM t_call_enum c, t_family_relationship r  WHERE c.id = r.CALL_ID AND r.is_confirm = 0 AND r.CREATE_USER_ID = ? AND r.RELATION_USER_ID = u.ID )  callName, "+
+						"	(YEAR(NOW())-YEAR(u.birthday)-1) + ( DATE_FORMAT(u.birthday, '%m%d') <= DATE_FORMAT(NOW(), '%m%d') ) AS  age "+
+						" FROM t_user u ,t_family_relationship r WHERE  u.id = r.relation_user_id AND r.create_user_id = ? AND r.is_confirm = 0 AND  u.FAMILYID = ? and r.call_id not in (31, 32 ,33) ";
+				List<Map<String, Object>> userList = baseDAO.getGenericBySQL(querySql, new Object[]{userId, userId, userId,  familyId});
+				jo.put("familyId", familyId);
+				if(userList==null){
+					jo.put("userNumber", 0);
+				}else{
+					jo.put("userNumber", userList.size());
+				}
+				jo.put("userList", userList);
+				ja.add(jo);
+				
+			}
+			
+		}
+		result.put("familyList", ja);
+		result.put("succMsg", "查询成功");
+		returnJSON.put("returnCode", Constant.RETURNCODE_SUCCESS);
+		returnJSON.put("result", result);
+		returnJSON.put("errorMsg", "");
+		return returnJSON.toString();
+	}
+
+}

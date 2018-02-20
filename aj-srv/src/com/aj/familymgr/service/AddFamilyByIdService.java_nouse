@@ -1,0 +1,233 @@
+package com.aj.familymgr.service;
+
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import net.sf.json.JSONObject;
+
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
+
+import com.aam.model.TUser;
+import com.aj.familyrelation.vo.TFamilyRelationship;
+import com.aj.sys.vo.TCallEnum;
+import com.aj.sys.vo.TSysMsgAlert;
+import com.aj.task.service.TaskService;
+import com.frame.core.dao.GenericDAO;
+import com.frame.ifpr.exception.PublicException;
+import com.frame.ifpr.service.PublishService;
+import com.util.Constant;
+import com.util.DateUtils;
+
+
+/**
+ * 按亲脉手机号添加家庭成员
+ * */
+
+@Service("familyByIdAdd")
+public class AddFamilyByIdService implements PublishService{
+
+	private Logger log = Logger.getLogger(AddFamilyByIdService.class);
+	
+	@Resource
+	private GenericDAO baseDAO;
+	@Resource
+	private TaskService taskService;
+	
+	@Override
+	public Object publishService(Object obj) throws PublicException {
+		
+		JSONObject json = JSONObject.fromObject(obj);
+		
+		String serviceName = json.optString("serviceName");
+		JSONObject params = json.optJSONObject("params");
+		String callId = params.optString("callId");  
+		String userId = params.optString("userId");
+		String isPrivate = params.optString("isPrivate");
+		String description = params.optString("description");
+		String ajNo = params.optString("ajNo");
+		String userTel = params.optString("userTel");
+		
+		JSONObject returnJSON = new JSONObject();
+		returnJSON.put("serviceName", serviceName);
+		JSONObject result = new JSONObject();
+		if(userId == null || "".equals(userId)){
+			returnJSON.put("returnCode", Constant.RETURNCODE_FAILED);
+			returnJSON.put("result", result);
+			returnJSON.put("errorMsg", "userId为空！");
+			return returnJSON.toString();
+		}
+		if(callId == null || "".equals(callId)){
+			returnJSON.put("returnCode", Constant.RETURNCODE_FAILED);
+			returnJSON.put("result", result);
+			returnJSON.put("errorMsg", "callId为空！");
+			return returnJSON.toString();
+		}
+		if(isPrivate == null || "".equals(isPrivate)){
+			returnJSON.put("returnCode", Constant.RETURNCODE_FAILED);
+			returnJSON.put("result", result);
+			returnJSON.put("errorMsg", "isPrivate为空！");
+			return returnJSON.toString();
+		}
+		String hsql = " from TUser where id = ? ";
+		List<TUser> userList = baseDAO.getGenericByHql(hsql, Integer.parseInt(userId));
+		if(userList == null || userList.size() == 0){
+			returnJSON.put("returnCode", Constant.RETURNCODE_FAILED);
+			returnJSON.put("result", result);
+			returnJSON.put("errorMsg", "没有该用户！");
+			return returnJSON.toString();
+		}else{
+			TUser user = userList.get(0);
+			if(user.getSex() != 0 && user.getSex() != 1){
+				returnJSON.put("returnCode", Constant.RETURNCODE_FAILED);
+				returnJSON.put("result", result);
+				returnJSON.put("errorMsg", "为了精准的生成家庭关系，请先设置个人性别！");
+				return returnJSON.toString();
+			}
+			TUser family  = null;
+			//有亲脉号
+			if((ajNo == null || "".equals(ajNo)) && (userTel == null || "".equals(userTel)) ){
+				//都为空
+				returnJSON.put("returnCode", Constant.RETURNCODE_FAILED);
+				returnJSON.put("result", result);
+				returnJSON.put("errorMsg", "ajNo和userTel不能同时为空！");
+				return returnJSON.toString();
+			}else if((ajNo != null && !"".equals(ajNo)) && (userTel != null && !"".equals(userTel))){
+				//都不为空,判断亲脉号和手机号是否对应
+				hsql = "from TUser where ajNo = ? and userTel = ?";
+				List<TUser> qUserList = baseDAO.getGenericByHql(hsql, ajNo, userTel);
+				if(qUserList == null || qUserList.size() ==0){
+					returnJSON.put("returnCode", Constant.RETURNCODE_FAILED);
+					returnJSON.put("result", result);
+					returnJSON.put("errorMsg", "ajNo和userTel不对应！");
+					return returnJSON.toString();
+				}else{
+					family = qUserList.get(0);
+				}
+			}else if(ajNo != null && !"".equals(ajNo)){
+				hsql = "from TUser where ajNo = ?";
+				List<TUser> qUserList = baseDAO.getGenericByHql(hsql, ajNo);
+				if(qUserList == null || qUserList.size() ==0){
+					returnJSON.put("returnCode", Constant.RETURNCODE_FAILED);
+					returnJSON.put("result", result);
+					returnJSON.put("errorMsg", "没有该亲脉号用户！");
+					return returnJSON.toString();
+				}else{
+					family = qUserList.get(0);
+				}
+			}else if(userTel != null && !"".equals(userTel)){
+				hsql = "from TUser where userTel = ?";
+				List<TUser> qUserList = baseDAO.getGenericByHql(hsql, userTel);
+				if(qUserList == null || qUserList.size() ==0){
+					returnJSON.put("returnCode", Constant.RETURNCODE_FAILED);
+					returnJSON.put("result", result);
+					returnJSON.put("errorMsg", "没有该手机号用户！");
+					return returnJSON.toString();
+				}else{
+					family = qUserList.get(0);
+				}
+			}
+			//建立家庭关系
+			if(family.getId() == Integer.parseInt(userId)){
+				returnJSON.put("returnCode", Constant.RETURNCODE_FAILED);
+				returnJSON.put("result", result);
+				returnJSON.put("errorMsg", "不能添加自己！");
+				return returnJSON.toString();
+			}
+			boolean isMatch = regFamilyUserSex(family, callId);
+			if(!isMatch){
+				returnJSON.put("returnCode", Constant.RETURNCODE_FAILED);
+				returnJSON.put("result", result);
+				returnJSON.put("errorMsg", "添加的家人和称谓性别不匹配，添加失败！");
+				return returnJSON.toString();
+			}
+			addUserRelation(user, family , callId, isPrivate, description);
+			
+			result.put("succMsg", "添加成功，等待对方确认！");	
+			returnJSON.put("returnCode", Constant.RETURNCODE_SUCCESS);
+			returnJSON.put("result", result);
+			returnJSON.put("errorMsg", "");
+			return returnJSON.toString();
+				
+		}
+		
+	}
+	
+	/**
+	 * 验证所添加家人的性别和称谓是否对应
+	 * */
+	private boolean regFamilyUserSex(TUser family, String callId) {
+		if(("1".equals(callId) || "3".equals(callId) || "6".equals(callId) ||"7".equals(callId) ||"23".equals(callId) ) && family.getSex() == 1){
+			return false;
+		}else if(("2".equals(callId) || "4".equals(callId) || "5".equals(callId) ||"8".equals(callId) ||"24".equals(callId) ) && family.getSex() == 0){
+			return false;
+		}
+		return true;
+	}
+	public void addUserRelation(TUser user, TUser family, String callId, String isPrivate, String description){
+		
+		TFamilyRelationship relation = new TFamilyRelationship();
+		relation.setCreateUserId(user.getId());
+		relation.setRelationUserId(family.getId());
+		relation.setCallId(Integer.parseInt(callId)); 
+		relation.setCreateDate(DateUtils.currentDate());
+		if("1".equals(isPrivate)){
+			relation.setIsPrivate(1);
+		}else if("2".equals(isPrivate)){
+			relation.setIsPrivate(0);
+		}
+		relation.setDescription(description);
+		relation.setIsDel(1);
+		relation.setIsConfirm(1);
+		int relationId = baseDAO.save(relation);
+		
+		//TODO 调用短信发送接口，向family.getUserTel发送添加短信以便确认关系
+		String callName = queryCallNameById(Integer.parseInt(callId));
+		//生成一条系统消息，通知用户确认关系 消息类型：0：普通提示消息 1：添加家人提示消息 2：引入所有家人提示消息
+		String name = user.getNickName()==null? user.getUserTel() : user.getNickName();
+		String familyName = user.getNickName() == null ? user.getUserTel() : user.getNickName();
+		sendSysMsgToRelationUser(family.getId(), relationId, 1,"系统消息", familyName+"您好，"+name+"亲脉号"+user.getAjNo()+"关系申请【"+callName+"】，是否接受？");
+		
+		//生成一个任务
+		/*JSONObject params = new JSONObject();
+		params.put("content", familyName +"您好，"+name +"亲脉号"+user.getAjNo()+"关系申请【"+callName+"】，是否接受？");
+		params.put("audioUrl", "");
+		params.put("imgUrl", "");
+		params.put("fromUserId", user.getId());
+		params.put("sendTime", "");
+		params.put("type", "2");
+		params.put("toUserId", family.getId());
+		try {
+			taskService.addTask(params);
+		} catch (Exception e) {
+			
+			log.info("添加家人时，生成相应任务异常："+ e);
+		}*/
+		
+	}
+	private void sendSysMsgToRelationUser(Integer targetUserId, int relationId, int msgType,
+			String msgTitle, String msgContent) {
+		
+		TSysMsgAlert alert = new TSysMsgAlert();
+		alert.setCreateDate(DateUtils.currentDate());
+		alert.setHadRead(0);
+		alert.setMsgContent(msgContent);
+		alert.setMsgTitle(msgTitle);
+		alert.setMsgType(msgType);
+		alert.setRelationId(relationId+"");
+		alert.setReciveUserId(targetUserId);
+		baseDAO.save(alert);
+		
+	}
+	public String queryCallNameById(int callId){
+		
+		String hsql = "from TCallEnum where id = ? ";
+		List<TCallEnum> callList =  baseDAO.getGenericByHql(hsql, callId);
+		if(callList != null && callList.size() >0){
+			return callList.get(0).getName();
+		}
+		return "";
+	}
+
+}

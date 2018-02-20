@@ -1,0 +1,416 @@
+package com.spt.score.util;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.log4j.Logger;
+
+import com.frame.core.util.DateUtil;
+import com.frame.core.util.ExcelReadHelper;
+import com.frame.core.util.ExcelWriteHelperPoi;
+import com.frame.core.util.StringUtil;
+import com.frame.core.vo.MsgVo;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
+public class JobExcelUtil {
+	private Logger logger = Logger.getLogger(JobExcelUtil.class);
+	
+	String groupId;
+	String jobType;
+	String fileName;
+	
+	public MsgVo checkImpExcel(String filePath, String groupId) {
+		if (filePath.lastIndexOf(".") == -1) {
+			return new MsgVo("文件类型有误");
+		}
+		
+		String suffix =  filePath.substring(filePath.lastIndexOf(".") + 1);
+		
+		if (!"xls".equals(suffix) && !"xlsx".equals(suffix)) {
+			return new MsgVo("文件类型有误，请正确使用模板xls,xlsx");
+		}
+		
+		ExcelReadHelper excelReader = null;
+		InputStream in = null;
+		
+		File tempFile = new File(filePath);
+		fileName = tempFile.getName();
+		
+		try {
+			excelReader = new ExcelReadHelper();
+			in = new FileInputStream(tempFile);
+			
+			return checkImpExcel(in, groupId, suffix);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return new MsgVo(true);
+		
+	}
+	
+	
+	public MsgVo checkImpExcel(InputStream in, String groupId, String suffix) {
+		this.groupId = groupId;
+		/*
+		 * 作业类型（1-全程模板，2-半程模板，3-迷你模板,4-亲子模板)
+		 * 亲子：4
+		迷你：3,11
+		半程：1.9
+		全场：2,10*/
+		if ("4".equals(groupId)) {
+			jobType = "4";
+		} else if ("3".equals(groupId) || "11".equals(groupId) ) {
+			jobType = "3";
+		} else if ("2".equals(groupId) || "10".equals(groupId) ) {
+			jobType = "1";
+		} else if ("1".equals(groupId) || "9".equals(groupId) ) {
+			jobType = "2";
+		} else {
+			return new MsgVo("组别信息有误:" + URLEncoder.encode(groupId));
+		}
+		
+		ExcelReadHelper excelReader = null;
+		try {
+			excelReader = new ExcelReadHelper();
+			excelReader.read(in, true, suffix);//读取excel数据
+		
+			MsgVo msg = validateImportCusInfoExcel(excelReader);//验证数据
+			
+			if (msg.isError() && StringUtil.isNotEmpty(msg.getMsg())) {
+				return msg;
+			}
+			
+			if (msg.isError()) {
+				String errorPath = errorFileOutPut(excelReader);//输出错误文件
+				//customGropService.updateCgropImportState(cgropId,ImportState.failure);
+				
+				if (errorPath == null) {
+					return new MsgVo("导入文件有误,生成错误说明文件失败.请稍后重试");
+				}
+				msg = new MsgVo(false);
+				msg.setCode("file_error");
+				msg.setObj(errorPath);
+				msg.setMsg("导入文件有误,点击确认下载文件查看详细信息");
+				return msg;
+			} else {//正确导入数据
+				System.out.println("文件正确");
+				/*result = customGropService.importCusInfoUseExcel(excelReader,bufferedReader,cgropId,suffix);
+				if ("success".equals(result)) {
+					customGropService.updateCgropImportState(cgropId,ImportState.success);
+					fis.close();
+					filexls.delete();
+				}else {
+					customGropService.updateCgropImportState(cgropId,ImportState.failure);
+					//errorFileOutPut(ftp,"更新客户群导入状态出错",cgropId);
+				}*/
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new MsgVo(false, "文件有误");
+		}
+		
+		return new MsgVo(true);
+	}
+	
+	
+	private MsgVo validateImportCusInfoExcel(ExcelReadHelper excelReader) {
+		int dataLength = 0;
+		//作业类型（1-全程模板，2-半程模板，3-迷你模板,4-亲子模板)
+		/*成绩的模板有三种：
+		分别为半程的：净计时成绩（总成绩）、分段计时成绩（3个）
+		迷你/亲子：无
+		10公里：净计时成绩（总成绩）、分段计时成绩（1个）*/
+		if ("4".equals(jobType)) {
+			dataLength = 1;
+		} else if ("3".equals(jobType)) {
+			dataLength = 1;
+		} else if ("2".equals(jobType)) {
+			dataLength = 5;
+		} else if ("1".equals(jobType)) {
+			dataLength = 3;
+		} else {
+			return new MsgVo("组别类型有误");
+		}
+		
+		boolean flag = true;
+		List<String[]> data = excelReader.getData();
+		List<String[]> dataError = new ArrayList<String[]>();
+		List<String> errorlist = new ArrayList<String>();
+		String userCode = "";
+		StringBuffer errorLine = new StringBuffer("");
+		
+		if (data == null || data.isEmpty()) {
+			return new MsgVo("文件内容为空");
+		}
+		
+		for (int i = 0; i < data.size(); i++) {
+			if (errorLine.length() > 0) {
+				errorlist.add(errorLine.toString());
+			}
+			errorLine = new StringBuffer("");
+			
+			String[] strArr = data.get(i);
+			if (strArr.length != dataLength) {
+				return new MsgVo("导入的文件非模版样式");
+			}
+			userCode = strArr[0];
+			
+			if (StringUtil.isEmpty(userCode)) {
+				errorLine.append("第" + (i+2) + "行,编码为空");
+				continue;
+			}
+			
+			for (int ii = 1; ii < dataLength; ii++) {
+				String time = strArr[ii];
+				
+				if (StringUtil.isEmpty(time)) {
+					errorLine.append("第" + (i+2) + "行,成绩为空,没有成绩请填写'0'");
+					break;
+				}
+
+				if ("0".equals(time)) {
+					break;
+				}
+				
+				String[] times = time.split(":");
+				if (times.length != 3) {
+					errorLine.append("第" + (i+2) + "行,成绩有误:" + time);
+					break;
+				}
+				boolean tflag = false;
+				boolean isFirst = true;
+				for (String t : times) {
+					if (StringUtil.isEmpty(t) || t.length() != 2) {
+						
+						if (isFirst && t.length() == 1) {
+							continue;
+						}
+						
+						errorLine.append("第" + (i+2) + "行,成绩有误:" + time);
+						tflag = true;
+						break;
+					}
+					isFirst = false;
+				}
+				if (tflag) {
+					break;
+				}
+				
+				try {
+					int h = Integer.parseInt(times[0]);
+					int m = Integer.parseInt(times[1]);
+					int s = Integer.parseInt(times[2]);
+					
+					if (m > 59) {
+						errorLine.append("第" + (i+2) + "行,成绩有误:" + time + ".分钟数不能大于59");
+						break;
+					}
+					if (s > 59) {
+						errorLine.append("第" + (i+2) + "行,成绩有误:" + time + ".秒数不能大于59");
+						break;
+					}
+					
+					String ts = "";
+					if (h < 10) {
+						ts = "0" + h;
+					}
+					if (m < 10) {
+						ts = ts + ":" + "0" + m;
+					} else {
+						ts = ts + ":" + m;
+					}
+					if (s < 10) {
+						ts = ts + ":" + "0" + s;
+					} else {
+						ts = ts + ":" + s;
+					}
+					
+					if (!time.equals(ts) && !("0" + time).equals(ts)) {
+						errorLine.append("第" + (i+2) + "行,成绩有误:" + time + ".解析后:" + ts); 
+						break;
+					}
+					
+				} catch (Exception e) {
+					errorLine.append("第" + (i+2) + "行,解析成绩格式有误:" + time); 
+					break;
+				}
+				
+			}
+			
+			/*if (errorLine.length() > 0) {
+				errorlist.add(errorLine.toString());
+			}
+			errorLine = new StringBuffer("");*/
+			
+		}
+		if (errorLine.length() > 0) {
+			errorlist.add(errorLine.toString());
+		}
+		if (errorlist.size() > 0) {
+			flag = false;
+		}
+		
+		if (flag) {
+			return new MsgVo(true);
+		}
+		
+		if (!flag) {
+			for (int i = 0; i < errorlist.size(); i++) {
+				String[] strArr1 = new String[1];
+				strArr1[0] = errorlist.get(i); 
+				dataError.add(strArr1);
+			}
+			
+			/*for (int i = 0; i < data.size(); i++) {
+				String[] strArr = data.get(i);
+				String[] strArr1 = new String[strArr.length+1];
+				strArr1[0] = strArr[0]; 
+				dataError.add(strArr1);
+			}*/
+			excelReader.setData(dataError);
+		}
+		return new MsgVo(false);
+	}
+	
+	private String errorFileOutPut(ExcelReadHelper excelReader) {
+		/**写错误信息到excel中，放在系统目录中*/
+		String columnsStr  = null;
+		/*if (flagLength) {
+			columnsStr ="[{'field': 'userTEL','title': '用户电话','align': 'left'},]";//导出字段数据 
+		}else {
+			columnsStr = "[{'field': 'error','title': '错误信息','align': 'center'},]"; 
+		}*/
+		
+		columnsStr = "[{'field': 'error','title': '错误信息','align': 'center'},]"; 
+		final Column[] columns = convertColumn(columnsStr);
+		ExcelWriteHelperPoi writer = new ExcelWriteHelperPoi(excelReader.getData()) {
+			
+			@Override
+			protected String getText(Object element, int columnIndex) {
+				String [] strArr = (String[])element;
+				try {
+					String columnValue = strArr[columnIndex];
+					return columnValue;
+				} catch (Exception e) {
+					logger.error("excel解析出错(" +e.getMessage()+")*****", e);
+				} 
+				return null;
+			}
+			
+			@Override
+			protected String[] getHead() {
+				String[] headers = new String[columns.length];
+				for (int columnIndex = 0; columnIndex < columns.length; columnIndex++) {
+					headers[columnIndex] = columns[columnIndex].getTitle();
+				}
+				return headers;
+			}
+			
+			
+		};
+		FileOutputStream fos = null;
+		String dateStr = DateUtil.dateFromat(new Date(), DateUtil.DATE_TIME_PATTERN4);
+		
+		String dbPath = "/res/imp_error/" + groupId + "/";
+		String fileName = dateStr + ".xls";
+		//File dir = new File(getRealPath() + "/res/imp_error/" + groupId + "/");
+		File dir = new File(getRealPath() + dbPath);
+		if (!dir.exists() || !dir.isDirectory()) {
+			dir.mkdirs();
+		}
+		//File xls = new File(dir , fileName + ".xls");
+		//File xls = new File(dir , fileName + ".xls");
+		//File xls = new File(dir , fileName.substring(0, fileName.lastIndexOf(".")) + "_error.xls");
+		File xls = new File(dir, fileName);
+		logger.info("错误文件:" + xls.getAbsolutePath());
+		try{
+			fos=new FileOutputStream(xls ,false);
+			writer.writeNormal(fos,"info");
+			fos.flush();  
+			
+			return dbPath + fileName;
+		} catch(Exception e) {
+			e.printStackTrace();
+			logger.info("写错误文件有误:" + e.toString());
+		} finally {
+		    try {
+		    	fos.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+				logger.info("写错误文件有误:" + e.toString());
+			}
+		}
+
+		return null;
+	}
+	
+	private Column[] convertColumn(String columnsJsonStr) {
+		JSONArray columnJsonArray = JSONArray.fromObject(columnsJsonStr);
+		Column[] columns = new Column[columnJsonArray.size()];
+		Column column = null;
+		for (int columnIndex = 0; columnIndex < columnJsonArray.size(); columnIndex++) {
+			JSONObject columnJson = columnJsonArray.getJSONObject(columnIndex);
+			column = new Column();
+			column.setField(columnJson.getString(Column.FIELDNAME));
+			column.setTitle(columnJson.getString(Column.TITLENAME));
+			column.setAlign(columnJson.getString(Column.ALIGNNAME));
+			
+			columns[columnIndex] = column;
+		}
+		return columns;
+	}
+	
+	public String getRealPath() {
+		File file = new File(this.getClass().getResource("/").getPath().substring(1));
+		//return file.getParentFile().getParentFile().getPath()+"/res/";
+		return file.getParentFile().getParentFile().getPath();
+	}
+
+}
+
+class Column {
+	
+	public static final String ALIGN_LEFT = "left";
+	public static final String ALIGN_RIGHT = "right";
+	public static final String ALIGN_CENTER = "center";
+	
+	public static final String FIELDNAME = "field";
+	public static final String TITLENAME = "title";
+	public static final String ALIGNNAME = "align";
+	
+	private String field;
+	private String title;
+	private String align = ALIGN_LEFT;
+	
+	public String getField() {
+		return field;
+	}
+	public void setField(String field) {
+		this.field = field;
+	}
+	public String getTitle() {
+		return title;
+	}
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	public String getAlign() {
+		return align;
+	}
+	public void setAlign(String align) {
+		this.align = align;
+	}
+	
+	
+}

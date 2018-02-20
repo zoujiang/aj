@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="css/wy-cx.css"/>
+    <title></title>
+</head>
+<body>
+<!-- 页头 -->
+<header id="head">
+    <div class="container">
+        <div class="logo">
+            <img src="images/wy-mls01.png" alt=""/>
+        </div>
+    </div>
+</header>
+
+<section id="main">
+    <div class="wy-main">
+        <div class="wy-main-dh">
+            <a href=""><img src="images/wy-mls02.gif" alt=""/></a><!--logo/-->
+        </div>
+        <div class="wy-main-dh02">
+            <ul>
+                <li><a href="">首页</a></li>
+                <li><a href="">赛事信息</a></li>
+                <li><a href="">新闻公告</a></li>
+                <li><a href="">合作伙伴</a></li>
+                <li><a href="">关于我们</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="wy-main02">
+        <p>您的位置:&nbsp;&nbsp;<a href="">首页></a><a href="">报名查询</a></p>
+    </div>
+    <div class="wy-main03">
+        <div class="wy-fonts">个人状态查询</div>
+
+        <!-- 信息部分  改变 参赛编号：H/T/MXXXX-->
+        <div class="wy-number">
+            <div class="wy-number-xx">
+                <!-- 大人信息 -->
+                <ul class="wy-xx-sr">
+                    <li><span class="wy-xx-mc">参赛编号 : </span><span class="wy-xx-xx">张菊红</span></li>
+                    <li><span class="wy-xx-mc">手机号码 : </span><span class="wy-xx-xx">13996486886</span></li>
+                    <li><span class="wy-xx-mc">性别 : </span><span class="wy-xx-xx">女</span></li>
+                    <li><span class="wy-xx-mc">证件类型 : </span><span class="wy-xx-xx">身份证</span></li>
+                    <li><span class="wy-xx-mc">证件号码 : </span><span class="wy-xx-xx">510824198901063166</span></li>
+                    <li><span class="wy-xx-mc">生日 : </span><span class="wy-xx-xx">1989-01-06</span></li>
+                    <li><span class="wy-xx-mc">通讯地址 : </span><span class="wy-xx-xx">中国 重庆 重庆市渝北区红叶路邮政绿苑2栋22-6</span></li>
+                    <li><span class="wy-xx-mc">电子邮箱 : </span><span class="wy-xx-xx">990747986@qq.com</span></li>
+                    <li><span class="wy-xx-mc">健康状况 : </span><span class="wy-xx-xx">健康</span></li>
+                    <li><span class="wy-xx-mc">有无病史 : </span><span class="wy-xx-xx">无</span></li>
+                    <li><span class="wy-xx-mc">血型 : </span><span class="wy-xx-xx">O</span></li>
+                    <li><span class="wy-xx-mc">T恤尺寸 : </span><span class="wy-xx-xx">S（成人）</span></li>
+                    <li><span class="wy-xx-mc">紧急联系人姓名 : </span><span class="wy-xx-xx">凡雪英</span></li>
+                    <li><span class="wy-xx-mc">紧急联系人电话 : </span><span class="wy-xx-xx">15102349289</span></li>
+                    <li><span class="wy-xx-mc">是否领物 : </span><span class="wy-xx-xx">否</span></li>
+                    <li><span class="wy-xx-mc">报名时间 : </span><span class="wy-xx-xx">2016-08-18 10:48:07</span></li>
+                    <li><span class="wy-xx-mc">订单信息 : </span><span class="wy-xx-xx">2016重庆国际女子半程马拉松赛半程马拉松张菊红</span></li>
+                    <li><span class="wy-xx-mc">订单状态 : </span><span class="wy-xx-xx">已支付</span></li>
+                    <li><span class="wy-xx-mc">订单号 : </span><span class="wy-xx-xx">147148848714427</span></li>
+                    <li><span class="wy-xx-mc">支付方式 : </span><span class="wy-xx-xx">微信支付</span></li>
+                </ul>
+                <!-- 小孩信息 -->
+                <ul class="wy-xx-sr02">
+                    <li><span class="wy-xx-mc">小孩姓名 ：</span><span class="wy-xx-xx">卓琳滟</span></li>
+                    <li><span class="wy-xx-mc">小孩年龄 ：</span><span class="wy-xx-xx">10</span></li>
+                    <li><span class="wy-xx-mc">小孩性别 ：</span><span class="wy-xx-xx">女</span></li>
+                    <li><span class="wy-xx-mc">小孩证件 ：</span><span class="wy-xx-xx">身份证</span></li>
+                    <li><span class="wy-xx-mc">小孩证件号码 ：</span><span class="wy-xx-xx">500108200609301227</span></li>
+                    <li><span class="wy-xx-mc">小孩生日 ：</span><span class="wy-xx-xx">2006-09-30</span></li>
+                    <li><span class="wy-xx-mc">小孩健康 ：</span><span class="wy-xx-xx">健康</span></li>
+                    <li><span class="wy-xx-mc">小孩病史 ：</span><span class="wy-xx-xx">无</span></li>
+                    <li><span class="wy-xx-mc">小孩血型 ：</span><span class="wy-xx-xx">O</span></li>
+                    <li><span class="wy-xx-mc">小孩T恤 ：</span><span class="wy-xx-xx">140cm（儿童）</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- 主办单位介绍 -->
+<footer id="footer">
+    <div class="wy-foot">
+
+    </div>
+    <div class="wy-foot-js">
+        <p>主办单位：重庆市体育局 重庆日报报业集团 重庆南岸区人民政府 乐视体育文化发展（北京）有限公司 </p>
+        <p>承办单位：重庆乐视体育产业发展有限公司</p>
+        <p>联合承办单位：咪咕互动娱乐有限公司</p>
+    </div>
+</footer>
+
+</body>
+</html>

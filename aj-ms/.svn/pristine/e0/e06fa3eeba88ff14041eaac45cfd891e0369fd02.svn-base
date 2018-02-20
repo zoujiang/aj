@@ -1,0 +1,98 @@
+package com.spt.score.util;
+
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+
+public class CertImgTextUtilTest {
+	
+	static String path = "D:\\tmp\\";
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		//迷你();
+		//亲子();
+		半程();
+		全程();
+		
+		System.out.println("04:31:01".compareTo("05:01:56"));
+		System.out.println("ok");
+
+	}
+	
+	public static void 迷你() {
+		CertImgTextUtil imgText = new CertImgTextUtil();
+		BufferedImage d = imgText.loadImageLocal(path + "mn311.jpg"); 
+		imgText.setFont("宋体", 90);
+		imgText.setColor(Color.BLACK);
+		
+		d = imgText.modifyImage(d, "张子", 1148, 1190);
+        d = imgText.modifyImage(d, "T0134", 2479, 1190);
+		
+		String fileName = "cert\\迷你.jpg";
+		imgText.writeImageLocal(path + fileName, d); 
+	}
+	
+	public static void 亲子() {
+		CertImgTextUtil imgText = new CertImgTextUtil();
+		BufferedImage d = imgText.loadImageLocal(path + "qz4.jpg"); 
+		BufferedImage bi = null;
+		imgText.setFont("宋体", 90);
+		imgText.setColor(Color.BLACK);
+		
+		bi = imgText.modifyImage(d, "T1344", 1088, 1165);
+        bi = imgText.modifyImage(d, "路飞", 1857, 1165);
+        bi = imgText.modifyImage(d, "     娜美", 2479, 1165);//加空格控制距离，宽度大了写不了字
+        
+		
+        String fileName = "cert\\亲子.jpg";
+		imgText.writeImageLocal(path + fileName, bi); 
+	}
+	
+	public static void 半程() {
+		CertImgTextUtil imgText = new CertImgTextUtil();
+		BufferedImage d = imgText.loadImageLocal(path + "bc19.jpg"); 
+		BufferedImage bi = null;
+		imgText.setFont("宋体", 80);
+		imgText.setColor(Color.BLACK);
+		
+		//bi = imgText.modifyImage(d, "真姓名", 680, 1192);
+		bi = imgText.modifyImage(d, "真姓名", 680, 1132);
+        bi = imgText.modifyImage(d, "T11233", 1595, 1132);
+        bi = imgText.modifyImage(d, "马拉松半程赛", 746, 1315);
+	    bi = imgText.modifyImage(d, "02:01:01", 746, 1612);
+	    bi = imgText.modifyImage(d, "1", 1706, 1612);
+	    
+	    imgText.setFont("宋体", 63);
+	    bi = imgText.modifyImage(d, "01:01:01", 883, 1788);
+	    //bi = imgText.modifyImage(d, "01:01:02", 1193, 1858);
+	    bi = imgText.modifyImage(d, "01:01:03", 1520, 1788);
+		
+        String fileName = "cert\\半程.jpg";
+		imgText.writeImageLocal(path + fileName, bi); 
+	}
+	
+	public static void 全程() {
+		CertImgTextUtil imgText = new CertImgTextUtil();
+		BufferedImage d = imgText.loadImageLocal(path + "qc210.jpg"); 
+		BufferedImage bi = null;
+		imgText.setFont("宋体", 80);
+		imgText.setColor(Color.BLACK);
+		
+		bi = imgText.modifyImage(d, "真姓名", 680, 1132);
+        bi = imgText.modifyImage(d, "T11233", 1595, 1132);
+        bi = imgText.modifyImage(d, "马拉松半程赛", 746, 1315);
+	    bi = imgText.modifyImage(d, "02:01:01", 746, 1612);
+	    bi = imgText.modifyImage(d, "1", 1706, 1612);
+	    
+	    imgText.setFont("宋体", 65);
+	    bi = imgText.modifyImage(d, "01:01:01", 1180, 1788);
+	    
+	    
+		
+        String fileName = "cert\\全程.jpg";
+		imgText.writeImageLocal(path + fileName, bi); 
+	}
+	
+	
+
+}

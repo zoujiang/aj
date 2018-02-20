@@ -1,0 +1,101 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+%>
+<!DOCTYPE html>
+<html>
+<head>
+	<title>个人成绩查询</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+	<link rel="stylesheet" type="text/css" href="css/common.css">
+	<link rel="stylesheet" type="text/css" href="css/APPmls.css">
+	<link rel="stylesheet" href="<%=basePath %>resources/layer/2.1/skin/layer.css"/>
+    <link rel="stylesheet" href="<%=basePath %>resources/layer/2.1/skin/layer.ext.css"/>
+	<script type="text/javascript" src="<%=basePath %>resources/hplus4.1/js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/fn.js"></script>
+	
+	<script type="text/javascript" src="<%=basePath %>resources/layer/2.1/layer.js"></script>
+	
+	<script type="text/javascript">
+		$(function(){
+			$(".wy-submit").click(function(){
+				if($("input[name='certNo']").val() == ""){
+					layer.msg("请输入证件号码", {title:'提示', btn: ['确定'],icon: 6}, function(index){});
+					return;
+				}
+				if($("input[name='mobile']").val() == ""){
+					layer.msg("请输入手机号码", {title:'提示', btn: ['确定'],icon: 6}, function(index){});
+					return;
+				}
+				$.ajax({
+		   	        type: "POST",
+		   	        url:"<%=basePath %>service/h5/gradeexist",
+		   	        dataType: "json",
+		   	        data:{
+		   	        	certNo:$("input[name='certNo']").val(),
+		   	        	mobile:$("input[name='mobile']").val()
+		   	        },
+		   	        success: function(data){
+		   	        	if(data == null || data == ''){
+		   					return;
+		   				} 
+		   	        	if(data.success == 1){
+		   	        		location.href = "<%=basePath %>service/h5/toScorePage?certNo="+$("input[name='certNo']").val()+"&mobile="+$("input[name='mobile']").val();
+		   	        	} else if(data.success==0){
+		   	        		location.href = "<%=basePath %>spt/h5/noexist.jsp";
+		   	        	} else if(data.success == 2){
+		   	        		location.href = "<%=basePath %>spt/h5/gradenoexist.jsp";
+		   	        	} else {
+		   	        		layer.msg(data.message, {title:'提示', btn: ['确定'],icon: 6}, function(index){});
+		   	        	}
+		   	        }
+		   		});	
+			});
+		});
+	</script>
+</head>
+<body>
+<header>
+	<div class="wy-header">
+		<div class="wy-header-personal">
+			<a onclick="javascript:history.go(-1);"> &lt; </a>
+			<p>成绩查询</p>
+		</div>
+	</div>
+</header>
+
+<section>
+	<div class="wy-section">
+		<div class="wy-section-certificate">
+			<span>证件号码</span>
+			<input type="text" name="certNo" class="">
+
+			<span style="margin-top:10px;">手机号码</span>
+			<input type="text" name="mobile" style="margin-top:10px;">
+		</div>
+		<p style="margin-top: 0.1rem;">&nbsp;</p>
+		<a class="wy-submit">提交查询</a>
+	</div>
+</section>
+
+<footer>
+	<div class="footer">
+		<div class="wy-foot">
+
+		</div>
+		<div class="wy-foot-js">
+			<p>主办单位：中国田径协会 重庆市体育局 重庆市南岸区人民政府</p>
+			<p>联合主办：重庆日报报业集团 乐视体育文化产业发展（北京）有限公司</p>
+			<p>承办单位：重庆乐视体育产业发展有限公司</p>
+		</div>
+	</div>
+
+</footer>
+
+
+
+
+</body>
+</html>

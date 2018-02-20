@@ -1,0 +1,57 @@
+package com.spt.get.vo;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+
+import com.frame.core.util.pagination.key.LimitKey;
+
+public class GetLimitKey extends LimitKey {
+	private String groupId;
+	private String type;
+	private String typeVal;
+	private String isGet;
+	private String checkPs;
+	
+	public String getGroupId() {
+		return groupId;
+	}
+	public void setGroupId(String groupId) {
+		this.groupId = groupId;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+	public String getTypeVal() {
+		return typeVal;
+	}
+	public void setTypeVal(String typeVal) {
+		if (typeVal == null) {
+			return;
+		}
+		try {
+			this.typeVal = URLDecoder.decode(typeVal,"utf8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			this.typeVal = typeVal;
+		}
+	}
+	public String getIsGet() {
+		return isGet;
+	}
+	public void setIsGet(String isGet) {
+		this.isGet = isGet;
+	}
+	public String getCheckPs() {
+		return checkPs;
+	}
+	public void setCheckPs(String checkPs) {
+		this.checkPs = checkPs;
+	}
+	
+	
+
+}

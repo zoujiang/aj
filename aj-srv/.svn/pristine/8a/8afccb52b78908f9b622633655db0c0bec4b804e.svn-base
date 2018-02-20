@@ -1,0 +1,265 @@
+package com.aj.familymgr.service;
+
+import java.util.List;
+import java.util.UUID;
+
+import javax.annotation.Resource;
+
+import net.sf.json.JSONObject;
+
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
+
+import com.aam.model.TUser;
+import com.aj.albummgr.vo.TAlbum;
+import com.aj.familyrelation.vo.TFamilyRelationship;
+import com.frame.core.dao.GenericDAO;
+import com.frame.ifpr.exception.PublicException;
+import com.frame.ifpr.service.PublishService;
+import com.util.Constant;
+import com.util.DateUtils;
+
+
+/**
+ * 家庭成员管理
+ * */
+
+@Service("familyMgr")
+public class FamilyManageService implements PublishService{
+
+	private Logger log = Logger.getLogger(FamilyManageService.class);
+	
+	@Resource
+	private GenericDAO baseDAO;
+	
+	@Override
+	public Object publishService(Object obj) throws PublicException {
+		
+		JSONObject json = JSONObject.fromObject(obj);
+		
+		String serviceName = json.optString("serviceName");
+		JSONObject params = json.optJSONObject("params");
+		String userId = params.optString("userId");
+		String targetUserId = params.optString("targetUserId");  
+		String oper = params.optString("oper");
+		
+		JSONObject returnJSON = new JSONObject();
+		returnJSON.put("serviceName", serviceName);
+		JSONObject result = new JSONObject();
+		if(userId == null || "".equals(userId)){
+			returnJSON.put("returnCode", Constant.RETURNCODE_FAILED);
+			returnJSON.put("result", result);
+			returnJSON.put("errorMsg", "userId为空！");
+			return returnJSON.toString();
+		}
+		if(targetUserId == null || "".equals(targetUserId)){
+			returnJSON.put("returnCode", Constant.RETURNCODE_FAILED);
+			returnJSON.put("result", result);
+			returnJSON.put("errorMsg", "targetUserId为空！");
+			return returnJSON.toString();
+		}
+		if(oper == null || "".equals(oper)){
+			returnJSON.put("returnCode", Constant.RETURNCODE_FAILED);
+			returnJSON.put("result", result);
+			returnJSON.put("errorMsg", "oper为空！");
+			return returnJSON.toString();
+		}
+		String hsql = " from TUser where id = ? ";
+		List<TUser> selfList = baseDAO.getGenericByHql(hsql, Integer.parseInt(userId));
+		if(selfList == null || selfList.size() == 0){
+			returnJSON.put("returnCode", Constant.RETURNCODE_FAILED);
+			returnJSON.put("result", result);
+			returnJSON.put("errorMsg", "无效用户！");
+			return returnJSON.toString();
+		}
+		List<TUser> userList = baseDAO.getGenericByHql(hsql, Integer.parseInt(targetUserId));
+		if(userList == null || userList.size() == 0){
+			returnJSON.put("returnCode", Constant.RETURNCODE_FAILED);
+			returnJSON.put("result", result);
+			returnJSON.put("errorMsg", "没有该用户！");
+			return returnJSON.toString();
+		}else{
+			TUser targetUser = userList.get(0);
+			hsql = "from TFamilyRelationship where createUserId = ? and relationUserId = ? and isConfirm = 0";
+			List<TFamilyRelationship> relationList = baseDAO.getGenericByHql(hsql, Integer.parseInt(userId), targetUser.getId());
+			if(relationList != null && relationList.size()>0){
+				TFamilyRelationship relation = relationList.get(0);
+				int callId = relation.getCallId();
+				if("2".equals(oper)){
+					try {
+						//删除  isDel是否被删除 0：是 1：否
+						relation.setIsDel(0);
+						relation.setIsConfirm(2);
+						baseDAO.update(relation);
+						//删除家人有2种情况， 如果是删除老公或者老婆，则是离婚，其他均是删除家人关系
+						if(callId == 5 ||callId == 6){
+							//如果是离婚，则删除2家人的关系， 即老公删除老婆、岳父、岳母的关系， 老婆删除老公、公公、婆婆的关系
+							familyBreak(userId, targetUser.getId());
+							//TODO 分割照片，把家庭相册复制到个人相册-》往事相册里面
+							//查询家庭相册
+							hsql = "from TAlbum where familyId = ? and albumType = 4 ";
+							List<TAlbum> familyAlbumList = baseDAO.getGenericByHql(hsql, targetUser.getFamilyId());
+							if(familyAlbumList != null && familyAlbumList.size() >0){
+								
+								//查询是否已经有了往事相册，有则沿用，无则生成
+								hsql = " from TAlbum where createUserId = ? and albumType = 1 and albumName = '往事相册' ";
+								List<TAlbum> wsAlbumList = baseDAO.getGenericByHql(hsql, Integer.parseInt(userId));
+								hsql = " from TAlbum where createUserId = ? and albumType = 1 and albumName = '往事相册' ";
+								List<TAlbum> wsAlbumList2 = baseDAO.getGenericByHql(hsql, targetUser.getId());
+								String albumId ;
+								String albumId2 ;
+								if(wsAlbumList == null || wsAlbumList.size() == 0){
+									TAlbum wsAlbum = new TAlbum();
+									wsAlbum.setAlbumName("往事相册");
+									wsAlbum.setAlbumType(1);
+									wsAlbum.setCreateDate(DateUtils.currentDate());
+									wsAlbum.setCreateUserId(Integer.parseInt(userId));
+									wsAlbum.setDescription("系统生成");
+									wsAlbum.setIsSysinit(0);
+									wsAlbum.setOwnerUserId(Integer.parseInt(userId));
+									wsAlbum.setIsDir(1);
+									albumId = baseDAO.save(wsAlbum);
+								}else{
+									albumId = wsAlbumList.get(0).getId();
+								}
+								if(wsAlbumList2 == null || wsAlbumList2.size() == 0){
+									TAlbum wsAlbum = new TAlbum();
+									wsAlbum.setAlbumName("往事相册");
+									wsAlbum.setAlbumType(1);
+									wsAlbum.setCreateDate(DateUtils.currentDate());
+									wsAlbum.setCreateUserId(targetUser.getId());
+									wsAlbum.setDescription("系统生成");
+									wsAlbum.setIsSysinit(0);
+									wsAlbum.setOwnerUserId(targetUser.getId());
+									wsAlbum.setIsDir(1);
+									albumId2 = baseDAO.save(wsAlbum);
+								}else{
+									albumId2 = wsAlbumList2.get(0).getId();
+								}
+								for(int i=0;i<familyAlbumList.size();i++){
+									//TODO 遍历familyAlbumList
+									TAlbum album = familyAlbumList.get(i);
+									String oladAlbumId = album.getId();
+									TAlbum newAlbum = new TAlbum();
+									newAlbum.setCreateUserId(Integer.parseInt(userId));
+									newAlbum.setAlbumType(5);
+									newAlbum.setCreateDate(DateUtils.currentDate());
+									newAlbum.setFamilyId("");
+									newAlbum.setIsSysinit(0);
+									newAlbum.setOwnerUserId(Integer.parseInt(userId));
+									newAlbum.setParentId(albumId);
+									newAlbum.setAlbumName(album.getAlbumName());
+									newAlbum.setAlbumUrl(album.getAlbumUrl());
+									newAlbum.setDescription(album.getDescription());
+									newAlbum.setIsDir(0);
+									newAlbum.setFamilyName(targetUser.getNickName());
+									int newAlbumId = baseDAO.save(newAlbum);
+									
+									TAlbum newAlbum2 = new TAlbum();
+									newAlbum2.setCreateUserId(targetUser.getId());
+									newAlbum2.setAlbumType(5);
+									newAlbum2.setCreateDate(DateUtils.currentDate());
+									newAlbum2.setFamilyId("");
+									newAlbum2.setIsSysinit(0);
+									newAlbum2.setOwnerUserId(targetUser.getId());
+									newAlbum2.setParentId(albumId2);
+									newAlbum2.setAlbumName(album.getAlbumName());
+									newAlbum2.setAlbumUrl(album.getAlbumUrl());
+									newAlbum2.setDescription(album.getDescription());
+									newAlbum2.setIsDir(0);
+									newAlbum2.setFamilyName(selfList.get(0).getNickName());
+									int newAlbumId2 =  baseDAO.save(newAlbum2);
+									
+									
+									String updateSql = "update t_photo set create_user_id = ?, album_id = ?, isprivate = 0 where album_id = ?";
+									baseDAO.execteNativeBulk(updateSql, userId, newAlbumId,  oladAlbumId);
+									
+									String copySql = "INSERT INTO t_photo (PHOTO_URL, CREATE_DATE, CREATE_USER_ID, ALBUM_ID, ISPRIVATE)  " +
+											"( SELECT  p.PHOTO_URL, ?, ? , ? ,0  FROM t_photo p WHERE p.ALBUM_ID = ? )";
+									baseDAO.execteNativeBulk(copySql, DateUtils.currentDate(), targetUser.getId(), newAlbumId2, oladAlbumId);
+								}
+								//删除家庭相册
+								String delHsql = "delete from TAlbum where familyId =  '"+targetUser.getFamilyId()+"'";
+								baseDAO.deleteByHsql(delHsql);
+							}
+							//给其中一个人重新设置家庭ID
+							targetUser.setFamilyId(UUID.randomUUID().toString());
+							baseDAO.saveOrUpdate(targetUser);
+							
+						}else{
+							//设置家人关系状态为删除
+							hsql = "update TFamilyRelationship set isDel =  0 where createUserId = ? and relationUserId = ? ";
+							int i = baseDAO.update(hsql, Integer.parseInt(userId), targetUser.getId());
+							if(i > 0){
+								//删除该家人和其他家人的所有关系，真删除
+								deleteRelationWithOtherFamily(userId,targetUser.getId());
+							}
+						}
+						returnJSON.put("returnCode", Constant.RETURNCODE_SUCCESS);
+						result.put("succMsg", "删除成功！");
+						returnJSON.put("result", result);
+						returnJSON.put("errorMsg", "");
+						return returnJSON.toString();
+					} catch (Exception e) {
+						log.info("删除家人关系时异常："+e.getMessage());
+						returnJSON.put("returnCode", Constant.RETURNCODE_FAILED);
+						returnJSON.put("result", result);
+						returnJSON.put("errorMsg", "删除失败！");
+						return returnJSON.toString();
+					}
+				}else if("3".equals(oper)){
+					//设为私有  是否私有 0：是 1：否
+					hsql = "update TFamilyRelationship set isPrivate =  0 where isDel =  1 and  createUserId = ? and relationUserId = ? ";
+					int i = baseDAO.update(hsql, Integer.parseInt(userId), targetUser.getId());
+					if(i > 0){
+						
+						//删除该家人和其他家人的所有关系，真删除
+						deleteRelationWithOtherFamily(userId,targetUser.getId());
+						
+						returnJSON.put("returnCode", Constant.RETURNCODE_SUCCESS);
+						result.put("succMsg", "设为私有成功！");
+						returnJSON.put("result", result);
+						returnJSON.put("errorMsg", "");
+						return returnJSON.toString();
+					}else{
+						returnJSON.put("returnCode", Constant.RETURNCODE_FAILED);
+						returnJSON.put("result", result);
+						returnJSON.put("errorMsg", "设为私有失败！");
+						return returnJSON.toString();
+					}
+				}else{
+					returnJSON.put("returnCode", Constant.RETURNCODE_FAILED);
+					returnJSON.put("result", result);
+					returnJSON.put("errorMsg", "无效的操作类型！");
+					return returnJSON.toString();
+				}
+				
+			}else{
+				returnJSON.put("returnCode", Constant.RETURNCODE_FAILED);
+				returnJSON.put("result", result);
+				returnJSON.put("errorMsg", "家庭关系不存在！");
+				return returnJSON.toString();
+			}
+		}
+		
+	}
+	
+	/*离婚，删除2家人关系*/
+	private void familyBreak(String userId, Integer relationUserId) {
+		
+		String sql = "DELETE FROM t_family_relationship WHERE ((create_user_id = ? and RELATION_USER_ID <> ?) OR (RELATION_USER_ID = ? and create_user_id <> ?) OR (create_user_id = ? and RELATION_USER_ID <> ?) OR (RELATION_USER_ID = ? and create_user_id <> ?) )  AND call_id NOT IN ('1','2','5','6','7','8','31','32','33')";
+		baseDAO.execteNativeBulk(sql, userId,userId,userId,userId,relationUserId, relationUserId,relationUserId,relationUserId);
+		
+		String u1 = "update TUser set isMarried = 1 where id = ?";
+		baseDAO.update(u1, Integer.parseInt(userId));
+		baseDAO.update(u1, relationUserId);
+		
+	}
+
+	private void deleteRelationWithOtherFamily(String createuserid ,Integer targetUserid) {
+		
+		String sql = "DELETE FROM t_family_relationship r WHERE  (r.create_user_id = "+targetUserid +" AND  r.relation_user_id <> "+createuserid+"  and r.relation_user_id <> "+targetUserid+" ) OR (r.relation_user_id = "+createuserid+" AND r.create_user_id <> "+targetUserid+" AND r.create_user_id <> "+createuserid+")";
+		baseDAO.deleteByHsql(sql);
+	}
+
+}

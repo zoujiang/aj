@@ -1,0 +1,136 @@
+@CHARSET "UTF-8";
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size:12px;
+}
+input, label, select, option, textarea, button, fieldset, legend {
+    font-size:12px;
+}
+input[disabled], select[disabled], textarea[disabled], input[readonly], select[readonly], textarea[readonly] {
+	cursor: not-allowed;
+	background-color: transparent;
+	border: none;
+}
+.datagrid-header-check input{
+	border: none;
+}
+.dialog-button{
+	text-align: center;
+}
+.dialog-toolbar, .dialog-button {
+	/* background: #eaf2ff; */
+}
+a.l-btn span.l-btn-left{
+	margin-left: 10px;
+}
+.datagrid-toolbar{
+	height:26px;
+}
+.datagrid .panel-body{
+	border: none;
+}
+.north{
+	background:url("../img/backhead-bg.jpg") repeat;
+}
+.icon-home{
+	background:url('../icon/home.png') no-repeat center center;
+}
+.icon-sys{
+	background:url('../icon/sys.gif') no-repeat center center;
+}
+.icon-user{
+	background:url('../icon/user.png') no-repeat center center;
+}
+.icon-role{
+	background:url('../icon/role.png') no-repeat center center;
+}
+.icon-res{
+	background:url('../icon/res.png') no-repeat center center;
+}
+.icon-user-edit{
+	background:url('../icon/user_edit.png') no-repeat center center;
+}
+.icon-user-quit{
+	background:url('../icon/user_go.png') no-repeat center center;
+}
+.icon-password-edit{
+	background:url('../icon/pass_edit.gif') no-repeat center center;
+}
+.icon-collapse{
+	background:url('../icon/collapse-all.gif') no-repeat center center;
+}
+.icon-expand{
+	background:url('../icon/expand-all.gif') no-repeat center center;
+}
+.icon-ctrl{
+	background:url('../icon/ctrl.gif') no-repeat center center;
+}
+.icon-ok{
+	background:url('../icon/tick.png') no-repeat center center;
+}
+.icon-cancel{
+	background:url('../icon/cross.png') no-repeat center center;
+}
+.icon-add{
+	background:url('../icon/add.png') no-repeat center center;
+}
+.icon-edit{
+	background:url('../icon/pencil.png') no-repeat center center;
+}
+.icon-remove{
+	background:url('../icon/delete.png') no-repeat center center;
+}
+.icon-up{
+	background:url('../icon/up.png') no-repeat center center;
+}
+.icon-down{
+	background:url('../icon/down.png') no-repeat center center;
+}
+.icon-drop-yes{
+	background:url('../icon/drop-yes.gif') no-repeat center center;
+}
+.icon-drop-no{
+	background:url('../icon/drop-no.gif') no-repeat center center;
+}
+.icon-reload{
+	background:url('../icon/refresh.gif') no-repeat center center;
+}
+.icon-accept{
+	background:url('../icon/accept.png') no-repeat center center;
+}
+.icon-unaccept{
+	background:url('../icon/cancel.png') no-repeat center center;
+}
+.icon-table{
+	background:url('../icon/table.png') no-repeat center center;
+}
+.icon-css{
+	background:url('../icon/css.png') no-repeat center center;
+}
+.icon-link{
+	background:url('../icon/link.png') no-repeat center center;
+}
+.icon-database{
+	background:url('../icon/database.png') no-repeat center center;
+}
+.icon-find{
+	background:url('../icon/find.png') no-repeat center center;
+}
+.icon-attach{
+	background:url('../icon/attach.png') no-repeat center center;
+}
+.icon-restore{
+	background:url('../icon/restore.png') no-repeat center center;
+}
+.icon-move-down{
+	background:url('../icon/move_down.png') no-repeat center center;
+}
+.icon-move-up{
+	background:url('../icon/move_up.png') no-repeat center center;
+}
+.icon-down{
+	background:url('../icon/down.png') no-repeat center center;
+}
+.icon-up{
+	background:url('../icon/up.png') no-repeat center center;
+}

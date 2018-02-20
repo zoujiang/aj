@@ -1,0 +1,30 @@
+<!-- 信息部分  改变 参赛编号：H/T/MXXXX-->
+<div class="wy-number">
+	<div class="wy-number-xx">
+		<!-- 大人信息 -->
+		<ul class="wy-xx-dr">
+			<li><span class="wy-xx-mc">查询结果 :</span></li>
+			<li><span class="wy-xx-mc">参赛项目 :</span><span class="wy-xx-xx">${apply.groupName}</span></li>
+			<li><span class="wy-xx-mc">参赛号码 :</span><span class="wy-xx-xx">${apply.gameCode}</span></li>
+			<li><span class="wy-xx-mc">选手姓名 :</span><span class="wy-xx-xx">${apply.trueName}</span></li>
+			<li><span class="wy-xx-mc">选手性别 :</span><span class="wy-xx-xx">${apply.sex}</span></li>
+			<li><span class="wy-xx-mc">证件类型 :</span><span class="wy-xx-xx">${apply.certType}</span></li>
+			<li><span class="wy-xx-mc">证件号码 :</span><span class="wy-xx-xx">${apply.certNo}</span></li>
+		</ul>
+		<!-- 小孩信息 -->
+		<ul class="wy-xx-dr" style="border-top: 0.02rem solid #ddd">
+			<li><span class="wy-xx-mc">小孩消息如下 :</span><span class="wy-xx-xx"></span></li>
+			<li><span class="wy-xx-mc">小孩姓名 :</span><span class="wy-xx-xx">${apply.childName}</span></li>
+			<li><span class="wy-xx-mc">小孩年龄 :</span><span class="wy-xx-xx">${apply.childAge}</span></li>
+			<li><span class="wy-xx-mc">小孩性别 :</span><span class="wy-xx-xx">${apply.childSex}</span></li>
+		</ul>
+	</div>
+	<#if score.certUrl??>
+		<div class="wy-xx-zp">
+			<p><a href="${basePath}service/h5/downloadCert?applyId=${score.applyId}">点击下载高清图片</a></p>
+			<div class="wy-k-img">
+				<img src="${score.certUrl}" alt=""/>
+			</div>
+		</div>
+	</#if>
+</div>

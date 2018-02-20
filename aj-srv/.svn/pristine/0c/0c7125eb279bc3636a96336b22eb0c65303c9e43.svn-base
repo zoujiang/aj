@@ -1,0 +1,63 @@
+#log4j.rootLogger=ERROR, spss
+#log4j.rootLogger=info,Runlog,Errorlog,Orderlog,stdout
+log4j.rootLogger=info,error,Runlog,stdout,Errorlog,Orderlog
+
+log4j.logger.com.spss.order.service=info
+log4j.logger.com.mymost.task.jobs=info
+
+#log4j.logger.com.mymost.exe=info
+#log4j.logger.com.mymost.task.jobs.AuthorGroupJob=info
+#log4j.rootLogger=DEBUG, spss, stdout
+
+#stdout output to console
+log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+log4j.appender.stdout.Target=System.out
+log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+log4j.appender.stdout.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss} %c%n%p: %m%n
+
+#OP output to operation log file
+log4j.appender.Orderlog=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.Orderlog.encoding=UTF-8
+log4j.appender.Orderlog.File=${catalina.home}/logs/log.log
+log4j.appender.Orderlog.DatePattern='.'yyyy-MM-dd'.log' 
+log4j.appender.Orderlog.Append=true 
+log4j.appender.Orderlog.layout=org.apache.log4j.PatternLayout
+log4j.appender.Orderlog.layout.ConversionPattern=[%-5p] %d{yyyy-MM-dd HH\:mm\:ss.SSS} method\:%L%n%m%n
+
+
+#OP output to operation log file
+log4j.appender.Runlog=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.Runlog.encoding=UTF-8
+log4j.appender.Runlog.File=${catalina.home}/logs/RunApp.log
+log4j.appender.Runlog.DatePattern='.'yyyy-MM-dd'.log' 
+log4j.appender.Runlog.Append=true 
+log4j.appender.Runlog.layout=org.apache.log4j.PatternLayout
+log4j.appender.Runlog.layout.ConversionPattern=[%-5p] %d{yyyy-MM-dd HH\:mm\:ss.SSS} method\:%L%n%m%n
+
+log4j.appender.Errorlog=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.Errorlog.encoding=UTF-8
+log4j.appender.Errorlog.Threshold=WARN
+log4j.appender.Errorlog.DatePattern='.'yyyy-MM-dd
+log4j.appender.Errorlog.File=${catalina.home}/logs/spssErrorlog.log
+log4j.appender.Errorlog.Append=true
+log4j.appender.Errorlog.layout=org.apache.log4j.PatternLayout
+log4j.appender.Errorlog.layout.ConversionPattern=[%-5p] %d{yyyy-MM-dd HH\:mm\:ss.SSS} method\:%L%n%m%n
+
+log4j.appender.Sqllog=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.Sqllog.encoding=UTF-8
+log4j.appender.Sqllog.DatePattern='.'yyyy-MM-dd'.log' 
+log4j.appender.Sqllog.File=${catalina.home}/logs/Sql.log
+log4j.appender.Sqllog.Append=true
+log4j.appender.Sqllog.layout=org.apache.log4j.PatternLayout
+log4j.appender.Sqllog.layout.ConversionPattern=[%-5p] %d{yyyy-MM-dd HH\:mm\:ss.SSS} method\:%L%n%m%n 
+
+log4j.logger.org.hibernate.SQL=warn,Sqllog
+log4j.logger.org.hibernate.type=warn,Sqllog
+log4j.logger.org.hibernate.tool.hbm2ddl=warn,Sqllog
+log4j.logger.org.hibernate.hql=warn,Sqllog
+log4j.logger.org.hibernate.cache=warn,Sqllog
+log4j.logger.org.hibernate.transaction=warn,Sqllog
+log4j.logger.org.hibernate.jdbc=warn,Sqllog
+log4j.logger.org.hibernate.connection.DriverManagerConnectionProvider=warn,Sqllog
+log4j.logger.org.hibernate.type.descriptor.sql.BasicBinder=warn,Sqllog
+

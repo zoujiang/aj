@@ -1,0 +1,149 @@
+package com.frame.core.util;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
+import org.apache.poi.hssf.usermodel.HSSFComment;
+import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFPatriarch;
+import org.apache.poi.hssf.usermodel.HSSFRichTextString;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.HSSFColor;
+
+public class ExportExcelUtils {
+
+	private String[] columns;
+	private int columnLength = 0;
+
+	/**
+	 * 生成Excel文件
+	 * 
+	 * @param title
+	 * @param out
+	 */
+	public HSSFWorkbook exportExcel(List<?> dataList, String headerColumn, String fileName) {
+		HSSFWorkbook workbook = new HSSFWorkbook();// 声明一个工作薄
+		HSSFSheet sheet = workbook.createSheet(fileName);// 生成一个表格
+		sheet.setDefaultColumnWidth((short) 15);// 设置表格默认列宽度为15个字节
+		
+		// 生成表头样式
+		HSSFCellStyle headerStyle = workbook.createCellStyle();
+		headerStyle.setFillForegroundColor(HSSFColor.SKY_BLUE.index);
+		headerStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+		headerStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+		headerStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+		headerStyle.setBorderRight(HSSFCellStyle.BORDER_THIN);
+		headerStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
+		headerStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+		HSSFFont headerFont = workbook.createFont();// 声明表头字体
+		headerFont.setColor(HSSFColor.VIOLET.index);
+		headerFont.setFontHeightInPoints((short) 12);
+		headerFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+		headerStyle.setFont(headerFont);// 把字体应用到当前的样式
+		
+		// 生成内容样式
+		HSSFCellStyle contentStyle = workbook.createCellStyle();
+		contentStyle.setFillForegroundColor(HSSFColor.LIGHT_YELLOW.index);
+		contentStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+		contentStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+		contentStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+		contentStyle.setBorderRight(HSSFCellStyle.BORDER_THIN);
+		contentStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
+		contentStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+		contentStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+		// 生成内容字体
+		HSSFFont contentFont = workbook.createFont();
+		contentFont.setBoldweight(HSSFFont.BOLDWEIGHT_NORMAL);
+		contentStyle.setFont(contentFont);
+		
+		// 声明一个画图顶级管理器
+		HSSFPatriarch patriarch = sheet.createDrawingPatriarch();
+		// 定义注释的大小和位置,详见文档
+		HSSFComment comment = patriarch.createComment(new HSSFClientAnchor(0,
+				0, 0, 0, (short) 4, 2, (short) 6, 5));
+		// 设置注释内容
+		comment.setString(new HSSFRichTextString("可以在POI中添加注释！"));
+		// 设置注释作者，当鼠标移动到单元格上是可以在状态栏中看到该内容.
+		comment.setAuthor("kenneth");
+		
+		int index = 0;
+		HSSFRow row0 = sheet.createRow(index);;
+		JSONArray columnArray = JSONArray.fromObject(headerColumn);
+		columnLength = columnArray.size();
+		columns = new String[columnLength];
+		for (int column = 0; column < columnArray.size(); column++) {
+			HSSFCell cell = row0.createCell(column);// 产生表格标题行
+			cell.setCellStyle(headerStyle);
+			JSONObject obj=(JSONObject) columnArray.get(column);
+			columns[column]=obj.getString("field");
+			HSSFRichTextString text = new HSSFRichTextString(obj.getString("title"));
+			cell.setCellValue(text);
+		}
+		// 遍历集合数据，产生数据行
+		for (Object element : dataList) {
+			HSSFRow row = sheet.createRow(++index);
+			for (int i = 0; i < columnLength; i++) {
+				HSSFCell cell = row.createCell(i);
+				cell.setCellStyle(contentStyle);
+				// 如果不是图片数据，就利用正则表达式判断textValue是否全部由数字组成
+				HSSFRichTextString cellText = new HSSFRichTextString(this.getDataText(element, i));
+				cell.setCellValue(cellText);
+			}
+		}
+		return workbook;
+	}
+
+	/**
+	 * 获取对象相关字段上内容
+	 * @param element
+	 * @param columnIndex
+	 * @return
+	 */
+	protected String getDataText(Object element, int columnIndex) {
+		Class<?> clazz = element.getClass();
+		if (element instanceof Map) {
+			Map<String, Object> map = (Map<String, Object>) element;
+			String field = columns[columnIndex];
+			if(map.get(field)==null){
+				return "";
+			}
+			return map.get(field).toString();
+		} else {
+			String field = columns[columnIndex];
+			String getName = "get" + BeanCopy.getMethodName(field);//拼组getMethodName
+			Method getMethod;
+			try {
+				getMethod = clazz.getMethod(getName);
+				//整形数据
+				if (Integer.class == getMethod.getReturnType()) {
+					Integer columnValue = (Integer) getMethod.invoke(element);
+					return String.valueOf(columnValue);
+				} else {
+					String columnValue = getMethod.invoke(element)+"";
+					return columnValue;
+				}
+			} catch (SecurityException e) {
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
+}

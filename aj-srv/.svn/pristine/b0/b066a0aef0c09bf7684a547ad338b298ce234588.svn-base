@@ -1,0 +1,107 @@
+@charset "utf-8";
+/* CSS Document */
+
+
+
+body{margin:0px;   font-family:"微软雅黑", "宋体", Arial; font-size:12px;}
+
+/*一般a标记样式*/
+a:link{color:#005faf;}
+a:hover{color:#F60;}
+a:visited{color:#005faf;}
+/*通用top页头样式*/
+.topbanner{ background:url(../images/topbg.gif) repeat-x scroll top; height:48px; padding:20px 20px 0px 25px;}
+.toplogo{width:auto; height:30px; margin-right:10px; color:#454545;}.toplogo img{float:left;}.toplogo div{display:inline; text-align:right; float:right; margin-top:5px;}.toplogo div img{vertical-align:middle; float:none; margin-right:5px;}.toplogo div span{margin:0 10px;}
+
+
+
+.mainnav{background:url(../images/mainnavbg.gif) repeat-x scroll; height:27px; padding-top:3px; padding-left:25px;} .titlelocation{line-height:27px;   width:140px; font-size:14px; font-family:Arial,"微软雅黑", "宋体"; font-weight:bold; color:#FFF; float:left;} .mianbaoxie{float:none; width:auto; margin-left:150px;}
+.mianbaoxie{background:url(../images/mianbaonavbg.gif) repeat-x scroll; height:27px; border-left:solid 1px #1190c5; line-height:27px; padding-left:15px;}
+.mianbaoxie span a{text-decoration:none;}.mianbaoxie span a:hover{text-decoration:underline;}
+/**********页头结束**********/
+
+/*中间区域*/
+.content{background:url(../images/bodybg.gif) repeat-x scroll top; background-color:#ebeff4;  /*padding-top:3px;*/}
+
+/*left*/
+.left{width:180px; _margin-top:3px; background-color:#FFF; overflow-y: auto; float:left;}  .left1{width:180px; margin-top:3px; background-color:#FFF; float:left; }
+
+
+.footer {
+    height: 50px;
+    line-height: 50px;
+    padding-right: 30px;
+    position: absolute;
+    right: 0;
+    text-align: right;
+}
+
+
+.content {
+	padding-top:5px;
+    *padding-top:3px;
+    background: url("../images/bodybg.gif") repeat-x scroll center top #EBEFF4;
+    *background: url("../img/bodybg.gif") repeat-x scroll center top ;
+
+}
+
+.righttextcon{
+	margin-left:185px;
+   _margin-left:180px;
+
+}
+.mulutree{
+	background:#EDF1F3;
+	color:#005FAF;
+    height: 25px;
+    line-height: 25px;
+    margin: 0;
+    padding-left: 30px;
+/*    border-bottom: 1px solid #D0D0D0;*/
+    border-right: 1px solid #D0D0D0;
+    border-top: 1px solid #D0D0D0; font-weight:bold; font-size:14px;
+}
+
+
+/*章节样式开始*/
+
+.txtbodddy{border: 1px solid #D0D0D0; color:#333; background: #fff  ; *background: #fff; min-height:500px; height:auto !important; height:500px;
+}
+
+
+.Sectiontitle{
+	background: none repeat scroll 0 0 #EDF1F3;
+    border-bottom: 1px solid #D0D0D0;
+    border-top: 1px solid #FFFFFF;
+    line-height: 60px;
+	width:100%;
+	font-family:"宋体", "新宋体", "微软雅黑"; font-size:medium;
+	color:#666;text-align: left;
+}
+.Sectiontitle h1, .Sectiontitle h2{margin:0px; margin-left:20px; display:inline;}
+.mainarert{padding:20px;}
+.mainarert table tr td{padding:5px;}
+
+
+
+.mainarert table {border-left: 1px solid #D0D0D0; border-top: 1px solid #D0D0D0;}
+.mainarert table thead td, .mainarert table th{
+    background: url("../images/theadbg.gif") repeat-x scroll center top #D9DEE5;
+    border-left: 1px solid #FFFFFF;
+    border-right: 1px solid #D0D0D0;
+    border-top: 1px solid #FFFFFF;
+    height: 25px;
+    text-align: center;
+}
+.mainarert table tbody td,.mainarert table  th {
+    border-bottom: 1px solid #D0D0D0;
+    border-right: 1px solid #D0D0D0;
+    color: #333333;
+    height: 28px;
+    line-height: 18px;
+    padding: 0 5px;
+    text-align: center;
+}
+.mainarert p{
+	text-indent:2em;
+}

@@ -1,0 +1,183 @@
+package com.spt.entry.model;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import static javax.persistence.GenerationType.IDENTITY;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+/**
+ * TApplyTeam entity. @author MyEclipse Persistence Tools
+ */
+@Entity
+@Table(name = "t_apply_team")
+public class ApplyTeam implements java.io.Serializable {
+
+	// Fields
+
+	private Integer teamId;
+	private Integer typeId;
+	private Integer sportId;
+	private String sportName;
+	private Integer groupId;
+	private String groupName;
+	private String truename;
+	private String mobile;
+	private Integer teamnuumber;
+	private Integer price;
+	private Integer addtime;
+	private String invitationcode;
+
+	// Constructors
+
+	/** default constructor */
+	public ApplyTeam() {
+	}
+
+	/** minimal constructor */
+	public ApplyTeam(Integer typeId, Integer sportId, String sportName,
+			Integer groupId, String groupName, String truename, String mobile,
+			Integer teamnuumber, Integer price, Integer addtime) {
+		this.typeId = typeId;
+		this.sportId = sportId;
+		this.sportName = sportName;
+		this.groupId = groupId;
+		this.groupName = groupName;
+		this.truename = truename;
+		this.mobile = mobile;
+		this.teamnuumber = teamnuumber;
+		this.price = price;
+		this.addtime = addtime;
+	}
+
+	/** full constructor */
+	public ApplyTeam(Integer typeId, Integer sportId, String sportName,
+			Integer groupId, String groupName, String truename, String mobile,
+			Integer teamnuumber, Integer price, Integer addtime,
+			String invitationcode) {
+		this.typeId = typeId;
+		this.sportId = sportId;
+		this.sportName = sportName;
+		this.groupId = groupId;
+		this.groupName = groupName;
+		this.truename = truename;
+		this.mobile = mobile;
+		this.teamnuumber = teamnuumber;
+		this.price = price;
+		this.addtime = addtime;
+		this.invitationcode = invitationcode;
+	}
+
+	// Property accessors
+	@Id
+	@GeneratedValue(strategy = IDENTITY)
+	@Column(name = "TEAM_ID", unique = true, nullable = false)
+	public Integer getTeamId() {
+		return this.teamId;
+	}
+
+	public void setTeamId(Integer teamId) {
+		this.teamId = teamId;
+	}
+
+	@Column(name = "TYPE_ID", nullable = false)
+	public Integer getTypeId() {
+		return this.typeId;
+	}
+
+	public void setTypeId(Integer typeId) {
+		this.typeId = typeId;
+	}
+
+	@Column(name = "SPORT_ID", nullable = false)
+	public Integer getSportId() {
+		return this.sportId;
+	}
+
+	public void setSportId(Integer sportId) {
+		this.sportId = sportId;
+	}
+
+	@Column(name = "SPORT_NAME", nullable = false, length = 100)
+	public String getSportName() {
+		return this.sportName;
+	}
+
+	public void setSportName(String sportName) {
+		this.sportName = sportName;
+	}
+
+	@Column(name = "GROUP_ID", nullable = false)
+	public Integer getGroupId() {
+		return this.groupId;
+	}
+
+	public void setGroupId(Integer groupId) {
+		this.groupId = groupId;
+	}
+
+	@Column(name = "GROUP_NAME", nullable = false, length = 20)
+	public String getGroupName() {
+		return this.groupName;
+	}
+
+	public void setGroupName(String groupName) {
+		this.groupName = groupName;
+	}
+
+	@Column(name = "TRUENAME", nullable = false, length = 30)
+	public String getTruename() {
+		return this.truename;
+	}
+
+	public void setTruename(String truename) {
+		this.truename = truename;
+	}
+
+	@Column(name = "MOBILE", nullable = false, length = 12)
+	public String getMobile() {
+		return this.mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+
+	@Column(name = "TEAMNUUMBER", nullable = false)
+	public Integer getTeamnuumber() {
+		return this.teamnuumber;
+	}
+
+	public void setTeamnuumber(Integer teamnuumber) {
+		this.teamnuumber = teamnuumber;
+	}
+
+	@Column(name = "PRICE", nullable = false)
+	public Integer getPrice() {
+		return this.price;
+	}
+
+	public void setPrice(Integer price) {
+		this.price = price;
+	}
+
+	@Column(name = "ADDTIME", nullable = false)
+	public Integer getAddtime() {
+		return this.addtime;
+	}
+
+	public void setAddtime(Integer addtime) {
+		this.addtime = addtime;
+	}
+
+	@Column(name = "INVITATIONCODE", length = 20)
+	public String getInvitationcode() {
+		return this.invitationcode;
+	}
+
+	public void setInvitationcode(String invitationcode) {
+		this.invitationcode = invitationcode;
+	}
+
+}

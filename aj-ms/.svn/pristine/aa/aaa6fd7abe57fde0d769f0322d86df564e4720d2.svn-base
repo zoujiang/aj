@@ -1,0 +1,498 @@
+/** 
+ * Description: TODO(用一句话描述该文件做什么)  
+ * @className com.spt.entry.action.AthleteAction
+ * @author ChingWang    
+ * @date 2016-9-15 下午2:34:04
+ * @version V1.0   
+ * Copyright (C) 2016 www.demo.com Inc. All rights reserved.        
+ */
+
+package com.spt.entry.action;
+
+import java.io.OutputStream;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.Font;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
+
+import com.alibaba.fastjson.JSONObject;
+import com.frame.core.util.DateUtil;
+import com.frame.core.util.ListRange;
+import com.frame.core.util.LogUtil;
+import com.frame.core.util.StringUtil;
+import com.spt.entry.model.Apply;
+import com.spt.entry.model.Sports;
+import com.spt.entry.model.SportsGroup;
+import com.spt.entry.service.AthleteService;
+
+import freemarker.template.Template;
+
+@Controller
+@RequestMapping("/athlete")
+public class AthleteAction {
+
+	@Autowired private AthleteService athleteService;
+	@Autowired private FreeMarkerConfigurer freeMarkerConfigurer;
+	
+	@RequestMapping("/getAthleteList")
+	@ResponseBody
+	public String getAthleteList(String groupId, String searchType, String searchValue, String codeSts, String apvSts, int offset, int limit){
+		ListRange<Map<String, Object>> range = new ListRange<Map<String, Object>>();
+		try{
+			long total = athleteService.getTotal(groupId, searchType, searchValue, codeSts, apvSts);
+			range.setTotal(total);
+			List<Map<String, Object>> list = new ArrayList<Map<String,Object>>();
+			if(total > 0){
+				list = athleteService.getList(groupId, searchType, searchValue, codeSts, apvSts, offset, limit);
+			}
+			range.setRows(list);
+		}catch (Exception e) {
+			LogUtil.info("查询数据异常{}", e.getLocalizedMessage());
+		}
+		return JSONObject.toJSONString(range);
+	}
+	
+	@RequestMapping("/getSelect")
+	@ResponseBody
+	public String getSelect(){
+		String retStr = "";
+		List<Sports> sports = athleteService.getSports();
+		if(sports != null && sports.size() > 0){
+			for(Sports sport : sports){
+				retStr +="<optgroup label=\""+sport.getName()+"\">";
+				List<SportsGroup> groups = athleteService.getSportGroups(sport.getSportId());
+				if(groups != null && groups.size() > 0){
+					for(SportsGroup group : groups){
+						retStr += "<option value = \""+group.getId()+"\">"+group.getGroupName()+"</option>";
+					}
+				}
+				retStr +="</optgroup>";
+			}
+		}
+		return retStr;
+	}
+	
+	@RequestMapping("/getSelectType")
+	@ResponseBody
+	public String getSelectType(){
+		String retStr = "";
+		List<Sports> sports = athleteService.getSports();
+		if(sports != null && sports.size() > 0){
+			for(Sports sport : sports){
+				retStr +="<optgroup label=\""+sport.getName()+"\">";
+				List<SportsGroup> groups = athleteService.getSportGroups(sport.getSportId());
+				if(groups != null && groups.size() > 0){
+					for(SportsGroup group : groups){
+						if (group.getId() > 4) {   //特殊处理， 只显示 10公里 半程 亲子 迷你
+							continue;
+						}
+						retStr += "<option value = \""+group.getId()+"\">"+group.getGroupName()+"</option>";
+					}
+				}
+				retStr +="</optgroup>";
+			}
+		}
+		return retStr;
+	}
+	
+	@RequestMapping("/getAthleteInfo")
+	@ResponseBody
+	public String getAthleteInfo(int applyId, int groupId, HttpServletRequest request, HttpServletResponse response){
+		String path = request.getContextPath();
+		String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+		Template template = null;
+		String content = null;
+		Map<String, Object> model = new HashMap<String, Object>();
+		model.put("basePath", basePath);
+		try {
+			Map<String, Object> apply = athleteService.getApply(applyId, groupId);
+			if(apply != null){
+				apply.put("addDt", DateUtil.dateFromat(new Date(Long.parseLong(apply.get("addDt").toString()) * 1000), DateUtil.DATE_TIME_PATTERN2));
+				String payType = "";
+				if(apply.get("payType") != null){
+					payType = apply.get("payType").toString();
+					if("wxpay".equals(payType)){
+						apply.put("payType", "微信支付");
+					} else if("alipay".equals(payType)){
+						apply.put("payType", "支付宝支付");
+					} else if("cqcb".equals(payType)){
+						apply.put("payType", "重庆银行");
+					}
+				}
+				model.put("apply", apply);
+				if(groupId == 4){
+					template = freeMarkerConfigurer.getConfiguration().getTemplate("sport_info_pc.ftl");
+				} else {
+					template = freeMarkerConfigurer.getConfiguration().getTemplate("sport_info.ftl");
+				}
+				content = FreeMarkerTemplateUtils.processTemplateIntoString(template, model);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return content;
+	}
+	
+	@RequestMapping("/getAthleteEdit")
+	@ResponseBody
+	public String getAthleteEdit(int applyId, int groupId){
+		JSONObject obj = new JSONObject();
+		try {
+			Map<String, Object> apply = athleteService.getApplyInfo(applyId, groupId);
+			if(apply != null){
+				obj.put("success", true);
+				obj.put("apply", apply);
+			} else {
+				obj.put("success", false);
+				obj.put("message", "信息不存在");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			obj.put("success", false);
+			obj.put("message", "系统繁忙，请稍后重试。");
+		}
+		return JSONObject.toJSONString(obj);
+	}
+	
+	@RequestMapping("/edit")
+	@ResponseBody
+	public String edit(Apply apply){
+		JSONObject obj = new JSONObject();
+		try {
+			athleteService.save(apply);
+			obj.put("success", true);
+			obj.put("message", "修改成功。");
+		} catch (Exception e) {
+			e.printStackTrace();
+			obj.put("success", false);
+			obj.put("message", "修改失败。");
+		}
+		return JSONObject.toJSONString(obj);
+	}
+	
+	@RequestMapping("/export")
+    public void exportProject(String type, HttpServletRequest request, HttpServletResponse response){
+    		try{
+	    		HSSFWorkbook workbook=new HSSFWorkbook();//创建一个webbook，对应一个Excel文件
+	    		HSSFSheet sheet=workbook.createSheet("demo");//在webbook中添加一个sheet
+	    		
+	    		HSSFCellStyle style=workbook.createCellStyle();//第四步，创建单元格，并设置值表头 设置表头居中
+	    		Font font=workbook.createFont();
+	    		this.setFontStyle(font);
+	    		style.setFont(font);
+	    		this.setHeadStyle(style);
+	    		
+	    		
+				HSSFRow firstRow=sheet.createRow(0);//在sheet中添加表头第0行,注意老版本poi对Excel的行数列数有限制short
+				firstRow.setHeight((short)300);
+				
+				HSSFCell cell=firstRow.createCell(0);//第一列
+				cell.setCellValue("参赛号码");
+				cell.setCellStyle(style);
+				
+				HSSFCell cell1=firstRow.createCell(1);
+				cell1.setCellValue("组别名称");
+				cell1.setCellStyle(style);
+				
+				HSSFCell cell2=firstRow.createCell(2);
+				cell2.setCellValue("订单ID");
+				cell2.setCellStyle(style);
+				
+				HSSFCell cell3=firstRow.createCell(3);
+				cell3.setCellValue("支付信息");
+				cell3.setCellStyle(style);
+				
+				HSSFCell cell4=firstRow.createCell(4);
+				cell4.setCellValue("选手姓名");
+				cell4.setCellStyle(style);
+				
+				HSSFCell cell5=firstRow.createCell(5);
+				cell5.setCellValue("手机号码");
+				cell5.setCellStyle(style);
+				
+				HSSFCell cell6 = firstRow.createCell(6);
+				cell6.setCellValue("证件类型");
+				cell6.setCellStyle(style);
+				
+				HSSFCell cell7=firstRow.createCell(7);
+				cell7.setCellValue("证件号码");
+				cell7.setCellStyle(style);
+				
+				HSSFCell cell8=firstRow.createCell(8);
+				cell8.setCellValue("团队名称");
+				cell8.setCellStyle(style);
+				
+				if(StringUtil.isNotEmpty(type) && "athlete".equals(type)){
+					HSSFCell cell9=firstRow.createCell(9);
+					cell9.setCellValue("生日");
+					cell9.setCellStyle(style);
+					
+					HSSFCell cell10=firstRow.createCell(10);
+					cell10.setCellValue("血型");
+					cell10.setCellStyle(style);
+					
+					HSSFCell cell11=firstRow.createCell(11);
+					cell11.setCellValue("T恤尺寸");
+					cell11.setCellStyle(style);
+					
+					HSSFCell cell12=firstRow.createCell(12);
+					cell12.setCellValue("电话");
+					cell12.setCellStyle(style);
+					
+					HSSFCell cell13=firstRow.createCell(13);
+					cell13.setCellValue("邮箱");
+					cell13.setCellStyle(style);
+					
+					HSSFCell cell14=firstRow.createCell(14);
+					cell14.setCellValue("地址");
+					cell14.setCellStyle(style);
+					
+					HSSFCell cell15=firstRow.createCell(15);
+					cell15.setCellValue("紧急联系人");
+					cell15.setCellStyle(style);
+					
+					HSSFCell cell16=firstRow.createCell(16);
+					cell16.setCellValue("紧急联系人电话");
+					cell16.setCellStyle(style);
+					
+					HSSFCell cell17=firstRow.createCell(17);
+					cell17.setCellValue("小孩姓名");
+					cell17.setCellStyle(style);
+					
+					HSSFCell cell18=firstRow.createCell(18);
+					cell18.setCellValue("小孩生日");
+					cell18.setCellStyle(style);
+					
+					HSSFCell cell19=firstRow.createCell(19);
+					cell19.setCellValue("小孩血型");
+					cell19.setCellStyle(style);
+					
+					HSSFCell cell20=firstRow.createCell(20);
+					cell20.setCellValue("小孩证件类型");
+					cell20.setCellStyle(style);
+					
+					HSSFCell cell21=firstRow.createCell(21);
+					cell21.setCellValue("小孩证件编号");
+					cell21.setCellStyle(style);
+					
+					HSSFCell cell22=firstRow.createCell(22);
+					cell22.setCellValue("小孩T恤尺寸");
+					cell22.setCellStyle(style);
+					
+					HSSFCell cel23=firstRow.createCell(23);
+					cel23.setCellValue("报名日期");
+					cel23.setCellStyle(style);
+					
+					HSSFCell cell24=firstRow.createCell(24);
+					cell24.setCellValue("是否领物");
+					cell24.setCellStyle(style);
+				} else {
+					HSSFCell cell9=firstRow.createCell(9);
+					cell9.setCellValue("报名日期");
+					cell9.setCellStyle(style);
+					
+					HSSFCell cell10=firstRow.createCell(10);
+					cell10.setCellValue("是否领物");
+					cell10.setCellStyle(style);
+				}
+				
+				int i = 1;
+				HSSFCellStyle cellDataStyle=workbook.createCellStyle();
+				cellDataStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT);
+				cellDataStyle.setWrapText(true);
+				 //设定标题框格式 
+				cellDataStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);    
+				cellDataStyle.setBottomBorderColor(HSSFColor.BLACK.index);    
+				cellDataStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);    
+				cellDataStyle.setLeftBorderColor(HSSFColor.BLACK.index);    
+				cellDataStyle.setBorderRight(HSSFCellStyle.BORDER_THIN);    
+				cellDataStyle.setRightBorderColor(HSSFColor.BLACK.index); 
+				List<Map<String, Object>> list = athleteService.getAll();
+				for(Map<String, Object> map : list){
+					if(map != null){
+						HSSFRow row=sheet.createRow(i++);
+						
+						HSSFCell celld=row.createCell(0);//第一列
+						celld.setCellValue(map.get("gamecode") != null?map.get("gamecode").toString():"");
+						celld.setCellStyle(cellDataStyle);
+						
+						HSSFCell celld1=row.createCell(1);
+						celld1.setCellValue(map.get("groupName") != null?map.get("groupName").toString():"");
+						celld1.setCellStyle(cellDataStyle);
+						
+						HSSFCell celld2=row.createCell(2);
+						celld2.setCellValue(map.get("tradeNo") != null?map.get("tradeNo").toString():"");
+						celld2.setCellStyle(cellDataStyle);
+						
+						HSSFCell celld3=row.createCell(3);
+						if(map.get("status") != null){
+							int status = Integer.parseInt(map.get("status").toString());
+							celld3.setCellValue(status == 0?"否":"是");
+						} else {
+							celld3.setCellValue("否");
+						}
+						celld3.setCellStyle(cellDataStyle);
+						
+						HSSFCell celld4=row.createCell(4);
+						celld4.setCellValue(map.get("trueName") != null?map.get("trueName").toString():"");
+						celld4.setCellStyle(cellDataStyle);
+						
+						HSSFCell celld5=row.createCell(5);
+						celld5.setCellValue(map.get("mobile") != null?map.get("mobile").toString():"");
+						celld5.setCellStyle(cellDataStyle);
+						
+						HSSFCell celld6=row.createCell(6);
+						celld6.setCellValue(map.get("certType") != null?map.get("certType").toString():"");
+						celld6.setCellStyle(cellDataStyle);
+						
+						HSSFCell celld7=row.createCell(7);
+						celld7.setCellValue(map.get("certNo") != null?map.get("certNo").toString():"");
+						celld7.setCellStyle(cellDataStyle);
+						
+						HSSFCell celld8=row.createCell(8);
+						celld8.setCellValue(map.get("teamName") != null?map.get("teamName").toString():"");
+						celld8.setCellStyle(cellDataStyle);
+						
+						if("athlete".equals(type)){
+							HSSFCell celld9=row.createCell(9);
+							celld9.setCellValue(map.get("birthday") != null?map.get("birthday").toString():"");
+							celld9.setCellStyle(cellDataStyle);
+							
+							HSSFCell celld10=row.createCell(10);
+							celld10.setCellValue(map.get("bloodtype") != null?map.get("bloodtype").toString():"");
+							celld10.setCellStyle(cellDataStyle);
+							
+							HSSFCell celld11=row.createCell(11);
+							celld11.setCellValue(map.get("tshirt") != null?map.get("tshirt").toString():"");
+							celld11.setCellStyle(cellDataStyle);
+							
+							HSSFCell celld12=row.createCell(12);
+							celld12.setCellValue(map.get("mobile") != null?map.get("mobile").toString():"");
+							celld12.setCellStyle(cellDataStyle);
+							
+							HSSFCell celld13=row.createCell(13);
+							celld13.setCellValue(map.get("email") != null?map.get("email").toString():"");
+							celld13.setCellStyle(cellDataStyle);
+							
+							HSSFCell celld14=row.createCell(14);
+							celld14.setCellValue(map.get("address") != null?map.get("address").toString():"");
+							celld14.setCellStyle(cellDataStyle);
+							
+							HSSFCell celld15=row.createCell(15);
+							celld15.setCellValue(map.get("contactName") != null?map.get("contactName").toString():"");
+							celld15.setCellStyle(cellDataStyle);
+							
+							HSSFCell celld16=row.createCell(16);
+							celld16.setCellValue(map.get("contactTel") != null?map.get("contactTel").toString():"");
+							celld16.setCellStyle(cellDataStyle);
+							
+							HSSFCell celld17=row.createCell(17);
+							celld17.setCellValue(map.get("childName") != null?map.get("childName").toString():"");
+							celld17.setCellStyle(cellDataStyle);
+							
+							HSSFCell celld18=row.createCell(18);
+							celld18.setCellValue(map.get("cildBirthday") != null?map.get("cildBirthday").toString():"");
+							celld18.setCellStyle(cellDataStyle);
+							
+							HSSFCell celld19=row.createCell(19);
+							celld19.setCellValue(map.get("childBloodType") != null?map.get("childBloodType").toString():"");
+							celld19.setCellStyle(cellDataStyle);
+							
+							HSSFCell celld20=row.createCell(20);
+							celld20.setCellValue(map.get("childCertType") != null?map.get("childCertType").toString():"");
+							celld20.setCellStyle(cellDataStyle);
+							
+							HSSFCell celld21=row.createCell(21);
+							celld21.setCellValue(map.get("childCertNo") != null?map.get("childCertNo").toString():"");
+							celld21.setCellStyle(cellDataStyle);
+							
+							HSSFCell celld22=row.createCell(22);
+							celld22.setCellValue(map.get("childTshirt") != null?map.get("childTshirt").toString():"");
+							celld22.setCellStyle(cellDataStyle);
+							
+							HSSFCell celd23=row.createCell(23);
+							celd23.setCellValue(map.get("addTm") != null?DateUtil.dateFromat(new Date(Long.parseLong(map.get("addTm").toString()) * 1000), DateUtil.DATE_TIME_PATTERN2):"");
+							celd23.setCellStyle(cellDataStyle);
+							
+							HSSFCell celld24=row.createCell(24);
+							if(map.get("isGet") != null){
+								int isGet = Integer.parseInt(map.get("isGet").toString());
+								celld24.setCellValue(isGet == 0?"否":"是");
+							} else {
+								celld24.setCellValue("");
+							}
+							celld24.setCellStyle(cellDataStyle);
+						} else {
+							HSSFCell celld9=row.createCell(9);
+							celld9.setCellValue(map.get("addTm") != null?DateUtil.dateFromat(new Date(Long.parseLong(map.get("addTm").toString()) * 1000), DateUtil.DATE_TIME_PATTERN2):"");
+							celld9.setCellStyle(cellDataStyle);
+							
+							HSSFCell celld10=row.createCell(10);
+							if(map.get("isGet") != null){
+								int isGet = Integer.parseInt(map.get("isGet").toString());
+								celld10.setCellValue(isGet == 0?"否":"是");
+							} else {
+								celld10.setCellValue("");
+							}
+							celld10.setCellStyle(cellDataStyle);
+						}
+					}
+				}
+	    		OutputStream out=response.getOutputStream();
+	    		String fileName="参赛用户信息"+DateUtil.dateFromat(new Date(), DateUtil.DATE_TIME_PATTERN4)+".xls";
+	    		response.addHeader("Content-Disposition","attachment;filename=\""+URLEncoder.encode(fileName,"UTF-8")+"\"");
+	    		response.setContentType("application/msexcel");
+	    		out.flush();
+				workbook.write(out);
+				out.close();
+    		}catch (Exception e) {
+    			e.printStackTrace();
+			}
+    }
+	
+	 private void setFontStyle(Font font){
+    	font.setFontHeightInPoints((short)12);
+		font.setFontName("新宋体");
+		font.setColor(HSSFColor.BLACK.index); 
+		font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+    }
+	 
+	 private void setHeadStyle(HSSFCellStyle style){
+	    	style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER); // 垂直      
+	    	style.setAlignment(HSSFCellStyle.ALIGN_CENTER);// 水平  
+
+			style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+			style.setFillForegroundColor(HSSFColor.LIGHT_GREEN.index);
+			 //设定标题框格式 
+			style.setBorderBottom(HSSFCellStyle.BORDER_THIN);    
+			style.setBottomBorderColor(HSSFColor.BLACK.index);    
+			style.setBorderLeft(HSSFCellStyle.BORDER_THIN);    
+			style.setLeftBorderColor(HSSFColor.BLACK.index);    
+			style.setBorderRight(HSSFCellStyle.BORDER_THIN);    
+			style.setRightBorderColor(HSSFColor.BLACK.index);    
+			style.setBorderTop(HSSFCellStyle.BORDER_THIN);    
+			style.setTopBorderColor(HSSFColor.BLACK.index);
+			style.setWrapText(true);
+	    }
+    
+}

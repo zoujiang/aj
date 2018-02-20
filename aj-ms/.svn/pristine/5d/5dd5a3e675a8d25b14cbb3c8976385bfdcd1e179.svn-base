@@ -1,0 +1,159 @@
+package com.spt.score.util;
+
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+
+import javax.imageio.ImageIO;  
+  
+  
+public class CertImgTextUtil {  
+  
+    private Font font = new Font("宋体", Font.PLAIN, 40);// 添加字体的属性设置
+    
+    private Color color = Color.BLACK;
+  
+    private Graphics2D g = null;  
+  
+    private int fontsize = 0;  
+  
+    private int x = 0;  
+  
+    private int y = 0;  
+  
+    /** 
+     * 导入本地图片
+     */  
+    public BufferedImage loadImageLocal(String imgName) {  
+        try {  
+            return ImageIO.read(new File(imgName));  
+        } catch (IOException e) { 
+        	e.printStackTrace();
+        }  
+        return null;  
+    }  
+  
+    /** 
+     * 导入网络图片
+     */  
+    public BufferedImage loadImageUrl(String imgName) {  
+        try {  
+            URL url = new URL(imgName);  
+            return ImageIO.read(url);  
+        } catch (IOException e) {  
+            e.printStackTrace();
+        }  
+        return null;  
+    }  
+  
+    /** 
+     * 生成图片到本地 
+     */  
+    public void writeImageLocal(String newImage, BufferedImage img) {  
+        if (newImage != null && img != null) {  
+            try {  
+                File outputfile = new File(newImage);  
+                ImageIO.write(img, "jpg", outputfile);  
+            } catch (IOException e) {  
+                e.printStackTrace();
+            }  
+        }  
+    }  
+    /** 
+     * 设定文字的字体/大小
+     */  
+    public void setFont(String fontStyle, int fontSize) {  
+        this.fontsize = fontSize;  
+        this.font = new Font(fontStyle, Font.PLAIN, fontSize);  
+    }  
+   
+    public void setColor(Color color) {  
+    	this.color = color;  
+    }  
+  
+    /** 
+     * 在图片指定位置写入文字
+     */  
+    public BufferedImage modifyImage(BufferedImage img, Object content, int x,  
+            int y) {  
+  
+        try {  
+            int w = img.getWidth();  
+            int h = img.getHeight();  
+            g = img.createGraphics();  
+            g.setBackground(Color.WHITE);  //透明
+            
+            //设置字体颜色  
+            if (color != null) {
+            	g.setColor(color);
+            } else {
+            	g.setColor(Color.BLACK);  
+            }
+            if (this.font != null) {
+            	g.setFont(this.font);  
+            }
+            //检查输出位置的纵坐标和横坐标
+            if (x >= h || y >= w) {  
+                this.x = h - this.fontsize + 2;  
+                this.y = w;  
+            } else {  
+                this.x = x;  
+                this.y = y;  
+            }  
+            if (content != null) {  
+                g.drawString(content.toString(), this.x, this.y);  
+            }  
+            g.dispose();  
+        } catch (Exception e) {  
+        	e.printStackTrace();
+        }  
+  
+        return img;  
+    }  
+  
+    public BufferedImage modifyImagetogeter(BufferedImage b, BufferedImage d) {  
+  
+        try {  
+            int w = b.getWidth();  
+            int h = b.getHeight();  
+              
+  
+            g = d.createGraphics();  
+            g.drawImage(b, 100, 10, w, h, null);  
+            g.dispose();  
+        } catch (Exception e) { 
+        	e.printStackTrace();
+        }  
+  
+        return d;  
+    }  
+  
+    public static void main(String[] args) {  
+  
+    	CertImgTextUtil tt = new CertImgTextUtil();  
+  
+        BufferedImage d = tt.loadImageLocal("D:\\tmp\\11.jpg");  
+//      BufferedImage b = tt  
+//              .loadImageLocal("E:\\文件(word,excel,pdf,ppt.txt)\\zte-logo.png");  
+        
+        //往图片上写文件  
+        BufferedImage bi  = tt.modifyImage(d,"了中工",90,90);
+        
+        tt.setFont("宋体", 10);
+        tt.setColor(Color.BLACK);
+        bi  = tt.modifyImage(d,"中文",58,12);
+        bi  = tt.modifyImage(d,"中文333",68,12);
+        
+        
+        tt.writeImageLocal("D:\\tmp\\img\\cc.jpg", bi);  
+  
+        //tt.writeImageLocal("D:\\cc.jpg", tt.modifyImagetogeter(b, d));  
+        //将多张图片合在一起  
+        System.out.println("success");  
+    }  
+  
+}  

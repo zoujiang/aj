@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+   	    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+   	    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+   	    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+   	    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+       ">
+
+        <!-- 用户注册 短信验证码申请接口 -->
+    <bean id="userRegSmsApplyParserAndWraper" class="com.frame.ifpr.common.parser.impl.JsonParserAndWraper">
+    	<property name="outClass" value="com.frame.ifpr.vo.RequestVo"></property>
+    	<property name="innerClass" value="com.aam.cus.vo.CusSmsApplyParamVo"></property>
+    </bean>
+    <bean id="userRegSmsApply" class="com.frame.ifpr.service.base.BasePublishService">
+    	<property name="parserAndWraper" ref="userRegSmsApplyParserAndWraper"></property>
+    	<property name="interfaceAbility" ref="restInterface"></property>
+    	<property name="publishService" ref="cusServiceImpl"></property>
+    </bean>
+
+            <!-- 用户注册 短信验证码验证接口 -->
+    <bean id="userRegSmsValidateParserAndWraper" class="com.frame.ifpr.common.parser.impl.JsonParserAndWraper">
+    	<property name="outClass" value="com.frame.ifpr.vo.RequestVo"></property>
+    	<property name="innerClass" value="com.aam.cus.vo.CusSmsValidateParamVo"></property>
+    </bean>
+    <bean id="userRegSmsValidate" class="com.frame.ifpr.service.base.BasePublishService">
+    	<property name="parserAndWraper" ref="userRegSmsValidateParserAndWraper"></property>
+    	<property name="interfaceAbility" ref="restInterface"></property>
+    	<property name="publishService" ref="cusServiceImpl"></property>
+    </bean>
+    
+    <!-- 用户注册接口 -->
+    <bean id="userFastRegParserAndWraper" class="com.frame.ifpr.common.parser.impl.JsonParserAndWraper">
+    	<property name="outClass" value="com.frame.ifpr.vo.RequestVo"></property>
+    	<property name="innerClass" value="com.aam.cus.vo.CusRegParamVo"></property>
+    </bean>
+    <bean id="userFastReg" class="com.frame.ifpr.service.base.BasePublishService">
+    	<property name="parserAndWraper" ref="userFastRegParserAndWraper"></property>
+    	<property name="interfaceAbility" ref="restInterface"></property>
+    	<property name="publishService" ref="cusServiceImpl"></property>
+    </bean>
+    
+         <!-- 用户修改资料接口 -->
+    <bean id="userMgrParserAndWraper" class="com.frame.ifpr.common.parser.impl.JsonParserAndWraper">
+    	<property name="outClass" value="com.frame.ifpr.vo.RequestVo"></property>
+    	<property name="innerClass" value="com.aam.cus.vo.CusModifyParamVo"></property>
+    </bean>
+    <bean id="userMgr" class="com.frame.ifpr.service.base.BasePublishService">
+    	<property name="parserAndWraper" ref="userMgrParserAndWraper"></property>
+    	<property name="interfaceAbility" ref="restInterface"></property>
+    	<property name="publishService" ref="cusServiceImpl"></property>
+    </bean>
+         <!-- 用户登陆接口 -->
+    <bean id="userLoginParserAndWraper" class="com.frame.ifpr.common.parser.impl.JsonParserAndWraper">
+    	<property name="outClass" value="com.frame.ifpr.vo.RequestVo"></property>
+    	<property name="innerClass" value="com.aam.cus.vo.CusLoginParamVo"></property>
+    </bean>
+    <bean id="userLogin" class="com.frame.ifpr.service.base.BasePublishService">
+    	<property name="parserAndWraper" ref="userLoginParserAndWraper"></property>
+    	<property name="interfaceAbility" ref="restInterface"></property>
+    	<property name="publishService" ref="cusServiceImpl"></property>
+    </bean>    
+          <!-- 用户信息接口 -->
+    <bean id="userInfoParserAndWraper" class="com.frame.ifpr.common.parser.impl.JsonParserAndWraper">
+    	<property name="outClass" value="com.frame.ifpr.vo.RequestVo"></property>
+    	<property name="innerClass" value="com.aam.cus.vo.CusInfoParamVo"></property>
+    </bean>
+    <bean id="userInfo" class="com.frame.ifpr.service.base.BasePublishService">
+    	<property name="parserAndWraper" ref="userInfoParserAndWraper"></property>
+    	<property name="interfaceAbility" ref="restInterface"></property>
+    	<property name="publishService" ref="cusServiceImpl"></property>
+    </bean>  
+    
+           <!-- 用户退出登陆接口 -->
+    <bean id="userLogoutParserAndWraper" class="com.frame.ifpr.common.parser.impl.JsonParserAndWraper">
+    	<property name="outClass" value="com.frame.ifpr.vo.RequestVo"></property>
+    	<property name="innerClass" value="com.aam.cus.vo.CusLogoutParamVo"></property>
+    </bean>
+    <bean id="userLogout" class="com.frame.ifpr.service.base.BasePublishService">
+    	<property name="parserAndWraper" ref="userLogoutParserAndWraper"></property>
+    	<property name="interfaceAbility" ref="restInterface"></property>
+    	<property name="publishService" ref="cusServiceImpl"></property>
+    </bean>    
+    
+    <bean id="deliAddrListParserAndWraper" class="com.frame.ifpr.common.parser.impl.JsonParserAndWraper">
+    	<property name="outClass" value="com.frame.ifpr.vo.RequestVo"></property>
+    	<property name="innerClass" value="com.aam.cus.vo.DeliAddrListParamVo"></property>
+    </bean>
+     <bean id="deliAddrList" class="com.frame.ifpr.service.base.BasePublishService">
+    	<property name="parserAndWraper" ref="deliAddrListParserAndWraper"></property>
+    	<property name="interfaceAbility" ref="restInterface"></property>
+    	<property name="publishService" ref="deliAddrServiceImpl"></property>
+    </bean> 
+    
+    <bean id="deliAddrDtlParserAndWraper" class="com.frame.ifpr.common.parser.impl.JsonParserAndWraper">
+    	<property name="outClass" value="com.frame.ifpr.vo.RequestVo"></property>
+    	<property name="innerClass" value="com.aam.cus.vo.DeliAddrDtlParamVo"></property>
+    </bean>
+     <bean id="deliAddrDtl" class="com.frame.ifpr.service.base.BasePublishService">
+    	<property name="parserAndWraper" ref="deliAddrDtlParserAndWraper"></property>
+    	<property name="interfaceAbility" ref="restInterface"></property>
+    	<property name="publishService" ref="deliAddrServiceImpl"></property>
+    </bean>      
+
+    <bean id="deliAddrMgrParserAndWraper" class="com.frame.ifpr.common.parser.impl.JsonParserAndWraper">
+    	<property name="outClass" value="com.frame.ifpr.vo.RequestVo"></property>
+    	<property name="innerClass" value="com.aam.cus.vo.DeliAddrMgrParamVo"></property>
+    </bean>
+     <bean id="deliAddrMgr" class="com.frame.ifpr.service.base.BasePublishService">
+    	<property name="parserAndWraper" ref="deliAddrMgrParserAndWraper"></property>
+    	<property name="interfaceAbility" ref="restInterface"></property>
+    	<property name="publishService" ref="deliAddrServiceImpl"></property>
+    </bean>   
+    
+    <!-- 查询更新 -->
+	<bean id="queryEditParserAndWraper" class="com.frame.ifpr.common.parser.impl.JsonParserAndWraper">
+		<property name="outClass" value="com.frame.ifpr.vo.RequestVo"></property>
+		<property name="innerClass" value="com.aj.clt.vo.EditParamVo"></property>
+	</bean>
+	<bean id="cltUpdate" class="com.frame.ifpr.service.base.BasePublishService">
+		<property name="parserAndWraper" ref="queryEditParserAndWraper"></property>
+		<property name="interfaceAbility" ref="restInterface"></property>
+		<property name="publishService" ref="editServiceImpl"></property>
+	</bean>
+	
+	<!-- 广告列表 -->
+	<bean id="adListParserAndWraper" class="com.frame.ifpr.common.parser.impl.JsonParserAndWraper">
+		<property name="outClass" value="com.frame.ifpr.vo.RequestVo"></property>
+		<property name="innerClass" value="com.aj.ad.ifpr.vo.AdListParamVo"></property>
+	</bean>
+	<bean id="adList" class="com.frame.ifpr.service.base.BasePublishService">
+		<property name="parserAndWraper" ref="adListParserAndWraper"></property>
+		<property name="interfaceAbility" ref="restInterface"></property>
+		<property name="publishService" ref="positionService"></property>
+	</bean>
+	<!-- 广告浏览统计 -->
+	<bean id="adLogSynParserAndWraper" class="com.frame.ifpr.common.parser.impl.JsonParserAndWraper">
+		<property name="outClass" value="com.frame.ifpr.vo.RequestVo"></property>
+		<property name="innerClass" value="com.aj.ad.ifpr.vo.AdLogParamVo"></property>
+	</bean>
+	<bean id="adSyn" class="com.frame.ifpr.service.base.BasePublishService">
+		<property name="parserAndWraper" ref="adLogSynParserAndWraper"></property>
+		<property name="interfaceAbility" ref="restInterface"></property>
+		<property name="publishService" ref="logSynService"></property>
+	</bean>
+   
+    <!-- 上传图片对外发布的接口-->
+    <bean id="fileUpload" class="com.frame.ifpr.service.impl.FileUploadServiceImpl"></bean>
+</beans>

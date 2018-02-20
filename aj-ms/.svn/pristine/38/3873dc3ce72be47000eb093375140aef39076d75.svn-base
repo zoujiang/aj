@@ -1,0 +1,124 @@
+/** 
+ * Description: TODO(用一句话描述该文件做什么)  
+ * @className com.spt.entry.service.AthleteService
+ * @author ChingWang    
+ * @date 2016-9-15 下午2:41:16
+ * @version V1.0   
+ * Copyright (C) 2016 www.demo.com Inc. All rights reserved.        
+ */
+
+package com.spt.entry.service;
+
+import java.util.List;
+import java.util.Map;
+
+import com.spt.entry.model.Apply;
+import com.spt.entry.model.Sports;
+import com.spt.entry.model.SportsGroup;
+
+public interface AthleteService {
+
+	/** 
+	 * TODO（用一句话描述该方法做什么）
+	 * @param groupId
+	 * @param type
+	 * @param value
+	 * @return
+	 * @version
+	 * Date           Author         Version     Description
+	 * -----------------------------------------------------------------
+	 * 2016-9-15      Ching Wang     v1.0.0      create
+	 *
+	 */
+	public long getTotal(String groupId, String type, String value, String codeSts, String apvSts);
+
+	/** 
+	 * TODO（用一句话描述该方法做什么）
+	 * @param groupId
+	 * @param type
+	 * @param value
+	 * @param offset
+	 * @param limit
+	 * @return
+	 * @version
+	 * Date           Author         Version     Description
+	 * -----------------------------------------------------------------
+	 * 2016-9-15      Ching Wang     v1.0.0      create
+	 *
+	 */
+	public List<Map<String, Object>> getList(String groupId, String type,
+			String value, String codeSts, String apvSts, int offset, int limit);
+
+	/** 
+	 * TODO（用一句话描述该方法做什么）
+	 * @version
+	 * Date           Author         Version     Description
+	 * -----------------------------------------------------------------
+	 * 2016-9-15      Ching Wang     v1.0.0      create
+	 * @return 
+	 *
+	 */
+	public List<Sports> getSports();
+
+	/** 
+	 * TODO（用一句话描述该方法做什么）
+	 * @param sportId
+	 * @return
+	 * @version
+	 * Date           Author         Version     Description
+	 * -----------------------------------------------------------------
+	 * 2016-9-15      Ching Wang     v1.0.0      create
+	 *
+	 */
+	public List<SportsGroup> getSportGroups(Integer sportId);
+
+	/**
+	 * 
+	 * TODO（用一句话描述该方法做什么）
+	 * @return
+	 * @version
+	 * Date           Author         Version     Description
+	 * -----------------------------------------------------------------
+	 * 2016-9-21      Ching Wang     v1.0.0      create
+	 *
+	 */
+	public List<Map<String, Object>> getAll();
+
+	/** 
+	 * TODO（用一句话描述该方法做什么）
+	 * @param applyId
+	 * @return
+	 * @version
+	 * Date           Author         Version     Description
+	 * -----------------------------------------------------------------
+	 * 2016-9-16      Ching Wang     v1.0.0      create
+	 *
+	 */
+	public Map<String, Object> getApply(int applyId, int groupId);
+
+	/** 
+	 * TODO（用一句话描述该方法做什么）
+	 * @param applyId
+	 * @param groupId
+	 * @return
+	 * @version
+	 * Date           Author         Version     Description
+	 * -----------------------------------------------------------------
+	 * 2016-9-18      Ching Wang     v1.0.0      create
+	 *
+	 */
+	public Map<String, Object> getApplyInfo(int applyId, int groupId);
+
+	/** 
+	 * TODO（用一句话描述该方法做什么）
+	 * @param apply
+	 * @version
+	 * Date           Author         Version     Description
+	 * -----------------------------------------------------------------
+	 * 2016-9-18      Ching Wang     v1.0.0      create
+	 *
+	 */
+	public void save(Apply apply);
+
+
+}

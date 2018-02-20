@@ -1,0 +1,36 @@
+@CHARSET "UTF-8";
+.tb_n{
+	width: 100%;
+	margin: 10px 0px 10px 0px;
+	border-spacing: 5px;
+}
+.tb_n .td_l{
+	width: 80px;
+	text-align: right;
+}
+.tb_n .td_r{
+	width: 197px;
+	text-align: left;
+}
+.tb_n .td_r_l{
+	width: 480px;
+	text-align: left;
+}
+.tb_n input{
+	width:180px; 
+	height:18px; 
+	border:solid 1px #95B8E7;
+	font-size:9pt;
+}
+.tb_n .td_r_l input{
+	width:470px; 
+}
+.tb_n textarea{
+	resize: none;
+	width:467px; 
+	display:inline;
+	height:80px; 
+	border:solid 1px #95B8E7;
+	font-size:9pt;
+}
+.clearfix {display:block;}

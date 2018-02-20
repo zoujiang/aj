@@ -1,0 +1,323 @@
+/* 通用设置 */
+body{
+    font:12px "微软雅黑",Arial;
+    color:#333;
+    margin:0px;
+    padding:0px;
+}
+
+p,h1,h2,h3,h4,h5,h6,ol,ul,li,dl,dt,dd{
+    margin:0px;
+    padding:0px;
+    list-style:none;
+}
+a{
+    text-decoration: none;
+    outline: none;
+}
+.lf{float:left;}
+.rt{float:right;}
+.clear{clear:both;}
+
+#top,#main,#footer{
+    width:1300px;
+    /* 水平居中 */
+    margin:0 auto;
+}
+img{
+    vertical-align:middle;
+}
+/****************************************************/
+#head{
+    width:100%;
+    height:60px;
+    background-color: #307577;
+}
+#head .logo{
+    float: right;
+}
+#mian{
+
+}
+.wy-main{
+    overflow: hidden;
+    margin-top:30px;
+}
+.wy-main-dh{
+    float: left;
+}
+.wy-main-dh02{
+    float: left;
+    position: relative;
+    bottom:0;
+    height:64px;
+    width:889px;
+}
+.wy-main-dh02 ul{
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 50px;
+    line-height: 50px;
+    background: #43a5a8;
+}
+.wy-main-dh02 ul li{
+    float: left;
+    width:20%;
+    text-align: center;
+    font-size: 21px;
+}
+.wy-main-dh02 ul li a{
+    color:white;
+}
+.wy-main-dh02 ul li a:hover{
+    border-bottom:1px solid #e5e5e5;
+}
+.wy-main02{
+    margin-top: 30px;
+    width:100%;
+    height:50px;
+    line-height: 50px;
+    border-bottom: 2px dashed #d5d5d5;
+    font-size: 18px;
+}
+#main .wy-main03{
+    margin: auto;
+    padding: 20px 0 100px;
+    width: 100%;
+    height: auto;
+}
+
+#main .wy-main03 .wy-fonts{
+    margin: auto;
+    width: 100%;
+    height: 80px;
+    line-height: 80px;
+    border: 1px solid #b5b5b5;
+    background: #f4f4f4;
+    color: #919191;
+    text-align: center;
+    font-size: 2.4rem;
+    box-sizing: border-box;
+}
+#main .wy-main03 .wy-input{
+    margin: auto;
+    padding: 100px 0;
+    width: 800px;
+    height: 60px;
+}
+#main .wy-main03 .wy-input span{
+    float: left;
+    display: block;
+    width: 200px;
+    height: 60px;
+    line-height: 60px;
+    background-color: #43a5a8;
+    color: #fff;
+    text-align: center;
+    font-size: 24px;
+
+}
+#main .wy-main03 .wy-input input{
+    float: left;
+    margin-left: 10px;
+    padding: 0 5px;
+    width: 590px;
+    height: 60px;
+    line-height: 60px;
+    font-size: 18px;
+    border: 1px solid #b5b5b5;
+    background-color: #fff;
+    box-sizing: border-box;
+}
+#main .wy-main03 .wy-submit{
+    display: block;
+    margin: auto;
+    width: 220px;
+    height: 75px;
+    line-height: 75px;
+    font-size: 24px;
+    color: #fff;
+    background-color: #43a5a8;
+    text-align: center;
+}
+#footer .wy-foot{
+    width: 1300px;
+    height: 2px;
+    background: #333333;
+}
+#footer .wy-foot-js{
+    margin: 5px auto 100px;
+    padding: 50px 0;
+    width: 1300px;
+    height: auto;
+    text-align: center;
+    overflow: hidden;
+    background: #4bbec2;
+}
+#footer .wy-foot-js p{
+    height: 30px;
+    line-height: 30px;
+    font-size: 14px;
+    color: #fff;
+}
+/*     信息部分  改变 报名信息不存在   */
+.wy-information{
+    width:500px;
+    height:160px;
+    margin:0 auto;
+    border:1px solid red;
+    margin-top: 100px;
+}
+.wy-information h3{
+    background-color: red;
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0;
+    color: #fff;
+    padding: 3px 15px;
+}
+.wy-information .wy-beijing{
+    margin: 15px 0 0 85px;
+    background: url(../images/wy-mls03.gif) left center no-repeat;
+    padding: 5px 50px;
+    line-height:28px;
+    color: #666;
+    min-height: 30px;
+}
+
+.wy-information .wy-beijing span{
+    font-size: 14px;
+    font-weight: bold;
+    color: #000;
+}
+
+.wy-information .wy-fanhui{
+    text-align: center;
+    margin:12px 0;
+}
+.wy-number{
+    width:100%
+}
+.wy-number .wy-number-xx{
+    /*width:700px;*/
+    margin: 0 auto;
+    font-size: 14px;
+    overflow: hidden;
+}
+/*  参赛信息  */
+.wy-number .wy-number-xx .wy-xx-dr li{
+    overflow: hidden;
+}
+.wy-number .wy-number-xx .wy-xx-dr li .wy-xx-mc{
+    display: inline-block;
+    width: 30%;
+    height: 60px;
+    line-height: 60px;
+    color: #444;
+    text-align: right;
+}
+.wy-number .wy-number-xx .wy-xx-dr li .wy-xx-xx{
+    display: inline-block;
+    width: 65%;
+    height: 60px;
+    line-height: 60px;
+    color: #444;
+    text-align: left;
+    margin-left: 20px;
+}
+
+/* 有儿童的信息  */
+.wy-number .wy-number-xx .wy-xx-sr{
+    float: left;
+    width:65%;
+}
+.wy-number .wy-number-xx .wy-xx-sr li .wy-xx-mc{
+    display: inline-block;
+    height: 60px;
+    line-height: 60px;
+    color: #444;
+    text-align: right;
+}
+.wy-number .wy-number-xx .wy-xx-sr li .wy-xx-xx{
+    display: inline-block;
+    height: 60px;
+    line-height: 60px;
+    color: #444;
+    text-align: left;
+    margin-left: 20px;
+}
+.wy-number .wy-number-xx .wy-xx-sr02{
+    float: left;
+    width:35%;
+}
+.wy-number .wy-number-xx .wy-xx-sr02 li .wy-xx-mc{
+    display: inline-block;
+    height: 60px;
+    line-height: 60px;
+    color: #444;
+    text-align: right;
+}
+.wy-number .wy-number-xx .wy-xx-sr02 li .wy-xx-xx{
+    display: inline-block;
+    height: 60px;
+    line-height: 60px;
+    color: #444;
+    text-align: left;
+    margin-left: 20px;
+}
+/* 成绩信息 计数器 */
+.wy-number .wy-number-xx .wy-xx-cjcx{
+    width:80%;
+    margin:30px auto;
+    overflow: hidden;
+
+}
+.wy-number .wy-number-xx .wy-xx-cjcx ul{
+    float: left;
+    width:50%;
+}
+.wy-number .wy-number-xx .wy-xx-cjcx ul li .wy-cx-cj{
+    display: inline-block;
+    height: 60px;
+    line-height: 60px;
+    color: #444;
+    text-align: right;
+}
+.wy-number .wy-number-xx .wy-xx-cjcx ul li .wy-cx-cj02{
+    display: inline-block;
+    height: 60px;
+    line-height: 60px;
+    color: #444;
+    text-align: left;
+    margin-left: 20px;
+}
+.wy-number .wy-number-xx .wy-xx-zp{
+    width:80%;
+    margin: 0 auto;
+}
+.wy-number .wy-number-xx .wy-xx-zp p a{
+    color:#0000FF;
+    display: inline-block;
+}
+.wy-number .wy-number-xx .wy-xx-zp p{
+    display: inline-block;
+    height: 40px;
+}
+.wy-number .wy-number-xx .wy-xx-zp p a:hover{
+    border-bottom: 1px solid #0000FF;
+}
+.wy-number .wy-number-xx .wy-xx-zp .wy-k-img{
+    margin-top:30px;
+}
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,106 @@
+package com.spt.score.service.impl;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+
+import com.frame.core.dao.GenericDAO;
+import com.frame.core.service.AuthorService;
+import com.frame.core.util.StringUtil;
+import com.frame.core.vo.DataModel;
+import com.frame.core.vo.MsgVo;
+import com.frame.log.service.LogBizOprService;
+import com.spt.entry.model.TCertCfg;
+import com.spt.entry.model.TImpJob;
+import com.spt.score.vo.ScoreLimitKey;
+
+@Service("scoreCertCfgService")
+@Scope("prototype")
+public class ScoreCertCfgServiceImpl  {
+
+	private Logger log = Logger.getLogger(this.getClass());
+	
+	@Autowired
+	private GenericDAO baseDAO;
+	@Autowired
+	private AuthorService authorService;
+	@Autowired
+	private LogBizOprService logBizOprService;
+	
+	public DataModel<Map<String, Object>> getList(ScoreLimitKey key) {
+		
+
+		String sql_table = " t_sports_group mt left join t_cert_cfg lt on mt.ID = lt.GROUP_ID ";
+		
+		String sqlWhere = " where mt.id in (1,2,3,4) ";
+		//String sqlWhere = " where 1=1 ";
+		List<Object> sps = new ArrayList<Object>();
+		if (StringUtil.isNotEmpty(key.getGroupId())) {
+			sqlWhere += " and mt.id = ? ";
+			sps.add(Long.parseLong(key.getGroupId()));	
+		} 
+		
+		
+		log.info(sps);
+		
+		String sql  = "select "
+		 		+ " mt.GROUP_NAME, mt.ID, lt.* "
+		 		//+ " DATE_FORMAT(score_dt, '%Y-%m-%d %H:%i') getDtText, "
+		 		//+ " lt.APPLY_ID,lt.GAMECODE,lt.TRUENAME,lt.MOBILE,lt.CERTNO,lt.TEAM_NAME,lt.GROUP_NAME,lt.SPORT_NAME, "
+		 		+ " from " + sql_table + sqlWhere + " order by mt.id asc";
+		 log.info(sql);
+		 List<Map<String, Object>> list = baseDAO.getGenericByPositionToSQL(sql, key.getOffset(), key.getPageSize(), sps.toArray()); 
+		 int totalCount = baseDAO.getGenericIntToSQL("select count(1) from " + sql_table + sqlWhere, sps.size() > 0 ? sps.toArray() : null);
+		
+		 return new DataModel<Map<String, Object>>(list,totalCount);
+		 
+	}
+	
+	public TCertCfg get(String groupId) {
+		TCertCfg po = baseDAO.get(TCertCfg.class, groupId);
+		return po;
+	}
+	
+	
+	
+	public MsgVo save(TCertCfg po) {
+		
+		TCertCfg old = baseDAO.get(TCertCfg.class, po.getCfgId());
+		if (old == null) {
+			return saveNew(po);
+		}
+		
+		if (StringUtil.isEmpty(po.getBackImg())) {
+			po.setBackImg(old.getBackImg());
+		}
+		
+		po.setCreateDt(old.getCreateDt());
+		po.setCreateUser(old.getCreateUser());
+		po.setModifyDt(new Date());
+		po.setModifyUser(authorService.getSessionUser().getAccount());
+		
+		baseDAO.merge(po);
+		return new MsgVo(true,"修改成功");
+	}
+	
+	public MsgVo saveNew(TCertCfg po) {
+		
+		
+		po.setCreateDt(new Date());
+		po.setCreateUser(authorService.getSessionUser().getAccount());
+		
+		
+		baseDAO.save(po);
+		return new MsgVo(true, "保存成功");
+	}
+	
+	
+	
+	
+}

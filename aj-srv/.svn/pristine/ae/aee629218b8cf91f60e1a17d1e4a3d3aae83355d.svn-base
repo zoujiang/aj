@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+	<resource id="10" title="商品管理" >
+	  <item id="1001" title="商品分类" href=""/>
+	  <item id="1002" title="商品发布" href=""/>
+	</resource>
+	<resource id="20" title="促销管理" >
+	  <item id="2001" title="面值卡促销" href=""/>
+	  <item id="2002" title="商品促销" href=""/>
+	  <item id="2003" title="按订单促销" href=""/>
+	  <item id="2004" title="送货上门服务" href=""/>
+	</resource>
+	<resource id="30" title="会员管理" >
+	  <item id="3001" title="会员信息查看" href=""/>
+	</resource>
+	<resource id="40" title="站点管理" >
+	  <item id="4001" title="门店管理" href=""/>
+	  <item id="4002" title="员工管理" href=""/>
+	</resource>
+	<resource id="50" title="系统管理" >
+	  <item id="5001" title="用户管理" href=""/>
+	  <item id="5002" title="角色管理" href=""/>
+	</resource>
+</resources>

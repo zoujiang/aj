@@ -1,0 +1,652 @@
+package com.spt.entry.model;
+
+import static javax.persistence.GenerationType.IDENTITY;
+
+import java.sql.Timestamp;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+/**
+ * TApply entity. @author MyEclipse Persistence Tools
+ */
+@Entity
+@Table(name = "t_apply")
+public class Apply implements java.io.Serializable {
+
+	// Fields
+
+	private Integer applyId;
+	private Integer teamId;
+	private String teamName;
+	private Integer sportId;
+	private Integer typeId;
+	private String sportName;
+	private Integer groupId;
+	private String groupName;
+	private String truename;
+	private Integer age;
+	private Date birthday;
+	private String childname;
+	private Integer childage;
+	private Integer sex;
+	private String mobile;
+	private Integer prolevel;
+	private Integer certtype;
+	private String certno;
+	private String country;
+	private String provinceId;
+	private String provincename;
+	private String cityId;
+	private String cityname;
+	private String address;
+	private String email;
+	private String contactname;
+	private String contacttel;
+	private String bloodtype;
+	private Integer healthstatus;
+	private Integer medicalhistory;
+	private String conditiontook;
+	private Integer tshirt;
+	private String invitationcode;
+	private Integer teamnumber;
+	private String gamecode;
+	private String file;
+	private Integer addtime;
+	private Integer addip;
+	private Boolean status;
+	private Integer childsex;
+	private Integer childcerttype;
+	private String childcertno;
+	private Date childbirthday;
+	private Integer childhealthstatus;
+	private String childbloodtype;
+	private Integer childmedicalhistory;
+	private String childconditiontook;
+	private Integer childtshirt;
+	private Integer channelId;
+	private String apvSts;
+	private String isGet;
+	private Timestamp getDt;
+	private String getCreateUser;
+
+	// Constructors
+
+	/** default constructor */
+	public Apply() {
+	}
+
+	/** minimal constructor */
+	public Apply(Integer sportId, Integer typeId, String truename,
+			Date birthday, String gamecode, Integer addtime, Integer addip,
+			Boolean status, Integer channelId) {
+		this.sportId = sportId;
+		this.typeId = typeId;
+		this.truename = truename;
+		this.birthday = birthday;
+		this.gamecode = gamecode;
+		this.addtime = addtime;
+		this.addip = addip;
+		this.status = status;
+		this.channelId = channelId;
+	}
+
+	/** full constructor */
+	public Apply(Integer teamId, String teamName, Integer sportId,
+			Integer typeId, String sportName, Integer groupId,
+			String groupName, String truename, Integer age, Date birthday,
+			String childname, Integer childage, Integer sex, String mobile,
+			Integer prolevel, Integer certtype, String certno, String country,
+			String provinceId, String provincename, String cityId,
+			String cityname, String address, String email, String contactname,
+			String contacttel, String bloodtype, Integer healthstatus,
+			Integer medicalhistory, String conditiontook, Integer tshirt,
+			String invitationcode, Integer teamnumber, String gamecode,
+			String file, Integer addtime, Integer addip, Boolean status,
+			Integer childsex, Integer childcerttype, String childcertno,
+			Date childbirthday, Integer childhealthstatus,
+			String childbloodtype, Integer childmedicalhistory,
+			String childconditiontook, Integer childtshirt, Integer channelId,
+			String apvSts, String isGet, Timestamp getDt, String getCreateUser) {
+		this.teamId = teamId;
+		this.teamName = teamName;
+		this.sportId = sportId;
+		this.typeId = typeId;
+		this.sportName = sportName;
+		this.groupId = groupId;
+		this.groupName = groupName;
+		this.truename = truename;
+		this.age = age;
+		this.birthday = birthday;
+		this.childname = childname;
+		this.childage = childage;
+		this.sex = sex;
+		this.mobile = mobile;
+		this.prolevel = prolevel;
+		this.certtype = certtype;
+		this.certno = certno;
+		this.country = country;
+		this.provinceId = provinceId;
+		this.provincename = provincename;
+		this.cityId = cityId;
+		this.cityname = cityname;
+		this.address = address;
+		this.email = email;
+		this.contactname = contactname;
+		this.contacttel = contacttel;
+		this.bloodtype = bloodtype;
+		this.healthstatus = healthstatus;
+		this.medicalhistory = medicalhistory;
+		this.conditiontook = conditiontook;
+		this.tshirt = tshirt;
+		this.invitationcode = invitationcode;
+		this.teamnumber = teamnumber;
+		this.gamecode = gamecode;
+		this.file = file;
+		this.addtime = addtime;
+		this.addip = addip;
+		this.status = status;
+		this.childsex = childsex;
+		this.childcerttype = childcerttype;
+		this.childcertno = childcertno;
+		this.childbirthday = childbirthday;
+		this.childhealthstatus = childhealthstatus;
+		this.childbloodtype = childbloodtype;
+		this.childmedicalhistory = childmedicalhistory;
+		this.childconditiontook = childconditiontook;
+		this.childtshirt = childtshirt;
+		this.channelId = channelId;
+		this.apvSts = apvSts;
+		this.isGet = isGet;
+		this.getDt = getDt;
+		this.getCreateUser = getCreateUser;
+	}
+
+	// Property accessors
+	@Id
+	@GeneratedValue(strategy = IDENTITY)
+	@Column(name = "APPLY_ID", unique = true, nullable = false)
+	public Integer getApplyId() {
+		return this.applyId;
+	}
+
+	public void setApplyId(Integer applyId) {
+		this.applyId = applyId;
+	}
+
+	@Column(name = "TEAM_ID")
+	public Integer getTeamId() {
+		return this.teamId;
+	}
+
+	public void setTeamId(Integer teamId) {
+		this.teamId = teamId;
+	}
+
+	@Column(name = "TEAM_NAME", length = 30)
+	public String getTeamName() {
+		return this.teamName;
+	}
+
+	public void setTeamName(String teamName) {
+		this.teamName = teamName;
+	}
+
+	@Column(name = "SPORT_ID", nullable = false)
+	public Integer getSportId() {
+		return this.sportId;
+	}
+
+	public void setSportId(Integer sportId) {
+		this.sportId = sportId;
+	}
+
+	@Column(name = "TYPE_ID", nullable = false)
+	public Integer getTypeId() {
+		return this.typeId;
+	}
+
+	public void setTypeId(Integer typeId) {
+		this.typeId = typeId;
+	}
+
+	@Column(name = "SPORT_NAME", length = 64)
+	public String getSportName() {
+		return this.sportName;
+	}
+
+	public void setSportName(String sportName) {
+		this.sportName = sportName;
+	}
+
+	@Column(name = "GROUP_ID")
+	public Integer getGroupId() {
+		return this.groupId;
+	}
+
+	public void setGroupId(Integer groupId) {
+		this.groupId = groupId;
+	}
+
+	@Column(name = "GROUP_NAME", length = 64)
+	public String getGroupName() {
+		return this.groupName;
+	}
+
+	public void setGroupName(String groupName) {
+		this.groupName = groupName;
+	}
+
+	@Column(name = "TRUENAME", nullable = false, length = 64)
+	public String getTruename() {
+		return this.truename;
+	}
+
+	public void setTruename(String truename) {
+		this.truename = truename;
+	}
+
+	@Column(name = "AGE")
+	public Integer getAge() {
+		return this.age;
+	}
+
+	public void setAge(Integer age) {
+		this.age = age;
+	}
+
+	@Temporal(TemporalType.DATE)
+	@Column(name = "BIRTHDAY", nullable = false, length = 0)
+	public Date getBirthday() {
+		return this.birthday;
+	}
+
+	public void setBirthday(Date birthday) {
+		this.birthday = birthday;
+	}
+
+	@Column(name = "CHILDNAME", length = 64)
+	public String getChildname() {
+		return this.childname;
+	}
+
+	public void setChildname(String childname) {
+		this.childname = childname;
+	}
+
+	@Column(name = "CHILDAGE")
+	public Integer getChildage() {
+		return this.childage;
+	}
+
+	public void setChildage(Integer childage) {
+		this.childage = childage;
+	}
+
+	@Column(name = "SEX")
+	public Integer getSex() {
+		return this.sex;
+	}
+
+	public void setSex(Integer sex) {
+		this.sex = sex;
+	}
+
+	@Column(name = "MOBILE", length = 64)
+	public String getMobile() {
+		return this.mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+
+	@Column(name = "PROLEVEL")
+	public Integer getProlevel() {
+		return this.prolevel;
+	}
+
+	public void setProlevel(Integer prolevel) {
+		this.prolevel = prolevel;
+	}
+
+	@Column(name = "CERTTYPE")
+	public Integer getCerttype() {
+		return this.certtype;
+	}
+
+	public void setCerttype(Integer certtype) {
+		this.certtype = certtype;
+	}
+
+	@Column(name = "CERTNO", length = 64)
+	public String getCertno() {
+		return this.certno;
+	}
+
+	public void setCertno(String certno) {
+		this.certno = certno;
+	}
+
+	@Column(name = "COUNTRY", length = 32)
+	public String getCountry() {
+		return this.country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	@Column(name = "PROVINCE_ID", length = 16)
+	public String getProvinceId() {
+		return this.provinceId;
+	}
+
+	public void setProvinceId(String provinceId) {
+		this.provinceId = provinceId;
+	}
+
+	@Column(name = "PROVINCENAME", length = 16)
+	public String getProvincename() {
+		return this.provincename;
+	}
+
+	public void setProvincename(String provincename) {
+		this.provincename = provincename;
+	}
+
+	@Column(name = "CITY_ID", length = 16)
+	public String getCityId() {
+		return this.cityId;
+	}
+
+	public void setCityId(String cityId) {
+		this.cityId = cityId;
+	}
+
+	@Column(name = "CITYNAME", length = 16)
+	public String getCityname() {
+		return this.cityname;
+	}
+
+	public void setCityname(String cityname) {
+		this.cityname = cityname;
+	}
+
+	@Column(name = "ADDRESS", length = 64)
+	public String getAddress() {
+		return this.address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	@Column(name = "EMAIL", length = 64)
+	public String getEmail() {
+		return this.email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	@Column(name = "CONTACTNAME", length = 64)
+	public String getContactname() {
+		return this.contactname;
+	}
+
+	public void setContactname(String contactname) {
+		this.contactname = contactname;
+	}
+
+	@Column(name = "CONTACTTEL", length = 64)
+	public String getContacttel() {
+		return this.contacttel;
+	}
+
+	public void setContacttel(String contacttel) {
+		this.contacttel = contacttel;
+	}
+
+	@Column(name = "BLOODTYPE", length = 16)
+	public String getBloodtype() {
+		return this.bloodtype;
+	}
+
+	public void setBloodtype(String bloodtype) {
+		this.bloodtype = bloodtype;
+	}
+
+	@Column(name = "HEALTHSTATUS")
+	public Integer getHealthstatus() {
+		return this.healthstatus;
+	}
+
+	public void setHealthstatus(Integer healthstatus) {
+		this.healthstatus = healthstatus;
+	}
+
+	@Column(name = "MEDICALHISTORY")
+	public Integer getMedicalhistory() {
+		return this.medicalhistory;
+	}
+
+	public void setMedicalhistory(Integer medicalhistory) {
+		this.medicalhistory = medicalhistory;
+	}
+
+	@Column(name = "CONDITIONTOOK", length = 500)
+	public String getConditiontook() {
+		return this.conditiontook;
+	}
+
+	public void setConditiontook(String conditiontook) {
+		this.conditiontook = conditiontook;
+	}
+
+	@Column(name = "TSHIRT")
+	public Integer getTshirt() {
+		return this.tshirt;
+	}
+
+	public void setTshirt(Integer tshirt) {
+		this.tshirt = tshirt;
+	}
+
+	@Column(name = "INVITATIONCODE", length = 16)
+	public String getInvitationcode() {
+		return this.invitationcode;
+	}
+
+	public void setInvitationcode(String invitationcode) {
+		this.invitationcode = invitationcode;
+	}
+
+	@Column(name = "TEAMNUMBER")
+	public Integer getTeamnumber() {
+		return this.teamnumber;
+	}
+
+	public void setTeamnumber(Integer teamnumber) {
+		this.teamnumber = teamnumber;
+	}
+
+	@Column(name = "GAMECODE", nullable = false, length = 64)
+	public String getGamecode() {
+		return this.gamecode;
+	}
+
+	public void setGamecode(String gamecode) {
+		this.gamecode = gamecode;
+	}
+
+	@Column(name = "FILE")
+	public String getFile() {
+		return this.file;
+	}
+
+	public void setFile(String file) {
+		this.file = file;
+	}
+
+	@Column(name = "ADDTIME", nullable = false)
+	public Integer getAddtime() {
+		return this.addtime;
+	}
+
+	public void setAddtime(Integer addtime) {
+		this.addtime = addtime;
+	}
+
+	@Column(name = "ADDIP", nullable = false)
+	public Integer getAddip() {
+		return this.addip;
+	}
+
+	public void setAddip(Integer addip) {
+		this.addip = addip;
+	}
+
+	@Column(name = "STATUS", nullable = false)
+	public Boolean getStatus() {
+		return this.status;
+	}
+
+	public void setStatus(Boolean status) {
+		this.status = status;
+	}
+
+	@Column(name = "CHILDSEX")
+	public Integer getChildsex() {
+		return this.childsex;
+	}
+
+	public void setChildsex(Integer childsex) {
+		this.childsex = childsex;
+	}
+
+	@Column(name = "CHILDCERTTYPE")
+	public Integer getChildcerttype() {
+		return this.childcerttype;
+	}
+
+	public void setChildcerttype(Integer childcerttype) {
+		this.childcerttype = childcerttype;
+	}
+
+	@Column(name = "CHILDCERTNO", length = 64)
+	public String getChildcertno() {
+		return this.childcertno;
+	}
+
+	public void setChildcertno(String childcertno) {
+		this.childcertno = childcertno;
+	}
+
+	@Column(name = "CHILDBIRTHDAY", length = 0)
+	public Date getChildbirthday() {
+		return this.childbirthday;
+	}
+
+	public void setChildbirthday(Date childbirthday) {
+		this.childbirthday = childbirthday;
+	}
+
+	@Column(name = "CHILDHEALTHSTATUS")
+	public Integer getChildhealthstatus() {
+		return this.childhealthstatus;
+	}
+
+	public void setChildhealthstatus(Integer childhealthstatus) {
+		this.childhealthstatus = childhealthstatus;
+	}
+
+	@Column(name = "CHILDBLOODTYPE", length = 16)
+	public String getChildbloodtype() {
+		return this.childbloodtype;
+	}
+
+	public void setChildbloodtype(String childbloodtype) {
+		this.childbloodtype = childbloodtype;
+	}
+
+	@Column(name = "CHILDMEDICALHISTORY")
+	public Integer getChildmedicalhistory() {
+		return this.childmedicalhistory;
+	}
+
+	public void setChildmedicalhistory(Integer childmedicalhistory) {
+		this.childmedicalhistory = childmedicalhistory;
+	}
+
+	@Column(name = "CHILDCONDITIONTOOK", length = 500)
+	public String getChildconditiontook() {
+		return this.childconditiontook;
+	}
+
+	public void setChildconditiontook(String childconditiontook) {
+		this.childconditiontook = childconditiontook;
+	}
+
+	@Column(name = "CHILDTSHIRT")
+	public Integer getChildtshirt() {
+		return this.childtshirt;
+	}
+
+	public void setChildtshirt(Integer childtshirt) {
+		this.childtshirt = childtshirt;
+	}
+
+	@Column(name = "CHANNEL_ID", nullable = false)
+	public Integer getChannelId() {
+		return this.channelId;
+	}
+
+	public void setChannelId(Integer channelId) {
+		this.channelId = channelId;
+	}
+
+	@Column(name = "APV_STS", length = 1)
+	public String getApvSts() {
+		return this.apvSts;
+	}
+
+	public void setApvSts(String apvSts) {
+		this.apvSts = apvSts;
+	}
+
+	@Column(name = "IS_GET", length = 1)
+	public String getIsGet() {
+		return this.isGet;
+	}
+
+	public void setIsGet(String isGet) {
+		this.isGet = isGet;
+	}
+
+	@Column(name = "GET_DT", length = 0)
+	public Timestamp getGetDt() {
+		return this.getDt;
+	}
+
+	public void setGetDt(Timestamp getDt) {
+		this.getDt = getDt;
+	}
+
+	@Column(name = "GET_CREATE_USER", length = 32)
+	public String getGetCreateUser() {
+		return this.getCreateUser;
+	}
+
+	public void setGetCreateUser(String getCreateUser) {
+		this.getCreateUser = getCreateUser;
+	}
+
+}

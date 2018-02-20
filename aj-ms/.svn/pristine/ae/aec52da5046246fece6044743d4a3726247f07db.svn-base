@@ -1,0 +1,258 @@
+/** 
+ * Description: TODO(用一句话描述该文件做什么)  
+ * @className com.spt.entry.service.impl.AthleteServiceImpl
+ * @author ChingWang    
+ * @date 2016-9-15 下午2:43:42
+ * @version V1.0   
+ * Copyright (C) 2016 www.demo.com Inc. All rights reserved.        
+ */
+
+package com.spt.entry.service.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.frame.core.dao.GenericDAO;
+import com.frame.core.util.StringUtil;
+import com.spt.entry.model.Apply;
+import com.spt.entry.model.Sports;
+import com.spt.entry.model.SportsGroup;
+import com.spt.entry.service.AthleteService;
+
+@Service("athleteService")
+public class AthleteServiceImpl implements AthleteService {
+
+	@Autowired private GenericDAO baseDAO;
+	
+	/* (非 Javadoc)
+	 * <p>Title: getTotal</p>
+	 * <p>Description: </p>
+	 * @param groupId
+	 * @param type
+	 * @param value
+	 * @return 
+	 * @see com.spt.entry.service.AthleteService#getTotal(java.lang.String, java.lang.String, java.lang.String)
+	 */
+	@Override
+	public long getTotal(String groupId, String type, String value, String codeSts, String apvSts) {
+		List<Object> params = new ArrayList<Object>();
+		String sql = "SELECT count(1) FROM T_APPLY ta, t_sports_group tsp, T_PAY_ORDER tpo  WHERE ta.GROUP_ID = tsp.ID AND ta.APPLY_ID = tpo.APPLY_ID and tpo.status = 1";
+		if(StringUtil.isNotEmpty(groupId)){
+			sql += " and tsp.id = ?";
+			params.add(Long.parseLong(groupId));
+		}
+		if(StringUtil.isNotEmpty(type)&& StringUtil.isNotEmpty(value)){
+			if("gameCode".equals(type)){
+				sql += " and ta.GAMECODE = ?";
+				params.add(value);
+			} else if("mobile".equals(type)) {
+				sql += " and ta.MOBILE = ?";
+				params.add(value);
+			} else if("certNo".equals(type)) {
+				sql += " and ta.CERTNO = ?";
+				params.add(value);
+			} else if("trueName".equals(type)) {
+				sql += " and ta.TRUENAME = ?";
+				params.add(value);
+			}
+		}
+		
+		if(StringUtil.isNotEmpty(codeSts)){
+			if("0".equals(codeSts)){
+				sql += " and (ta.gamecode IS NULL OR ta.gamecode ='')";
+			} else {
+				sql += " and ta.gamecode IS not NULL and ta.gamecode <>''";
+			}
+		} 
+		
+		if(StringUtil.isNotEmpty(apvSts)){
+			if("0".equals(apvSts)){
+				sql += " and ta.apv_sts = 0";
+			} else {
+				sql += " and ta.apv_sts = 1";
+			}
+		} 
+		
+		int count = baseDAO.getGenericIntToSQL(sql, params.size() > 0? params.toArray() : null);
+		return count;
+	}
+
+	/* (非 Javadoc)
+	 * <p>Title: getList</p>
+	 * <p>Description: </p>
+	 * @param groupId
+	 * @param type
+	 * @param value
+	 * @param offset
+	 * @param limit
+	 * @return 
+	 * @see com.spt.entry.service.AthleteService#getList(java.lang.String, java.lang.String, java.lang.String, int, int)
+	 */
+	@Override
+	public List<Map<String, Object>> getList(String groupId, String type,
+			String value, String codeSts, String apvSts, int offset, int limit) {
+		
+		List<Object> params = new ArrayList<Object>();
+		String sql = "SELECT ta.APPLY_ID id, ta.GAMECODE gameCode, tsp.GROUP_NAME groupName, tpo.id orderId, tpo.OUT_TRADE_NO tradeNo, tsp.id groupId, ta.TRUENAME trueName, ta.MOBILE mobile, ta.CERTTYPE certType, ta.CERTNO certNo, ta.TEAM_ID teamId, ta.TEAM_NAME teamName, ta.ADDTIME addDt, ta.IS_GET isGet, ta.APV_STS apvSts FROM T_APPLY ta, t_sports_group tsp, T_PAY_ORDER tpo  WHERE ta.GROUP_ID = tsp.ID AND ta.APPLY_ID = tpo.APPLY_ID and tpo.status = 1";
+		if(StringUtil.isNotEmpty(groupId)){
+			sql += " and tsp.id = ?";
+			params.add(Long.parseLong(groupId));
+		}
+		if(StringUtil.isNotEmpty(type)&& StringUtil.isNotEmpty(value)){
+			if("gameCode".equals(type)){
+				sql += " and ta.GAMECODE = ?";
+				params.add(value);
+			} else if("mobile".equals(type)) {
+				sql += " and ta.MOBILE = ?";
+				params.add(value);
+			} else if("certNo".equals(type)) {
+				sql += " and ta.CERTNO = ?";
+				params.add(value);
+			} else if("trueName".equals(type)) {
+				sql += " and ta.TRUENAME = ?";
+				params.add(value);
+			}
+		}
+		
+		if(StringUtil.isNotEmpty(codeSts)){
+			if("0".equals(codeSts)){
+				sql += " and (ta.gamecode IS NULL OR ta.gamecode ='')";
+			} else {
+				sql += " and ta.gamecode IS not NULL and ta.gamecode <>''";
+			}
+		} 
+		if(StringUtil.isNotEmpty(apvSts)){
+			if("0".equals(apvSts)){
+				sql += " and ta.apv_sts = 0";
+			} else {
+				sql += " and ta.apv_sts = 1";
+			}
+		} 
+		
+		sql +=" order by ta.apply_id asc";
+		return baseDAO.getGenericByPositionToSQL(sql, offset, limit, params.toArray()); 
+	}
+
+	/* (非 Javadoc)
+	 * <p>Title: getSelect</p>
+	 * <p>Description: </p>
+	 * @return 
+	 * @see com.spt.entry.service.AthleteService#getSelect()
+	 */
+	@Override
+	public List<Sports> getSports() {
+		String hql = "from Sports where 1=1";
+		return baseDAO.getGenericByHql(hql, null);
+	}
+
+	/* (非 Javadoc)
+	 * <p>Title: getSportGroups</p>
+	 * <p>Description: </p>
+	 * @param sportId
+	 * @return 
+	 * @see com.spt.entry.service.AthleteService#getSportGroups(java.lang.Integer)
+	 */
+	@Override
+	public List<SportsGroup> getSportGroups(Integer sportId) {
+		String hql = "from SportsGroup where sportId = ?";
+		return baseDAO.getGenericByHql(hql, new Object[]{sportId});
+	}
+
+	public List<Map<String, Object>> getAll(){
+		String sql = "SELECT al.* FROM (" +
+				"SELECT ta.gamecode, ta.GROUP_NAME groupName, tpo.OUT_TRADE_NO tradeNo, tpo.status, ta.trueName, bc0.basicname certType, ta.certNo, ta.TEAM_NAME teamName, ta.ADDTIME addTm, ta.IS_GET isGet, DATE_FORMAT(ta.BIRTHDAY,'%Y/%m/%d') birthday, ta.bloodtype, bc1.basicname tshirt, ta.mobile, ta.email, ta.address, ta.contactName, ta.contactTel, ta.childName, DATE_FORMAT(ta.CHILDBIRTHDAY ,'%Y/%m/%d') cildBirthday, ta.childBloodType, bc2.basicname childTshirt, bc3.basicname childCertType, ta.childCertNo  FROM t_apply ta ,t_pay_order tpo, basicinfo bc0, basicinfo bc1 , basicinfo bc2, basicinfo bc3 " +
+				"WHERE ta.APPLY_ID = tpo.APPLY_ID AND tpo.STATUS = 1 AND ta.CERTTYPE = bc0.basic_id AND ta.TSHIRT = bc1.basic_id AND ta.CHILDTSHIRT = bc2.basic_id AND ta.CHILDCERTTYPE = bc3.basic_id " +
+				"UNION ALL " +
+				"SELECT ta.gamecode, ta.GROUP_NAME groupName, tpo.OUT_TRADE_NO tradeNo, tpo.status, ta.trueName, bc0.basicname certType, ta.certNo, ta.TEAM_NAME teamName, ta.ADDTIME addTm, ta.IS_GET isGet, DATE_FORMAT(ta.BIRTHDAY,'%Y/%m/%d') birthday, ta.bloodtype, bc1.basicname tshirt, ta.mobile, ta.email, ta.address, ta.contactName, ta.contactTel, '' childName, '' cildBirthday, '' childBloodType, '' childTshirt, '' childCertType, '' childCertNo  FROM t_apply ta ,t_pay_order tpo, basicinfo bc0 , basicinfo bc1 " +
+				"WHERE ta.APPLY_ID = tpo.APPLY_ID AND tpo.STATUS = 1 AND ta.CERTTYPE = bc0.basic_id AND ta.TSHIRT = bc1.basic_id AND ta.GROUP_ID <> 4" +
+				") al ORDER BY al.gamecode";
+		return baseDAO.getGenericBySQL(sql, null);
+	}
+
+	/* (非 Javadoc)
+	 * <p>Title: getSport</p>
+	 * <p>Description: </p>
+	 * @param applyId
+	 * @return 
+	 * @see com.spt.entry.service.AthleteService#getSport(java.lang.String)
+	 */
+	@Override
+	public Map<String, Object> getApply(int applyId, int groupId) {
+		String sql = "";
+		if(groupId == 4){
+			sql = "SELECT ta.APPLY_ID applyId, ta.TEAM_ID teamId, ta.TEAM_NAME teamName, ta.SPORT_ID sportId, ta.SPORT_NAME sportName, ta.TYPE_ID typeId, ta.GROUP_ID groupId, ta.GROUP_NAME groupName, ta.TRUENAME trueName, ta.AGE age, ta.BIRTHDAY birthday, ta.CHILDNAME childName, ta.CHILDAGE childAge, ta.SEX sex, ta.MOBILE mobile, ta.PROLEVEL prolevel, bi.basicname certType, ta.CERTNO certNo, ta.COUNTRY country, ta.PROVINCE_ID provinceId, ta.PROVINCENAME provinceName, ta.CITY_ID cityId, ta.CITYNAME cityName, ta.ADDRESS address, ta.EMAIL email, ta.CONTACTNAME contactName, ta.CONTACTTEL contactTel, ta.BLOODTYPE bloodType, bih.basicname healthStatus, ta.MEDICALHISTORY medicalHis, ta.CONDITIONTOOK conditionTook, bis.basicname tshirt, ta.INVITATIONCODE invitCode, ta.TEAMNUMBER teamNum, ta.GAMECODE gameCode, ta.FILE attach, ta.ADDTIME addDt, ta.ADDIP addIp, ta.STATUS stat, ta.CHILDSEX childSex, bic.basicname childCertType, ta.CHILDCERTNO childCertNo, ta.CHILDBIRTHDAY childBirthDay, bihc.basicname childHealthStatus, ta.CHILDBLOODTYPE childBloodType, ta.CHILDMEDICALHISTORY childMedicalHis, ta.CHILDCONDITIONTOOK childConditionTook, bisc.basicname childTshirt, ta.CHANNEL_ID channelId, ta.APV_STS apvSts, ta.IS_GET isGet, ta.GET_DT getDt, ta.GET_CREATE_USER getCreateUser, tpo.TYPE payType, tpo.OUT_TRADE_NO tradeNo, tpo.STATUS payStatus FROM t_apply ta, t_pay_order tpo, basicinfo bi, basicinfo bis, basicinfo bih, basicinfo bic, basicinfo bisc, basicinfo bihc WHERE ta.APPLY_ID = tpo.APPLY_ID and ta.CERTTYPE = bi.basic_id and bis.basic_id = ta.TSHIRT and bih.basic_id = ta.HEALTHSTATUS AND ta.CHILDCERTTYPE = bic.basic_id AND bisc.basic_id = ta.CHILDTSHIRT AND bihc.basic_id = ta.CHILDHEALTHSTATUS  and tpo.status = 1 and ta.apply_id = ?";
+		} else {
+			sql = "SELECT ta.APPLY_ID applyId, ta.TEAM_ID teamId, ta.TEAM_NAME teamName, ta.SPORT_ID sportId, ta.SPORT_NAME sportName, ta.TYPE_ID typeId, ta.GROUP_ID groupId, ta.GROUP_NAME groupName, ta.TRUENAME trueName, ta.AGE age, ta.BIRTHDAY birthday, ta.SEX sex, ta.MOBILE mobile, ta.PROLEVEL prolevel, bi.basicname certType, ta.CERTNO certNo, ta.COUNTRY country, ta.PROVINCE_ID provinceId, ta.PROVINCENAME provinceName, ta.CITY_ID cityId, ta.CITYNAME cityName, ta.ADDRESS address, ta.EMAIL email, ta.CONTACTNAME contactName, ta.CONTACTTEL contactTel, ta.BLOODTYPE bloodType, bih.basicname healthStatus, ta.MEDICALHISTORY medicalHis, ta.CONDITIONTOOK conditionTook, bis.basicname tshirt, ta.INVITATIONCODE invitCode, ta.TEAMNUMBER teamNum, ta.GAMECODE gameCode, ta.FILE attach, ta.ADDTIME addDt, ta.ADDIP addIp, ta.STATUS stat , ta.CHANNEL_ID channelId, ta.APV_STS apvSts, ta.IS_GET isGet, ta.GET_DT getDt, ta.GET_CREATE_USER getCreateUser, tpo.TYPE payType, tpo.OUT_TRADE_NO tradeNo, tpo.STATUS payStatus, bi.basicname FROM t_apply ta, t_pay_order tpo, basicinfo bi, basicinfo bis, basicinfo bih WHERE ta.APPLY_ID = tpo.APPLY_ID and ta.CERTTYPE = bi.basic_id and bis.basic_id = ta.TSHIRT and bih.basic_id = ta.HEALTHSTATUS and tpo.status = 1 and  ta.apply_id = ?";
+		}
+		List<Map<String, Object>> list =  baseDAO.getGenericBySQL(sql, new Object[]{applyId});
+
+		if(list != null && list.size() > 0){
+			return list.get(0);
+		}
+		return null;
+	}
+
+	/* (非 Javadoc)
+	 * <p>Title: getApplyInfo</p>
+	 * <p>Description: </p>
+	 * @param applyId
+	 * @param groupId
+	 * @return 
+	 * @see com.spt.entry.service.AthleteService#getApplyInfo(int, int)
+	 */
+	@Override
+	public Map<String, Object> getApplyInfo(int applyId, int groupId) {
+		String sql = "";
+		if(groupId == 4){
+			sql = "SELECT ta.APPLY_ID applyId, ta.TRUENAME truename, ta.GAMECODE gamecode, ta.MOBILE mobile, ta.CERTTYPE certtype, ta.CERTNO certno, DATE_FORMAT(ta.BIRTHDAY,'%Y/%m/%d') birthday, ta.ADDRESS address, ta.EMAIL email, ta.BLOODTYPE bloodtype, ta.TSHIRT tshirt, ta.CONTACTNAME contactname, ta.CONTACTTEL contacttel, ta.CHILDNAME childname, DATE_FORMAT(ta.CHILDBIRTHDAY,'%Y/%m/%d') childbirthday, ta.CHILDBLOODTYPE childbloodtype, ta.CHILDTSHIRT childtshirt, ta.CHILDCERTTYPE childcerttype, ta.CHILDCERTNO childcertno FROM t_apply ta where ta.apply_id = ? and ta.group_id = ?";
+		} else {
+			sql = "SELECT ta.APPLY_ID applyId, ta.TRUENAME truename, ta.GAMECODE gamecode, ta.MOBILE mobile, ta.CERTTYPE certtype, ta.CERTNO certno, DATE_FORMAT(ta.BIRTHDAY,'%Y/%m/%d') birthday, ta.ADDRESS address, ta.EMAIL email, ta.BLOODTYPE bloodtype, ta.TSHIRT tshirt, ta.CONTACTNAME contactname, ta.CONTACTTEL contacttel FROM t_apply ta where ta.apply_id = ? and ta.group_id = ?";
+		}
+		List<Map<String, Object>> list = baseDAO.getGenericBySQL(sql, new Object[]{applyId, groupId});
+		if(list != null && list.size() > 0){
+			return list.get(0);
+		}
+		return null;
+	}
+
+	/* (非 Javadoc)
+	 * <p>Title: save</p>
+	 * <p>Description: </p>
+	 * @param apply 
+	 * @see com.spt.entry.service.AthleteService#save(com.spt.entry.model.Apply)
+	 */
+	@Override
+	public void save(Apply apply) {
+		List<Object> params = new ArrayList<Object>();
+		String usql = "UPDATE t_apply ta SET ta.TRUENAME = ?, ta.MOBILE = ?, ta.CERTTYPE = ?, ta.CERTNO = ?, ta.BIRTHDAY = ?, ta.ADDRESS = ?, ta.EMAIL = ?, ta.BLOODTYPE = ?, ta.TSHIRT = ?, ta.CONTACTNAME = ?, ta.CONTACTTEL = ?";
+		params.add(apply.getTruename());
+		params.add(apply.getMobile());
+		params.add(apply.getCerttype());
+		params.add(apply.getCertno());
+		params.add(apply.getBirthday());
+		params.add(apply.getAddress());
+		params.add(apply.getEmail());
+		params.add(apply.getBloodtype());
+		params.add(apply.getTshirt());
+		params.add(apply.getContactname());
+		params.add(apply.getContacttel());
+		if(apply.getGroupId() == 4){
+			usql += ", ta.CHILDNAME = ?, ta.CHILDCERTTYPE = ?, ta.CHILDCERTNO = ?, ta.CHILDBIRTHDAY = ?, ta.CHILDBLOODTYPE = ?, ta.CHILDTSHIRT = ?";
+			params.add(apply.getChildname());
+			params.add(apply.getChildcerttype());
+			//params.add(apply.getCertno());
+			params.add(apply.getChildcertno());
+			params.add(apply.getChildbirthday());
+			params.add(apply.getChildbloodtype());
+			params.add(apply.getChildtshirt());
+		}
+		usql +=" WHERE ta.APPLY_ID = ? AND ta.GROUP_ID = ?";
+		params.add(apply.getApplyId());
+		params.add(apply.getGroupId());
+		baseDAO.execteNativeBulk(usql, params.toArray());
+	}
+}

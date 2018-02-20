@@ -1,0 +1,23 @@
+@charset "utf-8";
+/* CSS Document */
+body{-webkit-text-size-adjust:none;font:400 14px/1.6 helvetica, verdana, san-serif;outline:0;min-width:320px;color:#444; margin:0; padding:0; display:block;background:url(../images/bg.png) no-repeat #fff;width:100%;height:100%;position:absolute;background-size:100% auto;}
+ul,li,dl,dt,dd,h1,h2,p{ list-style:none; margin:0; padding:0;}
+img{border:none;}
+.clearfix:after{display:block; overflow:hidden; clear:both; height:0; visibility:hidden; content:".";}
+a{color:#333; text-decoration:none;}
+ 
+.info{width:84%;margin:0 auto;margin-top:24px;border:2px #64cec8 solid;padding:2%;}
+.info ul{background:url(../images/ul_bg.png); padding:20px 17px 25px 20px;}
+.flower{background:url(../images/flower.png) no-repeat; position:relative; left:-68px; top:-80px; background-size:100% auto; width:160%;height:200px;z-index:2;}
+.info .sj_logo{ width:160px;height:160px;margin:0 auto;text-align:center; background:#fff;border:7px #9bf7f1 solid;border-radius:100%;position:relative;z-index:3;margin-top:-190px;}
+.info .sj_logo img{width:82%;margin: 0px auto;position: relative;top:22%;max-height:90px;}
+.sj_tit{ width:100%; text-align:center; margin-top:13px; font-size:20px;color:#fff;}
+.line{border-bottom:2px #fff solid;margin:0 auto;margin-top:10px;margin-bottom:14px;height:2px; width:25%;}
+.sj_phone{text-align:center;}
+.share{width:100%;text-align:center;margin-top:25px;}
+.qinmai_logo img{width:18%;}
+.qinmai_kouhao{width:100%;margin-top:12px;}
+.qinmai_xiazai{width:30%; height:40px;border:1px #ddd solid;background:#f6f6f7;text-align:center;line-height:40px;display:block;margin:0 auto;border-radius:5px;margin-top:16px;margin-bottom:30px;}
+
+.top_ad{ width:100%; text-align:center; margin-top:20px;}
+.top_ad img{ width:88.5%;}

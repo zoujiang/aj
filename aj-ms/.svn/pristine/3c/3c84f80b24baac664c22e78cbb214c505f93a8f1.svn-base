@@ -1,0 +1,234 @@
+package com.spt.entry.model;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import static javax.persistence.GenerationType.IDENTITY;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+/**
+ * TSports entity. @author MyEclipse Persistence Tools
+ */
+@Entity
+@Table(name = "t_sports")
+public class Sports implements java.io.Serializable {
+
+	// Fields
+
+	private Integer sportId;
+	private String name;
+	private String address;
+	private Integer starttime;
+	private Integer endtime;
+	private Integer entrystarttime;
+	private Integer entryendtime;
+	private Integer outnumber;
+	private Double costs;
+	private String logo;
+	private String guide;
+	private String doctxt;
+	private String disclaimer;
+	private Integer cpuserId;
+	private String cpusername;
+	private Integer addtime;
+	private Boolean status;
+
+	// Constructors
+
+	/** default constructor */
+	public Sports() {
+	}
+
+	/** minimal constructor */
+	public Sports(String name, String address, Integer cpuserId,
+			String cpusername, Integer addtime, Boolean status) {
+		this.name = name;
+		this.address = address;
+		this.cpuserId = cpuserId;
+		this.cpusername = cpusername;
+		this.addtime = addtime;
+		this.status = status;
+	}
+
+	/** full constructor */
+	public Sports(String name, String address, Integer starttime,
+			Integer endtime, Integer entrystarttime, Integer entryendtime,
+			Integer outnumber, Double costs, String logo, String guide,
+			String doctxt, String disclaimer, Integer cpuserId,
+			String cpusername, Integer addtime, Boolean status) {
+		this.name = name;
+		this.address = address;
+		this.starttime = starttime;
+		this.endtime = endtime;
+		this.entrystarttime = entrystarttime;
+		this.entryendtime = entryendtime;
+		this.outnumber = outnumber;
+		this.costs = costs;
+		this.logo = logo;
+		this.guide = guide;
+		this.doctxt = doctxt;
+		this.disclaimer = disclaimer;
+		this.cpuserId = cpuserId;
+		this.cpusername = cpusername;
+		this.addtime = addtime;
+		this.status = status;
+	}
+
+	// Property accessors
+	@Id
+	@GeneratedValue(strategy = IDENTITY)
+	@Column(name = "SPORT_ID", unique = true, nullable = false)
+	public Integer getSportId() {
+		return this.sportId;
+	}
+
+	public void setSportId(Integer sportId) {
+		this.sportId = sportId;
+	}
+
+	@Column(name = "NAME", nullable = false, length = 64)
+	public String getName() {
+		return this.name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	@Column(name = "ADDRESS", nullable = false)
+	public String getAddress() {
+		return this.address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	@Column(name = "STARTTIME")
+	public Integer getStarttime() {
+		return this.starttime;
+	}
+
+	public void setStarttime(Integer starttime) {
+		this.starttime = starttime;
+	}
+
+	@Column(name = "ENDTIME")
+	public Integer getEndtime() {
+		return this.endtime;
+	}
+
+	public void setEndtime(Integer endtime) {
+		this.endtime = endtime;
+	}
+
+	@Column(name = "ENTRYSTARTTIME")
+	public Integer getEntrystarttime() {
+		return this.entrystarttime;
+	}
+
+	public void setEntrystarttime(Integer entrystarttime) {
+		this.entrystarttime = entrystarttime;
+	}
+
+	@Column(name = "ENTRYENDTIME")
+	public Integer getEntryendtime() {
+		return this.entryendtime;
+	}
+
+	public void setEntryendtime(Integer entryendtime) {
+		this.entryendtime = entryendtime;
+	}
+
+	@Column(name = "OUTNUMBER")
+	public Integer getOutnumber() {
+		return this.outnumber;
+	}
+
+	public void setOutnumber(Integer outnumber) {
+		this.outnumber = outnumber;
+	}
+
+	@Column(name = "COSTS", precision = 10)
+	public Double getCosts() {
+		return this.costs;
+	}
+
+	public void setCosts(Double costs) {
+		this.costs = costs;
+	}
+
+	@Column(name = "LOGO")
+	public String getLogo() {
+		return this.logo;
+	}
+
+	public void setLogo(String logo) {
+		this.logo = logo;
+	}
+
+	@Column(name = "GUIDE", length = 65535)
+	public String getGuide() {
+		return this.guide;
+	}
+
+	public void setGuide(String guide) {
+		this.guide = guide;
+	}
+
+	@Column(name = "DOCTXT", length = 65535)
+	public String getDoctxt() {
+		return this.doctxt;
+	}
+
+	public void setDoctxt(String doctxt) {
+		this.doctxt = doctxt;
+	}
+
+	@Column(name = "DISCLAIMER", length = 65535)
+	public String getDisclaimer() {
+		return this.disclaimer;
+	}
+
+	public void setDisclaimer(String disclaimer) {
+		this.disclaimer = disclaimer;
+	}
+
+	@Column(name = "CPUSER_ID", nullable = false)
+	public Integer getCpuserId() {
+		return this.cpuserId;
+	}
+
+	public void setCpuserId(Integer cpuserId) {
+		this.cpuserId = cpuserId;
+	}
+
+	@Column(name = "CPUSERNAME", nullable = false, length = 64)
+	public String getCpusername() {
+		return this.cpusername;
+	}
+
+	public void setCpusername(String cpusername) {
+		this.cpusername = cpusername;
+	}
+
+	@Column(name = "ADDTIME", nullable = false)
+	public Integer getAddtime() {
+		return this.addtime;
+	}
+
+	public void setAddtime(Integer addtime) {
+		this.addtime = addtime;
+	}
+
+	@Column(name = "STATUS", nullable = false)
+	public Boolean getStatus() {
+		return this.status;
+	}
+
+	public void setStatus(Boolean status) {
+		this.status = status;
+	}
+
+}

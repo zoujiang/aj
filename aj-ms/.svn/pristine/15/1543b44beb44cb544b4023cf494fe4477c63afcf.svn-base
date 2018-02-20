@@ -1,0 +1,823 @@
+package com.qm.shop.album.action;
+
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.imageio.ImageIO;
+import javax.imageio.stream.ImageOutputStream;
+import javax.servlet.http.HttpServletRequest;
+
+import net.sf.json.JSONObject;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
+
+import com.frame.core.action.FtpImgDownUploadAction;
+import com.frame.core.constant.FtpConstant;
+import com.frame.core.util.DateUtil;
+import com.frame.core.util.EncryptUtils;
+import com.frame.core.util.FtpUtil;
+import com.frame.core.util.GUID;
+import com.frame.core.util.RandomGUID;
+import com.frame.core.util.SystemConfig;
+import com.frame.core.vo.DataModel;
+import com.qm.shop.Constant;
+import com.qm.shop.album.service.ShopAlbumService;
+import com.qm.shop.album.service.ShopDynamicAlbumService;
+import com.qm.shop.album.vo.ShopAlbumVO;
+import com.qm.shop.album.vo.ShopDynamicAlbumVO;
+import com.qm.shop.baseinfo.service.ShopBaseinfoService;
+import com.qm.shop.photo.service.ShopAlbumPhotoService;
+import com.qm.shop.photo.vo.ShopAlbumPhotoDO;
+import com.util.FileZipUtil;
+import com.util.WaterMarkUtil;
+
+
+@Controller
+@RequestMapping("/shop")
+@Scope("prototype")
+public class ShopAlbumAction extends FtpImgDownUploadAction {
+	@Autowired
+	private ShopAlbumService shopAlbumService;
+	@Autowired
+	private ShopDynamicAlbumService shopDynamicAlbumService;
+	@Autowired
+	private ShopAlbumPhotoService shopAlbumPhotoService;
+	@Autowired
+	private ShopBaseinfoService shopBaseinfoService;
+	
+	private String ftpAddress = (String) SystemConfig.getValue(FtpConstant.FTP_ADDRESS);
+	private String username = (String) SystemConfig.getValue(FtpConstant.USERNAME);
+	private String password = (String) SystemConfig.getValue(FtpConstant.PASSWORD);
+	private String path = (String) SystemConfig.getValue(FtpConstant.FTP_PATH);
+	private String tempPath = (String) SystemConfig.getValue(FtpConstant.FTP_FILE_TEM_PATH);
+	private int port =  SystemConfig.getValue(FtpConstant.PORT) == null ? 21 : Integer.parseInt(SystemConfig.getValue(FtpConstant.PORT).toString());
+	
+	private Logger logger = Logger.getLogger(this.getClass());
+	
+	@RequestMapping("/album/list")
+	@ResponseBody
+	public DataModel<Map<String, Object>> list(ShopAlbumVO limitKey, HttpServletRequest request) {
+		String shopId = (String)request.getSession().getAttribute(com.frame.core.constant.Constant.Login_USER_SHOP_ID);
+		limitKey.setShopId(shopId);
+		if(limitKey != null && limitKey.getShopName() != null && !"".equals(limitKey.getShopName())){
+			try {
+				limitKey.setShopName(new String( limitKey.getShopName().getBytes("ISO-8859-1"),"utf-8"));
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+		}
+		if(limitKey != null && limitKey.getUserName() != null && !"".equals(limitKey.getUserName())){
+			try {
+				limitKey.setUserName(new String( limitKey.getUserName().getBytes("ISO-8859-1"),"utf-8"));
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+		}
+		DataModel<Map<String, Object>> dataModel = shopAlbumService.getList(limitKey);
+		List<Map<String, Object>> list = dataModel.getRows();
+		if(list != null && list.size() > 0){
+			for(Map<String, Object> map : list){
+				String address =  map.get("downloadAddress") == null ? "" : map.get("downloadAddress").toString();
+				if(!"".equals(address)){
+					map.put("downloadAddress", Constant.resPrefix + address);
+					//生成一个
+					String id_encode = EncryptUtils.getInstance().base64_encode(map.get("id").toString());
+					map.put("shortAddress", id_encode);
+				}
+				if("0".equals(map.get("isPay").toString())){
+					map.put("payType", "");
+				}
+			}
+		}
+		return dataModel;
+	}
+	/**
+	 * 照片存储路劲规则 
+	 * 配置文件中路劲path/商户ID/客户ID/<固定字符串“Album”>/albumId
+	 * 由于客户照片是异步上传， 先将上传的图片存放到临时路劲 tempPath
+	 * 等表单提交之后，把临时路劲的文件转移到上述的照片存储路劲中，再删掉临时路劲中的文件
+	 * */
+	@RequestMapping("/album/add")
+	@ResponseBody
+	public String add(@RequestParam(value = "albumLogo") MultipartFile file, 
+							String userId, String albumName, String albumType, String origPrice, 
+							String payType_3, String payType_6, String payType_9, String payType_12, String payType_24, String payType_25,
+							String photoUrls, String photoTime, HttpServletRequest request) {
+		String shopId = (String)request.getSession().getAttribute(com.frame.core.constant.Constant.Login_USER_SHOP_ID);
+		String icon = "";
+		JSONObject modelMap = new JSONObject();  
+		if(file != null && !file.isEmpty()){
+			if(file != null && !file.isEmpty()){
+				
+				try {
+					icon = fileUpload("shopalbum/"+shopId, (CommonsMultipartFile)file);
+				} catch (Exception e) {
+					logger.info("新增商户相册时，上传LOGO文件出错："+e);
+				}
+			}
+		}
+		
+		Map<String, Object> shopInfo = shopBaseinfoService.findById(shopId);
+		String shopLogo = shopInfo.get("shopLogo") == null ? "" : shopInfo.get("shopLogo").toString();
+		ShopAlbumVO album = new ShopAlbumVO();
+		String id = GUID.generateID("SC");
+		album.setId(id);
+		album.setAlbumLogo(icon);
+		album.setAlbumName(albumName);
+		album.setAlbumType(albumType);
+		album.setCreateTime(DateUtil.dateFromatYYYYMMddHHmmss(new Date()));
+		album.setOrigPrice(origPrice);
+		album.setPayType_3(payType_3);
+		album.setPayType_6(payType_6);
+		album.setPayType_9(payType_9);
+		album.setPayType_12(payType_12);
+		album.setPayType_24(payType_24);
+		album.setPayType_25(payType_25);
+		album.setUserId(userId);
+		album.setShopId(shopId);
+		album.setDownloadAddress("");
+		album.setDownloadSecret("");
+		album.setPhotoTime(photoTime);
+		//StringBuffer newUrls = new StringBuffer();
+		long curUsedSize = 0;
+		long usedSize = 0;
+		boolean isPay = albumType != null && "1".equals(albumType);  //收费
+		if(photoUrls != null && !"".equals(photoUrls)){
+			FtpUtil ftp = new FtpUtil(ftpAddress, port, username, password);
+			String[] urls = photoUrls.split(",");
+			List<String> targetUrls = new ArrayList<String>();
+			try {
+				ftp.login();
+				for(String url : urls){
+					String resourceUrl = path + url;
+					String waterFileName =  url.substring(url.lastIndexOf("/")+1, url.length());
+					String waterMarkUrl = resourceUrl.replace(waterFileName, "w"+waterFileName);
+					long size = ftp.getFileSize(resourceUrl);
+					usedSize += size;
+					//如果相册为收费相册，计算占用的空间,同时生成水印图
+					if(isPay){
+					//1	curUsedSize += ftp.getFileSize(targetUrl);
+						curUsedSize += size;
+						//暂时用同步方法加水印，如果效率较低，再考虑启用线程
+						//1 WaterMarkUtil.addImageWatermark( path + shopLogo, targetUrl, waterMarkUrl, null);
+						 WaterMarkUtil.addImageWatermark( path + shopLogo, resourceUrl, waterMarkUrl, 30);
+					}else{
+						//targetUrls.add( targetUrl);
+						targetUrls.add( resourceUrl);
+					}
+				}
+				if(albumType != null && "0".equals(albumType) && targetUrls.size() > 0){
+					//免费相册 生成压缩包 收费的相册等到支付后再生成
+					//String from = path +"/"+ shopId +"/"+ userId +"/Album/" + id;
+					String to ="/"+ shopId +"/"+ userId +"/Album/" + id;
+					//boolean b = ftp.zip(from,  Constant.resPath + to, albumName+".zip");
+					String[] files = new String[targetUrls.size()];
+					boolean b = FileZipUtil.zip(targetUrls.toArray(files), Constant.resPath + to + "/"+albumName+".zip");
+					
+					if(b){
+						logger.info("生成压缩包成功,地址："+to +"/"+albumName+".zip");
+						album.setDownloadAddress(to +"/"+albumName+".zip");
+						album.setDownloadSecret(RandomGUID.getRandomString(4));
+					}
+				}
+			} catch (Exception e) {
+				//	logger.info("移动文件失败。。。源地址："+resourceUrl +"---目标地址："+targetUrl);
+			}finally{
+				ftp.closeServer();
+			}
+		}
+		album.setAlbumSize(usedSize);
+		int i = shopAlbumService.save(album);
+		
+		if(i > 0){
+			//保存照片
+		//1	savePhoto(id, newUrls.toString(), "save");
+			savePhoto(id, photoUrls, "save");
+			//更新商家空间的使用数
+			if(curUsedSize > 0){
+				shopBaseinfoService.updateZoneUsed(shopId, curUsedSize);
+			}
+			
+			modelMap.put("success", true);
+			modelMap.put("message", "保存成功");
+		}else{
+			modelMap.put("success", false);
+			modelMap.put("message", "保存失败");
+		}
+		return modelMap.toString();
+	}
+	
+	private InputStream getImageStream(BufferedImage bufferedImage,String type){
+		InputStream is = null;  
+		 ByteArrayOutputStream bs = new ByteArrayOutputStream(); 
+		 ImageOutputStream imOut; 
+		 try {  
+			 imOut = ImageIO.createImageOutputStream(bs);  
+			 ImageIO.write(bufferedImage, type,imOut);
+			 is= new ByteArrayInputStream(bs.toByteArray()); 
+			 } catch (IOException e) {  
+				 e.printStackTrace();  
+				 } 
+	   return is;  
+	}
+	
+	public void savePhoto(String albumId, String urls, String from){
+		
+		try {
+			//删除相册下所有的照片，然后保存最新的
+			if("update".equals(from)){
+				shopAlbumPhotoService.deleteAllInAlbumId(albumId);
+			}
+				
+			String[] ns = urls.split(",");
+			for(String u : ns){
+				if(u != null && u.trim().length() > 0){
+					ShopAlbumPhotoDO photo = new ShopAlbumPhotoDO();
+					photo.setId(GUID.generateID("PT"));
+					photo.setCreateTime(DateUtil.dateFromatYYYYMMddHHmmss(new Date()));
+					photo.setAlbumId(albumId);
+					photo.setUrl(u);
+					shopAlbumPhotoService.save(photo);
+				}
+			}
+		} catch (Exception e) {
+			logger.info("保存相册照片失败："+e);
+			e.printStackTrace();
+		}
+	}
+	
+	@RequestMapping("/album/find")
+	@ResponseBody
+	public String albumFind(String id) {
+		Map<String, Object> map = shopAlbumService.find(id);
+		
+		JSONObject modelMap = new JSONObject();
+		if(map != null){
+			//封面
+			String albumLogo = map.get("albumLogo") == null ? "" : map.get("albumLogo").toString();
+			if(!"".equals(albumLogo)){
+				map.put("albumLogo", Constant.imgPrefix +albumLogo);
+			}
+			//查询照片
+			List<Map<String, Object>> photoList = shopAlbumPhotoService.queryPhotoByAlbumId(id);
+			if(photoList != null && photoList.size() > 0){
+				StringBuffer photoUrls = new StringBuffer();
+				for(Map<String, Object> photo : photoList){
+					String photoUrl = photo.get("photoUrl").toString();
+					photoUrls.append(Constant.imgPrefix +photoUrl);
+					photoUrls.append(",");
+				}
+				if(photoUrls.toString().length() > 0){
+					map.put("photoUrls", photoUrls.toString().substring(0, photoUrls.toString().length() -1));
+				}
+			}
+			modelMap.put("success", true);
+			modelMap.put("data", map);
+		}else{
+			modelMap.put("success", false);
+			modelMap.put("message", "初始化失败");
+		}
+		return modelMap.toString();
+	}
+	
+	@RequestMapping("/album/update")
+	@ResponseBody
+	public String update(String id, @RequestParam(value = "albumLogo") MultipartFile file, 
+							String shopId,String userId, String albumName, String albumType, String origPrice, 
+							String payType_3, String payType_6, String payType_9, String payType_12, String payType_24, String payType_25,
+							String photoUrls, String oldAlbumLogo, String oldPhotoUrls, String photoTime, HttpServletRequest request) {
+		shopId = (String)request.getSession().getAttribute(com.frame.core.constant.Constant.Login_USER_SHOP_ID);
+		String icon = "";
+		Map<String, Object> oldAlbumInfo =  shopAlbumService.find(id);
+		Map<String, Object> shopInfo = shopBaseinfoService.findById(shopId);
+		String shopLogo = shopInfo.get("shopLogo") == null ? "" : shopInfo.get("shopLogo").toString();
+		if(oldPhotoUrls != null){
+			oldPhotoUrls = oldPhotoUrls.replaceAll(Constant.clearImgPrefix, "");
+		}
+		JSONObject modelMap = new JSONObject();  
+		if(file != null && !file.isEmpty()){
+			if(file != null && !file.isEmpty()){
+				
+				try {
+					icon = fileUpload("shopalbum/"+shopId, (CommonsMultipartFile)file);
+				} catch (Exception e) {
+					logger.info("新增商户相册时，上传LOGO文件出错："+e);
+				}
+			}
+		}
+		if("".equals(icon) && oldAlbumLogo != null && !"".equals(oldAlbumLogo)){
+			icon = oldAlbumLogo.replaceAll(Constant.clearImgPrefix, "");
+		}
+		ShopAlbumVO album = new ShopAlbumVO();
+		album.setId(id);
+		album.setAlbumLogo(icon);
+		album.setAlbumName(albumName);
+		album.setAlbumType(albumType);
+		album.setCreateTime(DateUtil.dateFromatYYYYMMddHHmmss(new Date()));
+		album.setOrigPrice(origPrice);
+		album.setPayType_3(payType_3);
+		album.setPayType_6(payType_6);
+		album.setPayType_9(payType_9);
+		album.setPayType_12(payType_12);
+		album.setPayType_24(payType_24);
+		album.setPayType_25(payType_25);
+		album.setUserId(userId);
+		album.setShopId(shopId);
+		album.setPhotoTime(photoTime);
+		
+		FtpUtil ftp = new FtpUtil(ftpAddress, port, username, password);
+		try {
+			ftp.login();
+			
+		} catch (Exception e) {
+			logger.info("登录FTP失败");
+		}
+		String sui = "/"+ shopId +"/"+ userId +"/Album/" + id ;
+		//StringBuffer newUrls = new StringBuffer();
+		long addFileSize = 0;
+		
+		if(photoUrls != null && !"".equals(photoUrls)){
+			
+			String[] urls = photoUrls.split(",");
+			for(String url : urls){
+				String resourceUrl = path + url;
+				addFileSize += ftp.getFileSize(resourceUrl);
+				/*String targetUrl = path + sui + url.replace(tempPath+"/", "");
+				newUrls.append(sui + url.replace(tempPath+"/", ""));
+				newUrls.append(",");
+				
+				try {
+					ftp.move(targetUrl , resourceUrl);
+				} catch (Exception e) {
+					logger.info("移动文件失败。。。源地址："+resourceUrl +"---目标地址："+targetUrl);
+					e.printStackTrace();
+				}
+				*/
+			}
+		}
+		//从FTP删除 本次编辑删掉的图片，如果有变化，重新生成压缩包
+		long delFileSize = 0;
+		if(albumType != null && "0".equals(albumType)){
+			delFileSize = moveImgFormFtp(oldAlbumInfo, photoUrls, oldPhotoUrls, ftp, shopId, userId, albumName, album);
+		}else{
+			delFileSize = moveImgFormFtp(id, oldPhotoUrls, ftp);
+			//删除压缩包
+			if(oldAlbumInfo.get("downloadAddress") != null && !"".equals(oldAlbumInfo.get("downloadAddress"))){
+				
+				String resPath =Constant.resPath + sui +"/"+oldAlbumInfo.get("albumName") +".zip";
+				ftp.delFile(resPath);
+			}
+			album.setDownloadAddress("");
+			album.setDownloadSecret("");
+		}
+		logger.info("处理文件完成～～～开始生成水印,原相册类型："+oldAlbumInfo.get("isPay")+"~delFileSize:"+delFileSize+"~addFileSize:"+addFileSize);
+		
+		long changeSize = 0;
+		if(oldAlbumInfo.get("isPay") != null && "1".equals(oldAlbumInfo.get("isPay")+"")){
+			//原相册收费
+			if("1".equals(albumType)){
+				//现相册也收费，使用空间的大小就是 加上新增照片的大小，减去删除照片的大小
+				changeSize = addFileSize - delFileSize;
+				//给新增的照片生成水印
+				addWaterMark(shopLogo, photoUrls);
+			}else{
+				//现相册不收费，使用空间的大小就是减去所有原照片的大小
+				//除了已经被删除的照片， 还剩余的老照片
+				long leftFileSize = 0; 
+				String[] oldUrls = oldPhotoUrls.split(",");
+				for(String u : oldUrls){
+					leftFileSize += ftp.getFileSize(Constant.path+ u);
+				}
+				changeSize = delFileSize + leftFileSize; //删除的＋剩下的＝ 全部旧相片的大小 
+			}
+		}else{
+			//原相册不收费
+			if("1".equals(albumType)){
+				//现相册收费，使用空间大小就是加上所有照片的大小
+				//除了已经被删除的照片， 还剩余的老照片
+				long leftFileSize = 0; 
+				String[] oldUrls = oldPhotoUrls.split(",");
+				for(String u : oldUrls){
+					leftFileSize += ftp.getFileSize(Constant.path+ u);
+				}
+				//原相册照片加水印
+				addWaterMark(shopLogo, oldPhotoUrls);
+				changeSize = leftFileSize + addFileSize; //旧相册剩下的 ＋  本次新增的
+				
+				//给新增的照片生成水印
+				addWaterMark(shopLogo, photoUrls);
+				
+			}else{
+				//现相册不收费，那么使用空间没有变化
+			}
+		}
+		ftp.closeServer();	
+		logger.info("生成水印完成～～更新相册信息");
+		int i = shopAlbumService.update(album);
+		String hixStr = photoUrls+"," + oldPhotoUrls;
+		
+		if(i > 0){
+			//保存照片
+		    savePhoto(id, hixStr, "update");
+		    if(changeSize != 0){
+		    	//更新商家空间使用数量
+		    	shopBaseinfoService.updateZoneUsed(shopId, changeSize);
+		    }
+			modelMap.put("success", true);
+			modelMap.put("message", "更新成功");
+		}else{
+			modelMap.put("success", false);
+			modelMap.put("message", "更新失败");
+		}
+		return modelMap.toString();
+	}
+	public void addWaterMark(String markUrl, String photoUrls){
+		String[] urls = photoUrls.split(",");
+		for(String url : urls){
+			if(url != null && url.trim().length() > 0){
+				
+				String resourceUrl = path + url;
+				String waterFileName =  url.substring(url.lastIndexOf("/")+1, url.length());
+				String waterMarkUrl = resourceUrl.replace(waterFileName, "w"+waterFileName);
+				//暂时用同步方法加水印，如果效率较低，再考虑启用线程
+				//1 WaterMarkUtil.addImageWatermark( path + shopLogo, targetUrl, waterMarkUrl, null);
+				WaterMarkUtil.addImageWatermark( path + markUrl, resourceUrl, waterMarkUrl, 30);
+			}
+		}
+	}
+	@RequestMapping("/album/del")
+	@ResponseBody
+	public String del(String id) {
+		
+		JSONObject modelMap = new JSONObject();
+		int i = shopAlbumService.del(id);
+		
+		FtpUtil ftp = new FtpUtil(ftpAddress, port, username, password);
+		try {
+			ftp.login();
+		} catch (Exception e1) {
+			logger.info("移动文件失败,登录FTP失败");
+			e1.printStackTrace();
+		}
+		if(i > 0){
+			//从FTP删除图片文件
+			moveImgFormFtp(id, "", ftp);
+			
+			modelMap .put("success", true);
+			modelMap.put("message", "删除成功");
+		}else{
+			modelMap.put("success", false);
+			modelMap.put("message", "删除失败");
+		}
+		return modelMap.toString();
+	}
+	
+	/**
+	 * 下载片源文件时 初始化页面信息
+	 * */
+	@RequestMapping("/album/dInit")
+	@ResponseBody
+	public String downloadInit(String id) {
+		
+		JSONObject modelMap = new JSONObject();
+		String albumId =  EncryptUtils.getInstance().base64_decode(id);
+		if(albumId == null){
+			modelMap.put("success", false);
+			modelMap.put("message", "资源不存在");
+		}else{
+			
+			Map<String, Object> map= shopAlbumService.findDownloadPageInit(albumId);
+			if(map == null || map.isEmpty()){
+				modelMap.put("success", false);
+				modelMap.put("message", "资源不存在");
+			}else{
+				map.put("logo", (map.get("logo") == null || "".equals(map.get("logo").toString()) ? "" : Constant.imgPrefix + map.get("logo")));
+				modelMap.put("success", true);
+				modelMap.put("data", map);
+			}
+		}
+		return modelMap.toString();
+	}
+	
+	/**
+	 * 下载片源文件
+	 * */
+	@RequestMapping("/album/d")
+	@ResponseBody
+	public String download(String id, String accessCode) {
+		
+		JSONObject modelMap = new JSONObject();
+		String albumId =  EncryptUtils.getInstance().base64_decode(id);
+		if(albumId == null){
+			modelMap.put("success", false);
+			modelMap.put("message", "资源不存在");
+		}else{
+			
+			Map<String, Object> map= shopAlbumService.find(albumId);
+			if(map == null || map.isEmpty()){
+				modelMap.put("success", false);
+				modelMap.put("message", "资源不存在");
+			}else{
+				if(map.get("downloadSecret") != null && accessCode != null && accessCode.equals(map.get("downloadSecret").toString())){
+					modelMap.put("success", true);
+					modelMap.put("url", Constant.resPrefix + map.get("downloadAddress"));
+				}else{
+					modelMap.put("success", false);
+					modelMap.put("message", "提取码错误");
+				}
+			}
+		}
+		return modelMap.toString();
+	}
+	
+	
+	/**
+	 * 照片存储路劲规则 
+	 * 配置文件中路劲path/商户ID/客户ID/<固定字符串“DynamicAlbum”>/dynamicAlbumId
+	 * 由于客户照片是异步上传， 先将上传的图片存放到临时路劲 tempPath
+	 * 等表单提交之后，把临时路劲的文件转移到上述的照片存储路劲中，再删掉临时路劲中的文件
+	 * */
+	@RequestMapping("/dynamicAlbum/add")
+	@ResponseBody
+	public String dynamicAlbumAdd(@RequestParam(value = "albumLogo") MultipartFile file, 
+							String userId, String albumName, 
+							String templateId, String photoUrls, HttpServletRequest request) {
+		String shopId = (String)request.getSession().getAttribute(com.frame.core.constant.Constant.Login_USER_SHOP_ID);
+		String icon = "";
+		JSONObject modelMap = new JSONObject();  
+		if(file != null && !file.isEmpty()){
+			if(file != null && !file.isEmpty()){
+				
+				try {
+					icon = fileUpload("shopalbum/"+shopId, (CommonsMultipartFile)file);
+				} catch (Exception e) {
+					logger.info("新增商户相册时，上传LOGO文件出错："+e);
+				}
+			}
+		}
+		ShopDynamicAlbumVO album = new ShopDynamicAlbumVO();
+		String id = GUID.generateID("SDC");
+		album.setId(id);
+		album.setAlbumLogo(icon);
+		album.setAlbumName(albumName);
+		album.setTemplateId(templateId);
+		album.setCreateTime(DateUtil.dateFromatYYYYMMddHHmmss(new Date()));
+		album.setUserId(userId);
+		album.setShopId(shopId);
+		//StringBuffer newUrls = new StringBuffer();
+		/*if(photoUrls != null && !"".equals(photoUrls)){
+			FtpUtil ftp = new FtpUtil(ftpAddress, port, username, password);
+			String[] urls = photoUrls.split(",");
+			try {
+				ftp.login();
+			} catch (Exception e1) {
+				logger.info("移动文件失败,登录FTP失败");
+				e1.printStackTrace();
+			}
+			for(String url : urls){
+				String resourceUrl = path + url;
+				String targetUrl = path +"/"+ shopId +"/"+ userId +"/DynamicAlbum/" + id + url.replace(tempPath+"/", "");
+				newUrls.append("/"+ shopId +"/"+ userId +"/DynamicAlbum/" + id + url.replace(tempPath+"/", ""));
+				newUrls.append(",");
+				try {
+					ftp.move(targetUrl , resourceUrl);
+				} catch (Exception e) {
+					logger.info("移动文件失败。。。源地址："+resourceUrl +"---目标地址："+targetUrl);
+				}
+			}
+		}*/
+		int i = shopDynamicAlbumService.save(album);
+		
+		if(i > 0){
+			//保存照片
+		//	savePhoto(id, newUrls.toString(), "save");
+			savePhoto(id, photoUrls, "save");
+			
+			modelMap.put("success", true);
+			modelMap.put("message", "保存成功");
+		}else{
+			modelMap.put("success", false);
+			modelMap.put("message", "保存失败");
+		}
+		return modelMap.toString();
+	}
+	@RequestMapping("/dynamicAlbum/list")
+	@ResponseBody
+	public DataModel<Map<String, Object>> dynamicAlbumList(ShopDynamicAlbumVO limitKey, HttpServletRequest request) {
+		String shopId = (String)request.getSession().getAttribute(com.frame.core.constant.Constant.Login_USER_SHOP_ID);
+		limitKey.setShopId(shopId);
+		if(limitKey != null && limitKey.getShopName() != null && !"".equals(limitKey.getShopName())){
+			try {
+				limitKey.setShopName(new String( limitKey.getShopName().getBytes("ISO-8859-1"),"utf-8"));
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+		}
+		if(limitKey != null && limitKey.getUserName() != null && !"".equals(limitKey.getUserName())){
+			try {
+				limitKey.setUserName(new String( limitKey.getUserName().getBytes("ISO-8859-1"),"utf-8"));
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+		}
+		DataModel<Map<String, Object>> dataModel = shopDynamicAlbumService.getList(limitKey);
+		return dataModel;
+	}
+	@RequestMapping("/dynamicAlbum/find")
+	@ResponseBody
+	public String dynamicAlbumFind(String id) {
+		Map<String, Object> map = shopDynamicAlbumService.find(id);
+		
+		JSONObject modelMap = new JSONObject();
+		if(map != null){
+			//封面
+			String albumLogo = map.get("albumLogo") == null ? "" : map.get("albumLogo").toString();
+			if(!"".equals(albumLogo)){
+				map.put("albumLogo", Constant.imgPrefix +albumLogo);
+			}
+			//店铺logo
+			String shopLogo = map.get("shopLogo") == null ? "" : map.get("shopLogo").toString();
+			if(!"".equals(shopLogo)){
+				map.put("shopLogo", Constant.imgPrefix +shopLogo);
+			}
+			//查询照片
+			List<Map<String, Object>> photoList = shopAlbumPhotoService.queryPhotoByAlbumId(id);
+			if(photoList != null && photoList.size() > 0){
+				StringBuffer photoUrls = new StringBuffer();
+				for(Map<String, Object> photo : photoList){
+					String photoUrl = photo.get("photoUrl").toString();
+					photoUrls.append(Constant.imgPrefix +photoUrl.substring(0, photoUrl.lastIndexOf("/")+1) + "n" +photoUrl.substring(photoUrl.lastIndexOf("/")+1));
+					photoUrls.append(",");
+				}
+				if(photoUrls.toString().length() > 0){
+					map.put("photoUrls", photoUrls.toString().substring(0, photoUrls.toString().length() -1));
+				}
+			}
+			modelMap.put("success", true);
+			modelMap.put("data", map);
+		}else{
+			modelMap.put("success", false);
+			modelMap.put("message", "初始化失败");
+		}
+		return modelMap.toString();
+	}
+	/**
+	 * 照片存储路劲规则 
+	 * 配置文件中路劲path/商户ID/客户ID/<固定字符串“DynamicAlbum”>/dynamicAlbumId
+	 * 由于客户照片是异步上传， 先将上传的图片存放到临时路劲 tempPath
+	 * 等表单提交之后，把临时路劲的文件转移到上述的照片存储路劲中，再删掉临时路劲中的文件
+	 * */
+	@RequestMapping("/dynamicAlbum/update")
+	@ResponseBody
+	public String dynamicAlbumUpdate(String id ,@RequestParam(value = "albumLogo") MultipartFile file, 
+							String shopId,String userId, String albumName, 
+							String templateId, String photoUrls, String oldAlbumLogo, String oldPhotoUrls, HttpServletRequest request) {
+		shopId = (String)request.getSession().getAttribute(com.frame.core.constant.Constant.Login_USER_SHOP_ID);
+		String icon = "";
+		JSONObject modelMap = new JSONObject();  
+		if(file != null && !file.isEmpty()){
+			if(file != null && !file.isEmpty()){
+				
+				try {
+					icon = fileUpload("shopalbum/"+shopId, (CommonsMultipartFile)file);
+				} catch (Exception e) {
+					logger.info("新增商户相册时，上传LOGO文件出错："+e);
+				}
+			}
+		}
+		if("".equals(icon) && oldAlbumLogo != null && !"".equals(oldAlbumLogo)){
+			icon = oldAlbumLogo.replaceAll(Constant.clearImgPrefix, "");
+		}
+		ShopDynamicAlbumVO album = new ShopDynamicAlbumVO();
+		album.setId(id);
+		album.setAlbumLogo(icon);
+		album.setAlbumName(albumName);
+		album.setTemplateId(templateId);
+		album.setUserId(userId);
+		album.setShopId(shopId);
+		FtpUtil ftp = new FtpUtil(ftpAddress, port, username, password);
+		//String[] urls = photoUrls.split(",");
+		try {
+			ftp.login();
+		} catch (Exception e1) {
+			logger.info("移动文件失败,登录FTP失败");
+			e1.printStackTrace();
+		}
+		//注意这里repalceAll  由于查询时返回的是 拼接了"n"，这里替换， 前面的shopAlbum是在上传照片时候固定的字符串
+		oldPhotoUrls = oldPhotoUrls.replaceAll("shopAlbum/n", "shopAlbum/");
+		//从FTP删除 本次编辑删掉的图片
+		moveImgFormFtp(id, oldPhotoUrls, ftp);
+		
+		/*StringBuffer newUrls = new StringBuffer();
+		if(photoUrls != null && !"".equals(photoUrls)){
+			
+			for(String url : urls){
+				String resourceUrl = path + url;
+				String targetUrl = path +"/"+ shopId +"/"+ userId +"/DynamicAlbum/" + id + url.replace(tempPath+"/", "");
+				newUrls.append("/"+ shopId +"/"+ userId +"/DynamicAlbum/" + id + url.replace(tempPath+"/", ""));
+				newUrls.append(",");
+				try {
+					ftp.move(targetUrl , resourceUrl);
+				} catch (Exception e) {
+					logger.info("移动文件失败。。。源地址："+resourceUrl +"---目标地址："+targetUrl);
+				}
+			}
+		}*/
+		ftp.closeServer();
+		int i = shopDynamicAlbumService.update(album);
+		if(!"".equals(photoUrls) && !photoUrls.endsWith(",")){
+			photoUrls = photoUrls +",";
+		}
+		String hixStr = photoUrls + oldPhotoUrls.replaceAll(Constant.clearImgPrefix, "").replaceAll("shopAlbum/n", "shopAlbum/");
+		
+		if(i > 0){
+			//保存照片
+			savePhoto(id, hixStr, "update");
+			
+			modelMap.put("success", true);
+			modelMap.put("message", "保存成功");
+		}else{
+			modelMap.put("success", false);
+			modelMap.put("message", "保存失败");
+		}
+		return modelMap.toString();
+	}
+	/**
+	 * 是否有新照片上传或者删除过照片， 重新生成压缩包
+	 * */
+	private long moveImgFormFtp(Map<String,Object> oldAlbum, String newPhotoUrl, String oldPhotoUrls, FtpUtil ftp, String shopId, String userId, String albumName, ShopAlbumVO album) {
+		
+		String id = oldAlbum.get("id").toString();
+		boolean oldIsPay = false;
+		if(oldAlbum != null && !oldAlbum.isEmpty()){
+			String isPay = oldAlbum.get("isPay") == null ? "0" : oldAlbum.get("isPay")+"";
+			if("1".equals(isPay)){
+				//原来是付费的， 即将变成免费的，---->生成压缩包
+				oldIsPay = true;
+			}
+		}
+		
+		long fileSizeChange = moveImgFormFtp(id, oldPhotoUrls, ftp);
+		if(oldIsPay || fileSizeChange > 0 || (newPhotoUrl != null && !"".equals(newPhotoUrl))){
+			//原照片有编辑 或者有新照片上传 重新打压缩包
+			String from = path +"/"+ shopId +"/"+ userId +"/Album/" + id;
+			String to ="/"+ shopId +"/"+ userId +"/Album/" + id;
+			boolean b = ftp.zip(from,  Constant.resPath + to, albumName+".zip");
+			if(b){
+				logger.info("生成压缩包成功,地址："+to +"/"+albumName+".zip");
+				album.setDownloadAddress(to +"/"+albumName+".zip");
+				//如果数据库中DownloadSecret不为null，那么这里更新该字段不生效（具体看serviceimpl实现）
+				album.setDownloadSecret(RandomGUID.getRandomString(4));
+			}
+		}
+		return fileSizeChange;
+	}
+	private long moveImgFormFtp(String id, String oldPhotoUrls, FtpUtil ftp) {
+		long delFileSize = 0;
+		List<Map<String, Object>> photoList = shopAlbumPhotoService.queryPhotoByAlbumId(id);
+		if(photoList != null && photoList.size() > 0){
+			for(Map<String, Object> photo : photoList){
+				String photoUrl = photo.get("photoUrl").toString();
+				if(!oldPhotoUrls.contains(photoUrl)){
+					//编辑后的照片URL中不包含原有的照片URL时， 从FTP删除照片
+					delFileSize += ftp.getFileSize(Constant.path + photoUrl);
+					logger.info("从FTP删除照片："+Constant.path + photoUrl);
+					ftp.delFile(Constant.path + photoUrl);
+				}
+			}
+		}
+		return delFileSize;
+	}
+	
+	@RequestMapping("/dynamicAlbum/templateList")
+	@ResponseBody
+	public String templateList() {
+		List<Map<String, Object>> templateList = shopDynamicAlbumService.templateList();
+		
+		JSONObject modelMap = new JSONObject();
+		for(Map<String, Object> temp : templateList){
+			if(temp.get("templateLogo") != null && !"".equals(temp.get("templateLogo"))){
+				temp.put("templateLogo", Constant.imgPrefix +temp.get("templateLogo"));
+			}
+		}
+		modelMap.put("success", true);
+		modelMap.put("data", templateList);
+		return modelMap.toString();
+	}
+}

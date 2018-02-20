@@ -1,0 +1,15 @@
+@CHARSET "UTF-8";
+#loginInfo:hover.l-btn-plain {
+	background: transparent;
+	color: #000000;
+	border: none;
+}
+#loginInfo:hover.l-btn-plain {
+	padding-right: 5px;
+	padding: 1px 6px 1px 1px;
+	cursor:default;
+}
+.tabs-tool{
+	border: none;
+	border-bottom: solid 1px #95B8E7;
+}

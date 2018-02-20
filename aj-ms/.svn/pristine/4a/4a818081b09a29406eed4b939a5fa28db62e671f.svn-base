@@ -1,0 +1,20 @@
+jdbc.driverClass=com.mysql.jdbc.Driver
+jdbc.jdbcUrl=jdbc\:mysql\://120.25.74.162\:3306/aj?useUnicode\=true&amp;characterEncoding\=utf-8
+jdbc.user=aj
+jdbc.password=aj123
+
+jdbc.miniPoolSize = 1
+jdbc.maxPoolSize = 10
+jdbc.initialPoolSize = 1
+jdbc.maxIdleTime = 2500
+jdbc.acquireIncrement = 1
+
+jdbc.acquireRetryAttempts = 30
+jdbc.acquireRetryDelay = 1000
+jdbc.testConnectionOnCheckin = true
+jdbc.testConnectionOnCheckout = true
+
+
+jdbc.automaticTestTable = test
+jdbc.idleConnectionTestPeriod = 1800
+jdbc.checkoutTimeout=3000

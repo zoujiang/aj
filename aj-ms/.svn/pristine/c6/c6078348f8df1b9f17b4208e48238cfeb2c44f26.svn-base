@@ -1,0 +1,103 @@
+package com.qm.shop.feedback.service.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+
+import com.frame.core.dao.GenericDAO;
+import com.frame.core.vo.DataModel;
+import com.frame.log.service.LogBizOprService;
+import com.qm.shop.feedback.service.ShopFeedbackService;
+import com.qm.shop.feedback.vo.ShopFeedbackVO;
+
+@Service("shopFeedbackService")
+@Scope("prototype")
+public class ShopFeedbackServiceImpl  implements ShopFeedbackService{
+
+	private Logger log = Logger.getLogger(this.getClass());
+	
+	@Autowired
+	private GenericDAO baseDAO;
+	
+	@Autowired
+	private LogBizOprService logBizOprService;
+	
+	@Override
+	public DataModel<Map<String, Object>> getList(ShopFeedbackVO limitKey) {
+		
+		String sql = "SELECT f.id, f.fb_category fbCategory, f.fb_content fbContent, f.create_time createTime, i.shop_name shopName, u.NAME replyUserName, f.reply_content replyContent, f.reply_time replyTime, f.is_show FROM t_shop_feedback f LEFT JOIN t_sys_user u ON f.reply_user_id = u.ID, t_shop_info i  WHERE f.shop_id = i.id ";
+		String countSql = "SELECT COUNT(1) FROM  t_shop_feedback f LEFT JOIN t_sys_user u ON f.reply_user_id = u.ID, t_shop_info i WHERE f.shop_id = i.id ";
+		List<String> param = new ArrayList<String>();
+		if(limitKey != null){
+			if(limitKey.getShopId() != null && !"".equals(limitKey.getShopId().toString())){
+				sql += " and i.id = ? ";
+				countSql += " and i.id = ? ";
+				param.add(limitKey.getShopId());
+			}
+			if(limitKey.getShopName() != null && !"".equals(limitKey.getShopName().toString())){
+				sql += " and i.shop_name like concat ('%',?,'%')";
+				countSql += " and i.shop_name like concat ('%',?,'%')";
+				param.add(limitKey.getShopName());
+			}
+			if(limitKey.getFbStartTime() != null && !"".equals(limitKey.getFbStartTime().toString())){
+				sql += " and f.create_time > ?";
+				countSql += " and f.create_time > ?";
+				param.add(limitKey.getFbStartTime()+" 00:00:00");
+			}
+			if(limitKey.getFbEndTime() != null && !"".equals(limitKey.getFbEndTime().toString())){
+				sql += " and f.create_time < ?";
+				countSql += "and f.create_time < ?";
+				param.add(limitKey.getFbEndTime()+" 23:59:59");
+			}
+		}
+		sql += " order by f.create_time desc";
+		List<Map<String, Object>> list = baseDAO.getGenericByPositionToSQL(sql, limitKey.getOffset(), limitKey.getPageSize(), param.toArray());
+		int total = baseDAO.getGenericIntToSQL(countSql, param.toArray());
+		return new DataModel<Map<String,Object>>(list, total);
+	}
+
+	@Override
+	public Map<String, Object> findById(String id) {
+		
+		String sql = "select id,fb_category fbCategory, fb_content fbContent from t_shop_feedback where id = ?";
+		List<Map<String, Object>> list = baseDAO.getGenericBySQL(sql, new Object[]{id});
+		if(list != null && list.size() > 0){
+			return list.get(0);
+		}
+		return null;
+	}
+
+	@Override
+	public int update(String id, String replyContent, String userid,String replyTime) {
+		
+		String sql = "update t_shop_feedback set reply_user_id = ?, reply_content = ? , reply_time = ? where id = ?";
+		return baseDAO.execteNativeBulk(sql, userid, replyContent, replyTime, id);
+	}
+
+	@Override
+	public int add(String generateID, String fbCategory, String fbContent,
+			String createTime, String shopId, String userid) {
+		
+		String natvieSQL = "insert into t_shop_feedback (id, fb_category, fb_content, create_time, shop_id, shop_account,is_show) values (?,?,?,?,?,?,?)";
+		return baseDAO.execteNativeBulk(natvieSQL, generateID, fbCategory, fbContent,createTime, shopId, userid, 0);
+	}
+
+	@Override
+	public int updateNotShow(String id) {
+		
+		return baseDAO.execteNativeBulk("update t_shop_feedback set is_show = 1 where id = ?", id);
+	}
+
+	@Override
+	public int update(String id, String fbCategory, String fbContent) {
+		
+		return baseDAO.execteNativeBulk("update t_shop_feedback set fb_category = ?, fb_content = ?, is_show = 0 where id = ?", fbCategory, fbContent, id);
+	}
+	
+
+}

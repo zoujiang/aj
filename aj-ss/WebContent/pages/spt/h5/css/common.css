@@ -1,0 +1,46 @@
+/*通用*/
+/* CSS Document */
+body,div,ol,ul,li,dl,dt,dd,h1,h2,h3,h4,h5,h6,p,form,fieldset,legend,input,button{
+    margin:0;
+    padding:0;
+    -webkit-tap-highlight-color:rgba(255,255,255,0);
+    font-family: 'Heiti SC', 'Microsoft YaHei';
+}
+html {
+    width: 100%;
+    /*font-family: 'Helvetica';*/
+    outline: 0;
+    -webkit-text-size-adjust:none;
+}
+body {
+    width:100%;
+    margin: 0;
+    -webkit-user-select: none;
+    position: relative;
+    min-width: 320px;
+    max-width: 720px;
+    font-size: 0.16rem;
+    overflow: scroll;
+    -moz-box-sizing:border-box;
+    -ms-box-sizing:border-box;
+    -webkit-box-sizing:border-box;
+}
+a:hover,a:link,a:visited,a{
+    color:inherit;
+    text-decoration:none;
+}
+ul,li，ol{list-style:none}
+
+.floatLeft{
+    float: left;
+}
+.floatRight{
+
+    float: right;
+}
+.clear{
+    clear: both;
+}
+img{
+    vertical-align:middle;
+}

@@ -1,0 +1,82 @@
+package com.aj.coupon.vo;
+
+import javax.persistence.*;
+import java.util.Objects;
+
+@Entity
+@Table(name = "t_my_coupon")
+public class TMyCoupon {
+    private int id;
+    private String userId;
+    private int couponId;
+    private String couponCode;
+    private String createTime;
+
+    @Id
+    @Column(name = "id")
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    @Basic
+    @Column(name = "user_id")
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    @Basic
+    @Column(name = "coupon_id")
+    public int getCouponId() {
+        return couponId;
+    }
+
+    public void setCouponId(int couponId) {
+        this.couponId = couponId;
+    }
+
+    @Basic
+    @Column(name = "coupon_code")
+    public String getCouponCode() {
+        return couponCode;
+    }
+
+    public void setCouponCode(String couponCode) {
+        this.couponCode = couponCode;
+    }
+
+    @Basic
+    @Column(name = "create_time")
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TMyCoupon tMyCoupon = (TMyCoupon) o;
+        return id == tMyCoupon.id &&
+                couponId == tMyCoupon.couponId &&
+                Objects.equals(userId, tMyCoupon.userId) &&
+                Objects.equals(couponCode, tMyCoupon.couponCode) &&
+                Objects.equals(createTime, tMyCoupon.createTime);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id, userId, couponId, couponCode, createTime);
+    }
+}

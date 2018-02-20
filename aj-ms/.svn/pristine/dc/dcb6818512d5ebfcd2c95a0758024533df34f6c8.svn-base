@@ -1,0 +1,161 @@
+package com.qm.shop.album.service.impl;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+
+import com.frame.core.dao.GenericDAO;
+import com.frame.core.util.DateUtil;
+import com.frame.core.vo.DataModel;
+import com.frame.log.service.LogBizOprService;
+import com.qm.shop.account.service.ShopAccountService;
+import com.qm.shop.account.vo.ShopAccountVO;
+import com.qm.shop.album.service.ShopAlbumService;
+import com.qm.shop.album.vo.ShopAlbumVO;
+import com.qm.shop.baseinfo.service.ShopBaseinfoService;
+import com.qm.shop.baseinfo.vo.ShopInfoVO;
+import com.qm.shop.category.vo.ShopCategoryVO;
+
+@Service("shopAlbumService")
+@Scope("prototype")
+public class ShopAlbumServiceImpl  implements ShopAlbumService{
+
+	private Logger log = Logger.getLogger(this.getClass());
+	
+	@Autowired
+	private GenericDAO baseDAO;
+	
+	@Autowired
+	private LogBizOprService logBizOprService;
+	
+	@Override
+	public DataModel<Map<String, Object>> getList(ShopAlbumVO limitKey) {
+		
+		String sql = "SELECT a.id, u.user_tel userTel, a.album_name albumName, (SELECT COUNT(1) FROM t_shop_photo p WHERE p.album_id = a.id ) photoCount, a.is_pay isPay, a.pay_type payType, a.create_time createTime, a.download_address downloadAddress, a.download_secret downloadSecret,o.pay_type buyType,o.transaction_id transactionId, a.view_count viewCount, a.photo_time photoTime, a.original_price originalPrice,o.total_fee totalFee, o.status payStatus FROM t_shop_album a LEFT JOIN t_shop_album_order o ON a.id = o.album_id and o.status = 1, t_shop_info i, t_shop_customer_user u WHERE a.shop_id = i.id  AND a.user_id = u.id ";
+		String countSql = "SELECT count(a.id) FROM t_shop_album a, t_shop_info i, t_shop_customer_user u WHERE a.shop_id = i.id  AND a.user_id = u.id";
+		List<String> param = new ArrayList<String>();
+		if(limitKey != null){
+			if(limitKey.getShopName() != null && !"".equals(limitKey.getShopName().toString())){
+				sql += " and i.shop_name like concat ('%',?,'%')";
+				countSql += " and i.shop_name like concat ('%',?,'%')";
+				param.add(limitKey.getShopName());
+			}
+			if(limitKey.getUserName() != null && !"".equals(limitKey.getUserName().toString())){
+				sql += " and u.username like concat ('%',?,'%')";
+				countSql += " and u.username like concat ('%',?,'%')";
+				param.add(limitKey.getUserName());
+			}
+			if(limitKey.getUserId() != null && !"".equals(limitKey.getUserId())){
+				sql += " and a.user_id = ? ";
+				countSql +=" and a.user_id = ? ";
+				param.add(limitKey.getUserId());
+			}
+			if(limitKey.getShopId() != null && !"".equals(limitKey.getShopId())){
+				sql += " and a.shop_id = ? ";
+				countSql +=" and a.shop_id = ? ";
+				param.add(limitKey.getShopId());
+			}
+		}
+		sql += "order by a.create_time desc";
+		List<Map<String, Object>> list = baseDAO.getGenericByPositionToSQL(sql, limitKey.getOffset(), limitKey.getPageSize(), param.toArray());
+		int total = baseDAO.getGenericIntToSQL(countSql, param.toArray());
+		return new DataModel<Map<String,Object>>(list, total);
+	}
+
+	@Override
+	public int save(ShopAlbumVO vo) {
+		String sql = "INSERT INTO t_shop_album (id, shop_id, user_id, album_name, album_logo, is_pay, original_price, pay_type, create_time, download_address, download_secret, album_size, photo_time) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		String sp = "|";
+		String payType = vo.getPayType_3() + sp 
+						+ vo.getPayType_6() + sp 
+						+ vo.getPayType_9() + sp
+						+ vo.getPayType_12() + sp
+						+ vo.getPayType_24() + sp
+						+ vo.getPayType_25();
+		return baseDAO.execteNativeBulk(sql, vo.getId(),vo.getShopId(), vo.getUserId(), vo.getAlbumName(), vo.getAlbumLogo(), vo.getAlbumType(), vo.getOrigPrice(), payType, vo.getCreateTime(), vo.getDownloadAddress(), vo.getDownloadSecret(), vo.getAlbumSize(),vo.getPhotoTime());
+	}
+
+	@Override
+	public List<Map<String, Object>> queryListByShopIdAndUserId(String shopId,
+			String userId) {
+		String sql = "select id albumId, album_name albumName, album_size albumSize, is_pay isPay,had_paid hadPaid from t_shop_album where shop_id = ? and user_id = ? order by create_time";
+		return baseDAO.getGenericBySQL(sql, new Object[]{shopId, userId});
+	}
+
+	@Override
+	public List<Map<String, Object>> queryNopaidAlbumListByShopIdAndUserId(
+			String shopId, String userId) {
+		String sql = "select a.id albumId from t_shop_album a left join t_shop_album_order o on a.id = o.album_id where a.is_pay = 1 and o.id is null and a.shop_id = ? and a.user_id = ?";
+		return baseDAO.getGenericBySQL(sql, new Object[]{shopId, userId});
+	}
+
+	@Override
+	public Map<String, Object> find(String id) {
+		
+		String sql = "SELECT a.id, a.user_id userId, a.shop_id shopId, u.user_tel userTel, a.album_name albumName, a.album_logo albumLogo, a.original_price originalPrice, a.is_pay isPay, a.pay_type payType, a.download_address downloadAddress, a.download_secret downloadSecret, a.photo_time photoTime FROM t_shop_album a, t_shop_info i, t_shop_customer_user u WHERE a.shop_id = i.id  AND a.user_id = u.id and a.id = ?";
+		List<Map<String, Object>>  list = baseDAO.getGenericBySQL(sql, new Object[]{id});
+		if(list != null && list.size() > 0){
+			return list.get(0);
+		}
+		return null;
+	}
+
+	@Override
+	public int update(ShopAlbumVO vo) {
+		
+		String sql = "update t_shop_album set shop_id =?, user_id=?, album_name=?, album_logo=?, is_pay=?, original_price=?, pay_type=?, download_address=?, download_secret =IFNULL(download_secret,?), photo_time = ? where id = ?";
+		String sp = "|";
+		int i = 0;
+		String payType = vo.getPayType_3() + sp 
+						+ vo.getPayType_6() + sp 
+						+ vo.getPayType_9() + sp
+						+ vo.getPayType_12() + sp
+						+ vo.getPayType_24() + sp
+						+ vo.getPayType_25();
+		List<Object> param = new ArrayList<Object>();
+		param.add(vo.getShopId());
+		param.add(vo.getUserId());
+		param.add(vo.getAlbumName());
+		param.add(vo.getAlbumLogo()== null ? "" : vo.getAlbumLogo());
+		param.add(vo.getAlbumType());
+		param.add(vo.getOrigPrice());
+		param.add(payType);
+		param.add(vo.getDownloadAddress()== null ? "" : vo.getDownloadAddress());
+		param.add(vo.getDownloadSecret()== null ? "" : vo.getDownloadSecret());
+		param.add(vo.getPhotoTime());
+		param.add(vo.getId());
+		try {
+			//i = baseDAO.execteNativeBulk(sql, vo.getShopId(), vo.getUserId(), vo.getAlbumName(), vo.getAlbumLogo(), Integer.parseInt(vo.getAlbumType()), vo.getOrigPrice(), payType, vo.getDownloadAddress(), vo.getDownloadSecret(), vo.getId());
+			Object[] o = new Object[param.size()];
+			i = baseDAO.execteNativeBulk(sql, param.toArray(o));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return i;
+	}
+
+	@Override
+	public int del(String id) {
+		
+		return baseDAO.execteNativeBulk("delete from t_shop_album where id = ? ", id);
+	}
+
+	@Override
+	public Map<String, Object> findDownloadPageInit(String albumId) {
+		
+		String sql = "SELECT a.album_name albumName, s.shop_name shopName, s.logo FROM t_shop_album a , t_shop_info s WHERE a.shop_id = s.id AND a.id = ? AND a.download_address IS NOT NULL";
+		List<Map<String, Object>> list = baseDAO.getGenericBySQL(sql, new Object[]{albumId});
+		if(list != null && list.size() > 0){
+			return list.get(0);
+		}
+		return null;
+	}
+
+	
+}

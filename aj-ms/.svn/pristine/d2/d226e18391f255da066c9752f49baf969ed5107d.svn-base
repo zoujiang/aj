@@ -1,0 +1,213 @@
+package com.spt.entry.model;
+
+import java.io.Serializable;
+import javax.persistence.*;
+import java.util.Date;
+
+
+/**
+ * The persistent class for the t_user_score database table.
+ * 
+ */
+@Entity
+@Table(name="t_user_score")
+@NamedQuery(name="TUserScore.findAll", query="SELECT t FROM TUserScore t")
+public class TUserScore implements Serializable {
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@Column(name="APPLY_ID")
+	private String applyId;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="CERT_DOWN_DT")
+	private Date certDownDt;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="CERT_GEN_DT")
+	private Date certGenDt;
+
+	@Column(name="CERT_IF_DOWN")
+	private String certIfDown;
+
+	@Column(name="CERT_JOB_ID")
+	private String certJobId;
+
+	@Column(name="CERT_STATUS")
+	private String certStatus;
+
+	@Column(name="CERT_URL")
+	private String certUrl;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="SCORE_DT")
+	private Date scoreDt;
+
+	@Column(name="SCORE_JOB_ID")
+	private String scoreJobId;
+
+	@Column(name="SCORE_RANK")
+	private Integer scoreRank;
+
+	@Column(name="SCORE_TIME")
+	private String scoreTime;
+
+	@Column(name="SCORE_TIME1")
+	private String scoreTime1;
+
+	@Column(name="SCORE_TIME2")
+	private String scoreTime2;
+
+	@Column(name="SCORE_TIME3")
+	private String scoreTime3;
+	
+	@Column(name="GAME_CODE")
+	private String gameCode;
+	@Column(name="GROUP_ID")
+	private String groupId;
+	@Column(name="GROUP_TYPE")
+	private String groupType;
+
+	public TUserScore() {
+	}
+
+	public String getApplyId() {
+		return this.applyId;
+	}
+
+	public void setApplyId(String applyId) {
+		this.applyId = applyId;
+	}
+
+	public Date getCertDownDt() {
+		return this.certDownDt;
+	}
+
+	public void setCertDownDt(Date certDownDt) {
+		this.certDownDt = certDownDt;
+	}
+
+	public Date getCertGenDt() {
+		return this.certGenDt;
+	}
+
+	public void setCertGenDt(Date certGenDt) {
+		this.certGenDt = certGenDt;
+	}
+
+	public String getCertIfDown() {
+		return this.certIfDown;
+	}
+
+	public void setCertIfDown(String certIfDown) {
+		this.certIfDown = certIfDown;
+	}
+
+	public String getCertJobId() {
+		return this.certJobId;
+	}
+
+	public void setCertJobId(String certJobId) {
+		this.certJobId = certJobId;
+	}
+
+	public String getCertStatus() {
+		return this.certStatus;
+	}
+
+	public void setCertStatus(String certStatus) {
+		this.certStatus = certStatus;
+	}
+
+	public String getCertUrl() {
+		return this.certUrl;
+	}
+
+	public void setCertUrl(String certUrl) {
+		this.certUrl = certUrl;
+	}
+
+	public Date getScoreDt() {
+		return this.scoreDt;
+	}
+
+	public void setScoreDt(Date scoreDt) {
+		this.scoreDt = scoreDt;
+	}
+
+	public String getScoreJobId() {
+		return this.scoreJobId;
+	}
+
+	public void setScoreJobId(String scoreJobId) {
+		this.scoreJobId = scoreJobId;
+	}
+
+	public Integer getScoreRank() {
+		return this.scoreRank;
+	}
+
+	public void setScoreRank(Integer scoreRank) {
+		this.scoreRank = scoreRank;
+	}
+
+	public String getScoreTime() {
+		return this.scoreTime;
+	}
+
+	public void setScoreTime(String scoreTime) {
+		this.scoreTime = scoreTime;
+	}
+
+	public String getScoreTime1() {
+		return this.scoreTime1;
+	}
+
+	public void setScoreTime1(String scoreTime1) {
+		this.scoreTime1 = scoreTime1;
+	}
+
+	public String getScoreTime2() {
+		return this.scoreTime2;
+	}
+
+	public void setScoreTime2(String scoreTime2) {
+		this.scoreTime2 = scoreTime2;
+	}
+
+	public String getScoreTime3() {
+		return this.scoreTime3;
+	}
+
+	public void setScoreTime3(String scoreTime3) {
+		this.scoreTime3 = scoreTime3;
+	}
+
+	public String getGameCode() {
+		return gameCode;
+	}
+
+	public void setGameCode(String gameCode) {
+		this.gameCode = gameCode;
+	}
+
+	public String getGroupId() {
+		return groupId;
+	}
+
+	public void setGroupId(String groupId) {
+		this.groupId = groupId;
+	}
+
+	public String getGroupType() {
+		return groupType;
+	}
+
+	public void setGroupType(String groupType) {
+		this.groupType = groupType;
+	}
+	
+	
+	
+
+}

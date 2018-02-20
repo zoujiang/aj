@@ -1,0 +1,356 @@
+package com.spt.score.job;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+
+import com.frame.core.dao.GenericDAO;
+import com.frame.core.jdbcdao.BaseDao;
+import com.frame.core.util.StringUtil;
+import com.frame.core.vo.MsgVo;
+import com.spt.entry.model.TCertCfg;
+import com.spt.entry.model.TImpJob;
+import com.spt.entry.model.TUserScore;
+import com.spt.score.util.JobExcelReadHelper;
+import com.spt.score.util.ScoreConsts;
+
+@Service("scoreImportService")
+@Scope("prototype")
+public class ScoreImportServiceImpl {
+	private static Logger logger = Logger.getLogger(ScoreImportServiceImpl.class);
+	
+	@Autowired
+	private GenericDAO baseDAO;
+	@Autowired
+	private BaseDao baseDao;
+	
+	
+	public void doImport() {
+		
+		List<TImpJob> list = baseDAO.getGenericByHql("from TImpJob t where t.jobStatus in (?,?) order by createDt asc",ScoreConsts.status_待处理,ScoreConsts.status_处理失败);
+		
+		if (list == null || list.isEmpty()) {
+			logger.info("doImport is empty");
+			return;
+		}
+		
+		logger.info("doImport size:" + list.size());
+		
+		for (TImpJob po : list) {
+			doImport(po);
+			//更新排名放外面去
+		}
+		
+		logger.info("doImport end size:" + list.size());
+	}
+	
+	public void doImport(TImpJob job) {
+
+		logger.info("doImport :" + job.getJobId());
+		//作业执行状态0-待导入，1-导入中，2-导入成功，3-失败)
+		if (StringUtil.isEmpty(job.getJobFilePath())) {
+			logger.info("doImport filePath is null:" + job.getJobId());
+			return;
+		}
+		String filePath = job.getJobFilePath();
+		if (filePath.lastIndexOf(".") == -1) {
+			logger.info("doImport file suffix is error:" + job.getJobId() + "." + filePath);
+			return;
+		}
+		String suffix =  filePath.substring(filePath.lastIndexOf(".") + 1);
+		
+		if (!"xls".equals(suffix) && !"xlsx".equals(suffix)) {
+			logger.info("doImport file suffix is not xls.xlsx:" + job.getJobId() + "." + filePath);
+			return;
+		}
+		
+		filePath = ScoreConsts.getRealPath() + filePath;
+		
+		File tempFile = new File(filePath);
+		
+		if (!tempFile.exists()) {
+			logger.info("doImport file is not exists:" + job.getJobId() + "." + filePath);
+			return;
+		}
+		
+		TCertCfg certCfg = baseDAO.get(TCertCfg.class, job.getJobGroupId());
+		if (certCfg == null) {
+			logger.info("doImport TCertCfg is not exists:" + job.getJobId() + "." + filePath);
+			return;
+		}
+		
+		baseDAO.execteBulk("update TImpJob set jobStatus =  " + ScoreConsts.status_处理中 + 
+					" ,certStatus = " + ScoreConsts.status_待处理  + 
+					" ,jobStartDt = ? "  + 
+					" where id = ?", new Date(), job.getJobId());
+		
+		JobExcelReadHelper excelReader = null;
+		InputStream in = null;
+		try {
+			in = new FileInputStream(tempFile);
+			excelReader = new JobExcelReadHelper();
+			excelReader.read(in, true, suffix);
+			
+			List<String[]> data = excelReader.getData();
+			
+			if (data == null || data.isEmpty()) {
+				logger.info("doImport file empty:" + job.getJobId() + "." + filePath);
+				baseDAO.execteBulk("update TImpJob set jobStatus =  " + ScoreConsts.status_处理失败 + 
+						" ,certStatus = " + ScoreConsts.status_待处理  + 
+						" ,jobStartDt = ? "  + 
+						" where id = ?", new Date(), job.getJobId());
+				return;
+			}
+			
+			int dataLength = 0;
+			String codeIn = "";
+			List<String> codeInPs = new ArrayList<String>();
+			String jobType = job.getJobType();
+			
+			if (ScoreConsts.jobType_迷你.equals(jobType)) {
+				dataLength = 1;
+				codeInPs.add("3");
+				codeInPs.add("11");
+			} else if (ScoreConsts.jobType_亲子.equals(jobType)) {
+				dataLength = 1;
+				codeInPs.add("4");
+				codeInPs.add("4");
+			} else if (ScoreConsts.jobType_半程.equals(jobType)) {
+				dataLength = 4;
+				codeInPs.add("1");
+				codeInPs.add("9");
+			} else if (ScoreConsts.jobType_全程.equals(jobType)) {
+				dataLength = 3;
+				codeInPs.add("2");
+				codeInPs.add("10");
+			} else {
+				logger.info("doImport groupType is error:" + job.getJobId() + "." + job.getJobType());
+				baseDAO.execteBulk("update TImpJob set jobStatus =  " + ScoreConsts.status_处理失败 + 
+						" ,certStatus = " + ScoreConsts.status_待处理  + 
+						" ,jobStartDt = ? "  + 
+						" where id = ?", new Date(), job.getJobId());
+				return;
+			}
+			
+			Map<String, TUserScore> map = new HashMap<String, TUserScore>();
+			
+			
+			for (int i = 0; i < data.size(); i++) {
+				String[] strArr = data.get(i);
+				if (strArr.length != dataLength) {
+					logger.info("doImport file is not demo:" + job.getJobId());
+					baseDAO.execteBulk("update TImpJob set jobStatus =  " + ScoreConsts.status_处理失败 + 
+							" ,certStatus = " + ScoreConsts.status_待处理  + 
+							" ,jobStartDt = ? "  + 
+							" where id = ?", new Date(), job.getJobId());
+					return;
+				}
+				
+				if (StringUtil.isEmpty(codeIn) ) {
+					codeIn = "?";
+				} else {
+					codeIn += ",?";
+				}
+				
+				String userCode = strArr[0];
+				codeInPs.add(userCode);
+				
+				TUserScore score = new TUserScore();
+				map.put(userCode, score);
+				score.setScoreJobId(job.getJobId());
+				score.setScoreDt(new Date());
+				score.setCertStatus("0");
+				score.setCertIfDown("0");
+				score.setGameCode(userCode);
+				score.setGroupType(job.getJobType());
+				
+				for (int ii = 1; ii < dataLength && ii < strArr.length; ii++) {
+					String time = strArr[ii];
+					
+					if (StringUtil.isEmpty(time)) {
+						continue;
+					}
+					
+					if ("0".equals(time)) {
+						time = null;
+					} else if (time.length() == 7) {
+						time = "0" + time;
+					}
+					
+					if (ii == 1) {
+						score.setScoreTime(time);
+					} else if (ii == 2) {
+						score.setScoreTime1(time);
+					} else if (ii == 3) {
+						score.setScoreTime2(time);
+					} else if (ii == 4) {
+						score.setScoreTime3(time);
+					}
+					
+				}
+				
+				if ("1".equals(certCfg.getIsNeedScore())) {
+					score.setCertStatus("0"); //无证书
+					if (StringUtil.isNotEmpty(score.getScoreTime()) 
+							&& score.getScoreTime().compareTo(certCfg.getMinScore()) <= 0) {
+						score.setCertStatus("1"); //待生成
+					}
+				} else {
+					score.setCertStatus("1"); //待生成
+				}
+				
+			}
+			
+			List<TUserScore> scoreList = new ArrayList<TUserScore>();
+			
+			if (StringUtil.isNotEmpty(codeIn)) {
+				String sql = "select APPLY_ID,GAMECODE,GROUP_ID from t_apply where group_id in (?,?) and gamecode in (" + codeIn + ")";
+				
+				List<Map<String,Object>> list = baseDAO.getGenericBySQL(sql, codeInPs.toArray());
+				if (list == null || list.isEmpty()) {
+					logger.info("doImport t_apply has no data:" + job.getJobId() + "." + job.getJobType());
+					baseDAO.execteBulk("update TImpJob set jobStatus =  " + ScoreConsts.status_处理失败 + 
+							" ,certStatus = " + ScoreConsts.status_待处理  + 
+							" ,jobStartDt = ? "  + 
+							" where id = ?", new Date(), job.getJobId());
+					return;
+				} else {
+					for (Map<String,Object> row : list) {
+						String code = (String)row.get("GAMECODE");
+						Integer appyId = (Integer)row.get("APPLY_ID");
+						Integer groupId = (Integer)row.get("GROUP_ID");
+						TUserScore score = map.get(code);
+						if (score != null) {
+							score.setApplyId(appyId + "");
+							score.setGroupId(groupId + "");
+							//数据量应该不大，就这样保存/更新算了
+							baseDAO.merge(score);
+							scoreList.add(score);
+						}
+					}
+					
+				}
+				
+			}
+			
+			logger.info("doImport ok:" + job.getJobId() + ".size:" + scoreList.size());
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.info("doImport error:" + job.getJobId() + "." + e.toString());
+			
+			baseDAO.execteBulk("update TImpJob set jobStatus = " + ScoreConsts.status_处理失败 + 
+					" ,certStatus = " + ScoreConsts.status_待处理 + 
+					" ,jobEndDt = ? "  + 
+					" where id = ?", new Date(), job.getJobId());
+			
+			return;
+		} finally {
+			if (in != null) {
+				try {
+					in.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+					logger.info("doImport close InputStream error:" + job.getJobId() + "." + e.toString());
+				}
+			}
+		}
+		
+		
+		baseDAO.execteBulk("update TImpJob set jobStatus = " + ScoreConsts.status_处理成功 + 
+				" ,certStatus = " + ScoreConsts.status_待处理 + 
+				" ,jobEndDt = ? "  + 
+				" where id = ?", new Date(), job.getJobId());
+		
+		String[] ids = null;
+		
+		if (StringUtil.equals(ScoreConsts.jobType_全程, job.getJobType())
+				|| StringUtil.equals(ScoreConsts.jobType_半程, job.getJobType())) {
+			//设置为需要重新生成证书
+			baseDAO.execteBulk("update TImpJob set certStatus = " + ScoreConsts.status_待处理  + 
+					" ,certStartDt = null "  + 
+					" ,certEndDt = null "  + 
+					" where jobType = ?", job.getJobType());
+			if (StringUtil.equals(ScoreConsts.jobType_全程, job.getJobType())) {
+				ids = new String[]{"2", "10"};
+			} else {
+				//半程
+				ids = new String[]{"1", "9"};
+			}
+			
+			baseDAO.execteBulk("update TUserScore set certStatus = 1 " + 
+					" ,certGenDt = null "  + 
+					" ,certDownDt = null "  + 
+					" ,certUrl = null "  + 
+					" ,scoreRank = null "  + 
+					" ,certIfDown = 0 "  + 
+					" where groupId in (?,?) and certStatus <> 0 ", ids[0], ids[1]);
+			
+		} 
+		 
+		
+	}
+	
+	
+	/*public void updateRank() {
+		String[] ids = new String[]{"1", "9", "2", "10"};
+		
+		for (String id :ids) {
+			String rankSql = "UPDATE t_user_score d \n"
+					+ "  LEFT JOIN (SELECT "  
+					+ " 		(@rowNO:= @rowNo+1) AS rowno,  \n" 
+					+ " 		apply_id,score_time   \n"
+					+ " 	FROM (SELECT   \n"
+					+ " 			apply_id,score_time  \n"
+					+ " 		  FROM t_user_score etr  where score_time is not null and group_id = ? \n"
+					+ " 		  ORDER BY etr.score_time asc,etr.score_dt desc) a,   \n"
+					+ " 		(SELECT @rowNO:=0) b) c   \n"
+					+ "  ON c.apply_id = d.apply_id   \n"
+					+ " SET d.score_rank = rowno  \n"
+					+ " where  d.group_id = ? ";	
+			baseDao.update(rankSql, id, id);
+		}
+	}*/
+	
+	public void updateRank() {
+		
+		List<String[]> ids = new ArrayList<String[]>();
+		ids.add(new String[]{"1", "9"});
+		ids.add(new String[]{"2", "10"});
+		
+		for (String[] id :ids) {
+			String rankSql = "UPDATE t_user_score d \n"
+					+ "  LEFT JOIN (SELECT "  
+					+ " 		(@rowNO:= @rowNo+1) AS rowno,  \n" 
+					+ " 		apply_id,score_time   \n"
+					+ " 	FROM (SELECT   \n"
+					+ " 			apply_id,score_time  \n"
+					+ " 		  FROM t_user_score etr  where score_time is not null and group_id in (?,?) \n"
+					+ " 		  ORDER BY etr.score_time asc,etr.score_dt desc) a,   \n"
+					+ " 		(SELECT @rowNO:=0) b) c   \n"
+					+ "  ON c.apply_id = d.apply_id   \n"
+					+ " SET d.score_rank = rowno  \n"
+					+ " where  d.group_id in (?,?) ";	
+			baseDao.update(rankSql, id[0], id[1], id[0], id[1]);
+		}
+	}
+	
+	
+	
+	
+
+
+}

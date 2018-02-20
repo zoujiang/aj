@@ -1,0 +1,19 @@
+@charset "utf-8";
+/* CSS Document */
+@import url("css/main.css");
+@import url("css/icos.css");
+@import url("../../scripts/js/button/skins/default/css/ajaxtags.css");
+@import url("../../scripts/js/button/skins/default/css/button.css");
+@import url("../../scripts/js/toolBar/skins/default/css/toolBar.css");
+@import url("../../scripts/js/formItem/skins/default/css/formitem.css");
+@import url("../../scripts/js/grid/skins/default/css/tyGrid.css");
+@import url("../../scripts/js/dialog/skins/default/css/ui.core.css");
+@import url("../../scripts/js/dialog/skins/default/css/ui.theme.css");
+@import url("../../scripts/js/dialog/skins/default/css/ui.resizable.css");
+@import url("../../scripts/js/dialog/skins/default/css/ui.dialog.css");
+@import url("../../scripts/js/message/skins/default/css/jquery.message.css");
+@import url("../../scripts/js/jsTree/themes/tianyu/style.css");
+@import url("../../scripts/js/jsTree/themes/checkbox/style.css");
+@import url("../../scripts/js/tabPanel/skins/default/css/tabpanel.css");
+
+

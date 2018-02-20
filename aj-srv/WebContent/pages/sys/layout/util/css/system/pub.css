@@ -1,0 +1,21 @@
+@CHARSET "UTF-8";
+a.l-btn span.l-btn-left {
+	margin-left: 0px;
+}
+.dg_tb{
+	display: block;
+}
+.dg_tb .tb_left{
+	position: absolute;
+	left: 2px;
+}
+.dg_tb .tb_right{
+	position: absolute; 
+	right: 2px;
+}
+.dg_tb .tb_right input{
+	height:18px; 
+	width: 100px;
+	border:solid 1px #95B8E7;
+	font-size:9pt;
+}

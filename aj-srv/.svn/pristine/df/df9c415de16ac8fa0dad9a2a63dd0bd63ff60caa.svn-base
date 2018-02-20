@@ -1,0 +1,73 @@
+package com.aj.familyrelation.service;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import net.sf.json.JSONObject;
+
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
+
+import com.frame.core.dao.GenericDAO;
+import com.frame.core.util.SystemConfig;
+import com.frame.ifpr.exception.PublicException;
+import com.frame.ifpr.service.PublishService;
+import com.util.Constant;
+
+@Service("familyRelationList")
+public class QueryFamilyRelationListService implements PublishService{
+
+	private Logger log = Logger.getLogger(QueryFamilyRelationListService.class);
+	
+	@Resource
+	private GenericDAO baseDAO;
+	
+	@Override
+	public Object publishService(Object obj) throws PublicException {
+		
+		
+		JSONObject json = JSONObject.fromObject(obj);
+		
+		String serviceName = json.optString("serviceName");
+		JSONObject params = json.optJSONObject("params");
+		String userId = params.optString("userId");
+		String key = params.optString("key");
+		
+		JSONObject returnJSON = new JSONObject();
+		returnJSON.put("serviceName", serviceName);
+		JSONObject result = new JSONObject();
+		if(userId == null || "".equals(userId)){
+			returnJSON.put("returnCode", Constant.RETURNCODE_FAILED);
+			returnJSON.put("result", result);
+			returnJSON.put("errorMsg", "userId为空！");
+			return returnJSON.toString();
+		}
+	
+		//TODO 先验证家庭关系加密Key
+		//查询所有家人
+		String imgUrl= SystemConfig.getValue("img.http.url");
+		String sql = "SELECT c.ID callId, c.NAME callName,c.level,  u.ID userId,u.sex, u.IS_MARRIED isMarried, CASE WHEN  photo = 'null' THEN '' ELSE   CONCAT('"+imgUrl+"', u.photo)  END photo, (YEAR(NOW())-YEAR( u.birthday)-1) + ( DATE_FORMAT(u.birthday, '%m%d') <= DATE_FORMAT(NOW(), '%m%d') )  age FROM t_family_relationship r, t_call_enum c , t_user u  WHERE  r.CALL_ID = c.ID AND  r.RELATION_USER_ID = u.id AND  r.CREATE_USER_ID = ? AND r.IS_DEL <> 0 and r.IS_PRIVATE  =1  and r.IS_CONFIRM = 0 and r.call_id not  in (31, 32 ,33)";
+		List<Map<String, Object>> users = baseDAO.getGenericBySQL(sql, new Object[]{userId});
+		/*//把自己加入到列表中
+		sql = "select 0 callId, '我' callName, 0 level, u.id userId, u.sex, u.IS_MARRIED isMarried, CONCAT('"+imgUrl+"',u.photo) photo, (YEAR(NOW())-YEAR( u.birthday)-1) + ( DATE_FORMAT(u.birthday, '%m%d') <= DATE_FORMAT(NOW(), '%m%d') )  age from  t_user u where u.id = ?";
+		List<Map<String, Object>> mes = baseDAO.getGenericBySQL(sql, new Object[]{userId});
+		users.addAll(mes);*/
+		//加入宠物
+		/*sql = "select 14 callId, '宠物' callName, -9 level, u.id userId, u.sex, u.IS_MARRIED isMarried, CASE WHEN  photo = 'null' THEN '' ELSE   CONCAT('"+imgUrl+"', u.photo)  END photo, (YEAR(NOW())-YEAR( u.birthday)-1) + ( DATE_FORMAT(u.birthday, '%m%d') <= DATE_FORMAT(NOW(), '%m%d') )  age from  t_user u where u.id in (SELECT s.relation_user_id FROM t_family_relationship s WHERE s.create_user_id = ?  AND s.call_id = 14 AND s.is_del <>0)";
+		List<Map<String, Object>> pets = baseDAO.getGenericBySQL(sql, new Object[]{userId});
+		users.addAll(pets);*/
+		//查询已经私有的家人，
+		sql = "SELECT c.ID callId, c.NAME callName, u.ID userId, CASE WHEN  photo = 'null' THEN '' ELSE   CONCAT('"+imgUrl+"', u.photo)  END photo FROM t_family_relationship r, t_call_enum c , t_user u  WHERE  r.CALL_ID = c.ID AND  r.RELATION_USER_ID = u.id AND  r.CREATE_USER_ID = ? AND r.IS_DEL <> 0 and r.IS_PRIVATE  =0 and r.IS_CONFIRM = 0 	 ";
+		List<Map<String, Object>> hadDeleteUsers = baseDAO.getGenericBySQL(sql, new Object[]{userId});
+		result.put("succMsg", "查询成功");
+		result.put("list", users);
+		result.put("privateUsers", hadDeleteUsers);
+		result.put("totalResults", users.size());
+		returnJSON.put("returnCode", Constant.RETURNCODE_SUCCESS);
+		returnJSON.put("result", result);
+		returnJSON.put("errorMsg", "");
+		return returnJSON.toString();
+	}	
+}

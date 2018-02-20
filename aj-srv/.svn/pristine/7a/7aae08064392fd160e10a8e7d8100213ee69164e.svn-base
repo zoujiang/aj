@@ -1,0 +1,205 @@
+﻿
+<html>
+<head>
+    <script type="text/javascript" src="js/jquery-2.1.3.min.d7c4f6165c7e2558fb7f18723c1d1e30.js"></script>
+    <script>
+        var __time_begin = new Date();
+        var urlStr ;
+    	//function Ponload(){
+    		$(document).ready(function() { 
+    		var queryStr = window.location.search;
+    		if(queryStr != ""){
+    			queryStr = queryStr.substring(1);
+    			 $.ajax({
+    	             type: "GET",
+    	             url: "/aj/admin/photoShare/init?id="+queryStr,
+    	             dataType: "json",
+    	             async: false,
+    	             success: function(data){
+    	            	 if(data.success){
+    	            		var url = data.url;
+    	            		var urls = url.split(",");
+    	            		for(var i = 0 ; i < urls.length; i++){
+    	            			//{"url":"image/2.jpg","type":"image","location":"url"},
+    	            			if(i == 0){
+    		            			urlStr = '{"url":"'+urls[i]+'","type":"image","location":"url"}';
+    	            			}else{
+    		            			urlStr += ',{"url":"'+urls[i]+'","type":"image","location":"url"}';
+    	            			}
+    	            		}
+    	            		 g_album_info_res = JSON.parse('{"msg":"","data":{"status":1,"account_type":null,"share_desc":"","title":"亲脉，开启我的家庭圈","shareToWeibo":1,"description":null,"shareToQQ":1,"shareToTimeline":1,"favor":{"status":false},"create_time":1429720000,"music":"http:\/\/7xi46f.com2.z0.glb.qiniucdn.com\/music\/\u5929\u7a7a\u4e4b\u57ce.mp3","img_src":"qiniu-ttxp","template":{"name":"\u68a6\u5e7b\u661f\u7a7a","script":"http:\/\/cdn.ttxuanpai.com\/js\/album_template\/album_3dring.js?t=20160921","object":"EVA_ALBUM_3DRing","version":"1.0","music":"http:\/\/7xi46f.com2.z0.glb.qiniucdn.com\/music\/Without You I Am Dying.mp3","id":"5492f6186571f01824fd0d95"},"uid":"","shareToFriends":4,"id":"5537c9f0f9eb5b4a3917c371","page_view":24,"media_list":['+ urlStr +']},"ret":"0"}');
+    	            		 wx_jsapi_sig = JSON.parse('{"msg":"","data":{"timestamp":1488380644,"noncestr":"Ve97GjLflfWHjpr","appId":"wx479c12ded827a4d5","uid":"","signature":"25d79ade1d915403d2d5795f966c587ea12e282f"},"ret":"0"}');
+    	            		 g_uid = "";
+    	            	 }else{
+    	            		 alert(data.msg);
+    	            	 }
+    	         	 }
+    	    	});
+    		}else{
+    			showException("您所查看的亲脉分享地址错误!");
+    		}
+    	});
+    	
+    </script>
+    <title>亲脉照片分享</title>
+
+    <meta charset="utf-8" />
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-touch-fullscreen" content="yes"/>
+<meta name="format-detection" content="telephone=no,address=no"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+<meta name="Copyright" content="TTXuanPai">
+<link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/index.css" />
+</head>
+
+<body>
+   <div class="header"><span class="logo"><img src="image/logo.png"> 亲脉APP</span><a href="#">下载体验</a></div>
+   <div id="wraper_music">
+       <a id="div_music" class="fl" onClick="onPlayMusic()">
+           <div id="btn_play_music" class="c_btn_play_music_playing"></div>
+       </a>
+   </div>
+   <div id="div_player"></div>
+   <div id="wrapper_play_end" class="effect_fadeIn">
+       <div id="wrapper_playend_tips">
+           <div id="playendtips_title">
+           </div>
+           <div id="playendtips_date">
+           </div>
+           <div id="playendtips_toolbar">
+               <a id="playendtips_replay">
+                   ��������(5s)
+               </a>
+               <a id="playendtips_stop">
+                   ����
+               </a>
+           </div>
+       </div>
+   </div>
+   <div id="div_editor" style="display:none">
+       <div id="editor_content">
+           <div  id="editor_change_template" class="editor_content_page">
+               <div id="album_tmpl_head"></div>
+               <ul id="album_tmpl_list"></ul>
+               <div id="tmpl_tags">
+                   <ul id="album_tmpl_tag_list">
+                   </ul>
+               </div>
+           </div>
+           <div id="music_list_wrapper" class="editor_content_page">
+               <div id="album_music_head">
+                   <a class="music_tags_tab fl music_tags_tab_selected"><p></p></a>
+                   <a class="music_tags_tab fl"><p></p></a>
+                   <a class="music_tags_tab fl"><p></p></a>
+                   <a class="music_tags_tab fl"><p></p></a>
+                   <a class="music_tags_tab fl" id="edit_music_search"><p></p></a>
+                   <div class="search-bar">
+                       <div class="search_input_outter">
+                           <input id="music_search_input" class="fl" type="text" placeholder="�������������...">
+                       </div>
+                       <div class="search_go fr" id="music_search"></div>
+                   </div>
+               </div>
+               <div id="music_tags">
+                   <div class="search_hot_tag">�Ƽ�����:</div>
+                   <ul id="album_music_tag_list"  class="fl" >
+                   </ul>
+               </div>
+               <ul id="album_music_list"  class="fl">
+                   <audio></audio>
+               </ul>
+               <div id="album_empty_music_result"><p>�ǳ���Ǹ��û���ҵ���"</p><p id="album_empty_music_result_keywords"></p><p>"��ص�����~</p></div>
+           </div>
+           <div id="editor_change_content" class="editor_content_page">
+               <div class="edit_item">
+                   <div class="edit_cell">������:</div>
+                   <div class="edit_cell">
+                       <input id="edit_album_title" type="text"/>
+                   </div>
+               </div>
+
+               <div class="edit_item">
+                   <div class="edit_cell">����˵��:</div>
+                   <div class="edit_cell">
+                       <textarea id="edit_album_share_desc" placeholder="���������˵�������50��" maxlength="50"></textarea>
+                   </div>
+               </div>
+           </div>
+           <div id="edit_page_image" class="editor_content_page">
+               <!--div id="w_edit_image_tips">С��ʾ : ͼ��ģ�弴�����ߣ������ڴ�~</div-->
+               <ul id="album_image_list"  class="fl"></ul>
+           </div>
+           <div id="editor_content_titlebar">
+               <div id="editor_content_caption">�޸�ģ��</div>
+               <a id="editor_content_closebtn">
+                   <div></div>
+               </a>
+               <a id="editor_content_confirm">
+                   <div></div>
+               </a>
+           </div>
+       </div>
+       <footer id="editor_toolbar">
+           <a id="div_change_template" class="editor_btn_section"">
+               <div class="tab-icon"></div>
+               <p>ģ��</p>
+           </a>
+           <a id="div_change_music" class="editor_btn_section"">
+               <div class="tab-icon"></div>
+               <p>����</p>
+           </a>
+           <a id="div_change_content" class="editor_btn_section"">
+               <div class="tab-icon"></div>
+               <p>����</p>
+           </a>
+           <a id="div_change_picture" class="editor_btn_section"">
+               <div class="tab-icon"></div>
+               <p>ͼƬ</p>
+           </a>
+       </footer>
+   </div>
+
+   <div id="wrapper_cover">
+       <div id="wrapper_player_cover_bkgnd">
+           <img>
+           <div id="wrapper_player_cover_title"><span id="album_title"></span></div>
+       </div>
+       <div id="div_player_loadingText">
+           <span id="player_loadingText"></span>
+       </div> 
+       <div id="w_player_cover_mask">
+           <img src="http://cdn.ttxuanpai.com/images/view/cover_play.png">
+       </div>
+   </div>
+   <div id="div_error">
+       <div class="error-cell icon_area">
+           <div class="error-icon-warn">
+               <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAABQCAMAAAAeErRkAAABcVBMVEUAAAD//vz++/X9+Oj//vn//fr779z48MH33az79dz//fr//vz//fn//fj///389e39+Ov68eP68eX9+On//vv99OT98cn67tf569f57Nv35cz678v34MT53rr//fz+/fz9+/L/+/D++On68ef88eT///r89uX///7++ef+8+X779v899r669X458/34s346Nf57c747dT758P88N7++PP++PX89Nv67tr78979+O/89+b79Nz24ML94Kv66s3//vj///7/+vL/+/T+/ff+9uv+/vb+/fX++uv/9uj/+uv+9er87d7+++/89Ov+/PX+8d/78N757N///PP/++n77t/8++T9+uH56Nj15M/548by3cr8+eb65cz8+eT02L779Nj568j+/uz999f03sj7+NL78t732bP87Nv89d/15dL758L26db44Mr148/95MjszK381qv746L967f67Nr68ej93aT+1Jv85Mn//////v3///1fO9fBAAAAeHRSTlMA/BEN7uFmIBIJ+vXx6+ffyr26t7WpZFhONzImGhb85dbTzMjAvr63qaCamJGPjnx8eXFvaWdaWkM/PTkeDATy6+vi3t7c29rQzMe/u7m4t7WuraupoJ6WiYaFg4GAfHR0c29vamhiYWBfXlZWTEhIR0I/Pjw2NR+zNNtYAAABnUlEQVQ4y63S11bbQBSF4W3LxgbHYGJwwTaEBAIhlNBCSSCh9957771LenpGM0eaA9f8d9/SzdZZA1FmKx6LxTcykO0HTFn00NG5bVJ2Agj3m16BEJImaxf1nKUo5SxG8Vt+5qzFD846NHD+QivnEfKY7CRSNmMXuixNqxtlBZr/QsgFNP/74S/UHDLQO675HeAr4wD/pSXBFc16wVU+GXxlnuCZHtUh2Gl57BR89Oj7I5iJuPwUAtjKQr+gMeByOB+iKj4ZmHJZ4kifdlmy0WWDZLPLZskTknUqeWERk5IPPtrYLZkuVyxPS/4NsMmAv0KxwpDMr1T84kzWp52Eqkaxhlin+JO4rrhGbFXcIXZYcuNvYkoxRUz76Kwyeg8FZcRc1GE0SzSCDoMGsTdGk6kSh9Nwm6crU400mWpyuEmg97Dn8dKybZosj9fW3t72go+vJ1FbXb2QCCs9jdnyOJX3jp77vGd2B/SMml4jYRybrBYscs7iG+fX95zjnMEBZwvCRVqDOeAm4ipyC9EVfS+6hiy7XRUMTjRlAbwCzxM7k52LCtAAAAAASUVORK5CYII=">
+           </div>
+       </div>
+       <div class="error-cell">
+           <span id="txt_error_desc"></span>
+       </div>
+       <div class="error-cell btn_area">
+            <a id="btn_create_album" href="javascript:" class="myui_btn myui_btn_primary">出错了</a>
+       </div>
+   </div>
+
+    <script type="text/javascript" src="js/jweixin-1.0.0.js"></script>
+    <script type="text/javascript" src="js/common.min.f9d4629ea4e77923eb8f42ce713c74f3.js"></script>
+
+    <script src="js/view-base.min.1af5c09653f8b718e728ad93ac67c7b9.js"></script>
+    <script src="js/base64.js"></script>
+    <script type="text/javascript" src="js/stats.js" name="MTAH5" sid="500001150" cid="500001151" ></script>
+	<script>
+		$(function (){
+			$('#div_player').on('click' , '.ring_img_wrapper',function (){
+				$('#img_viewer').attr('style','width: 608px; height: 651px;display:block;pointer-events: auto;').attr('class','img_viewer_show');
+				$('#img_viewer img').attr('src',$(this).find('img').attr('src'));
+			});
+		});
+	</script>
+</body>
+</html>

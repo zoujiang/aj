@@ -1,0 +1,218 @@
+package com.spt.entry.model;
+
+import java.io.Serializable;
+import javax.persistence.*;
+import java.util.Date;
+
+
+/**
+ * The persistent class for the t_imp_job database table.
+ * 
+ */
+@Entity
+//@Table(name="t_imp_job")
+//@NamedQuery(name="TImpJob.findAll", query="SELECT t FROM TImpJob t")
+public class TImpJob implements Serializable {
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@Column(name="JOB_ID")
+	private String jobId;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="CERT_END_DT")
+	private Date certEndDt;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="CERT_START_DT")
+	private Date certStartDt;
+
+	@Column(name="CERT_STATUS")
+	private String certStatus;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="CREATE_DT")
+	private Date createDt;
+
+	@Column(name="CREATE_USER")
+	private String createUser;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="JOB_END_DT")
+	private Date jobEndDt;
+
+	@Column(name="JOB_ERR_FILE")
+	private String jobErrFile;
+
+	@Column(name="JOB_FILE_PATH")
+	private String jobFilePath;
+
+	@Column(name="JOB_NAME")
+	private String jobName;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="JOB_START_DT")
+	private Date jobStartDt;
+
+	@Column(name="JOB_STATUS")
+	private String jobStatus;
+
+	@Column(name="JOB_TYPE")
+	private String jobType;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="MODIFY_DT")
+	private Date modifyDt;
+
+	@Column(name="MODIFY_USER")
+	private String modifyUser;
+	
+	@Column(name="JOB_GROUP_ID")
+	private String jobGroupId;
+	
+	@Column(name="JOB_FILE_NAME")
+	private String jobFileName;
+
+	public TImpJob() {
+	}
+
+	public String getJobId() {
+		return this.jobId;
+	}
+
+	public void setJobId(String jobId) {
+		this.jobId = jobId;
+	}
+
+	public Date getCertEndDt() {
+		return this.certEndDt;
+	}
+
+	public void setCertEndDt(Date certEndDt) {
+		this.certEndDt = certEndDt;
+	}
+
+	public Date getCertStartDt() {
+		return this.certStartDt;
+	}
+
+	public void setCertStartDt(Date certStartDt) {
+		this.certStartDt = certStartDt;
+	}
+
+	public String getCertStatus() {
+		return this.certStatus;
+	}
+
+	public void setCertStatus(String certStatus) {
+		this.certStatus = certStatus;
+	}
+
+	public Date getCreateDt() {
+		return this.createDt;
+	}
+
+	public void setCreateDt(Date createDt) {
+		this.createDt = createDt;
+	}
+
+	public String getCreateUser() {
+		return this.createUser;
+	}
+
+	public void setCreateUser(String createUser) {
+		this.createUser = createUser;
+	}
+
+	public Date getJobEndDt() {
+		return this.jobEndDt;
+	}
+
+	public void setJobEndDt(Date jobEndDt) {
+		this.jobEndDt = jobEndDt;
+	}
+
+	public String getJobErrFile() {
+		return this.jobErrFile;
+	}
+
+	public void setJobErrFile(String jobErrFile) {
+		this.jobErrFile = jobErrFile;
+	}
+
+	public String getJobFilePath() {
+		return this.jobFilePath;
+	}
+
+	public void setJobFilePath(String jobFilePath) {
+		this.jobFilePath = jobFilePath;
+	}
+
+	public String getJobName() {
+		return this.jobName;
+	}
+
+	public void setJobName(String jobName) {
+		this.jobName = jobName;
+	}
+
+	public Date getJobStartDt() {
+		return this.jobStartDt;
+	}
+
+	public void setJobStartDt(Date jobStartDt) {
+		this.jobStartDt = jobStartDt;
+	}
+
+	public String getJobStatus() {
+		return this.jobStatus;
+	}
+
+	public void setJobStatus(String jobStatus) {
+		this.jobStatus = jobStatus;
+	}
+
+	public String getJobType() {
+		return this.jobType;
+	}
+
+	public void setJobType(String jobType) {
+		this.jobType = jobType;
+	}
+
+	public Date getModifyDt() {
+		return this.modifyDt;
+	}
+
+	public void setModifyDt(Date modifyDt) {
+		this.modifyDt = modifyDt;
+	}
+
+	public String getModifyUser() {
+		return this.modifyUser;
+	}
+
+	public void setModifyUser(String modifyUser) {
+		this.modifyUser = modifyUser;
+	}
+
+
+	public String getJobGroupId() {
+		return jobGroupId;
+	}
+
+	public void setJobGroupId(String jobGroupId) {
+		this.jobGroupId = jobGroupId;
+	}
+
+	public String getJobFileName() {
+		return jobFileName;
+	}
+
+	public void setJobFileName(String jobFileName) {
+		this.jobFileName = jobFileName;
+	}
+
+	
+
+}

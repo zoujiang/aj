@@ -1,0 +1,103 @@
+/** 
+ * Description: TODO(用一句话描述该文件做什么)  
+ * @className com.spt.entry.service.WebService
+ * @author ChingWang    
+ * @date 2016-9-17 下午7:07:48
+ * @version V1.0   
+ * Copyright (C) 2016 www.demo.com Inc. All rights reserved.        
+ */
+
+package com.spt.entry.service;
+
+import java.util.Map;
+
+public interface H5Service {
+
+	/** 
+	 * TODO（用一句话描述该方法做什么）
+	 * @param certNo
+	 * @param mobile
+	 * @return
+	 * @version
+	 * Date           Author         Version     Description
+	 * -----------------------------------------------------------------
+	 * 2016-9-17      Ching Wang     v1.0.0      create
+	 *
+	 */
+	public int getTotal(String certNo, String mobile);
+
+	/** 
+	 * TODO（用一句话描述该方法做什么）
+	 * @param certNo
+	 * @param mobile
+	 * @return
+	 * @version
+	 * Date           Author         Version     Description
+	 * -----------------------------------------------------------------
+	 * 2016-9-17      Ching Wang     v1.0.0      create
+	 *
+	 */
+	public Map<String, Object> getApply(int groupId, String certNo, String mobile);
+
+	/** 
+	 * TODO（用一句话描述该方法做什么）
+	 * @param certNo
+	 * @param mobile
+	 * @return
+	 * @version
+	 * Date           Author         Version     Description
+	 * -----------------------------------------------------------------
+	 * 2016-9-17      Ching Wang     v1.0.0      create
+	 *
+	 */
+	public Map<String, Object> isExist(String certNo, String mobile);
+
+	/** 
+	 * TODO（用一句话描述该方法做什么）
+	 * @param certNo
+	 * @param mobile
+	 * @return
+	 * @version
+	 * Date           Author         Version     Description
+	 * -----------------------------------------------------------------
+	 * 2016-9-30      Ching Wang     v1.0.0      create
+	 *
+	 */
+	public int isGradeExist(String groupId, String certNo, String mobile);
+
+	/** 
+	 * TODO（用一句话描述该方法做什么）
+	 * @param certNo
+	 * @param mobile
+	 * @return
+	 * @version
+	 * Date           Author         Version     Description
+	 * -----------------------------------------------------------------
+	 * 2016-9-30      Ching Wang     v1.0.0      create
+	 *
+	 */
+	public Map<String, Object> getApplyInfo(String certNo, String mobile);
+
+	/** 
+	 * TODO（用一句话描述该方法做什么）
+	 * @param string
+	 * @return
+	 * @version
+	 * Date           Author         Version     Description
+	 * -----------------------------------------------------------------
+	 * 2016-9-30      Ching Wang     v1.0.0      create
+	 *
+	 */
+	public Map<String, Object> getScoreInfo(String applyId);
+
+	/** 
+	 * TODO（用一句话描述该方法做什么）
+	 * @param applyId
+	 * @version
+	 * Date           Author         Version     Description
+	 * -----------------------------------------------------------------
+	 * 2016-10-10      Ching Wang     v1.0.0      create
+	 *
+	 */
+	public void updateCertStatus(String applyId);
+}

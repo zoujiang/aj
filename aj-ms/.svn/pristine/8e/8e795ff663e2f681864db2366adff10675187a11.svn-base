@@ -1,0 +1,147 @@
+/** 
+ * Description: TODO(用一句话描述该文件做什么)  
+ * @className com.spt.entry.service.impl.WebServiceImpl
+ * @author ChingWang    
+ * @date 2016-9-17 下午7:08:33
+ * @version V1.0   
+ * Copyright (C) 2016 www.demo.com Inc. All rights reserved.        
+ */
+
+package com.spt.entry.service.impl;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.frame.core.dao.GenericDAO;
+import com.spt.entry.service.WebService;
+
+@Service("webService")
+public class WebServiceImpl implements WebService {
+
+@Autowired private GenericDAO baseDAO;
+	
+	/* (非 Javadoc)
+	 * <p>Title: getTotal</p>
+	 * <p>Description: </p>
+	 * @param certNo
+	 * @param mobile
+	 * @return 
+	 * @see com.spt.entry.service.AthleteService#getTotal(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public int getTotal(String certNo, String mobile) {
+		String sql = "SELECT COUNT(1) FROM t_apply tp , t_pay_order tpo WHERE tp.APPLY_ID = tpo.APPLY_ID AND tpo.STATUS = 1 and tp.MOBILE = ? AND tp.CERTNO = ?";
+		return baseDAO.getGenericIntToSQL(sql, new Object[]{mobile, certNo});
+	}
+
+	/* (非 Javadoc)
+	 * <p>Title: getApply</p>
+	 * <p>Description: </p>
+	 * @param certNo
+	 * @param mobile
+	 * @return 
+	 * @see com.spt.entry.service.WebService#getApply(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public Map<String, Object> getApply(int groupId, String certNo, String mobile) {
+		String sql = "";
+		if(groupId == 4){
+			sql = "SELECT ta.APPLY_ID applyId, ta.TEAM_ID teamId, ta.TEAM_NAME teamName, ta.SPORT_ID sportId, ta.SPORT_NAME sportName, ta.TYPE_ID typeId, ta.GROUP_ID groupId, ta.GROUP_NAME groupName, ta.TRUENAME trueName, ta.AGE age, ta.BIRTHDAY birthday, ta.CHILDNAME childName, ta.CHILDAGE childAge, ta.SEX sex, ta.MOBILE mobile, ta.PROLEVEL prolevel, bi.basicname certType, ta.CERTNO certNo, ta.COUNTRY country, ta.PROVINCE_ID provinceId, ta.PROVINCENAME provinceName, ta.CITY_ID cityId, ta.CITYNAME cityName, ta.ADDRESS address, ta.EMAIL email, ta.CONTACTNAME contactName, ta.CONTACTTEL contactTel, ta.BLOODTYPE bloodType, bih.basicname healthStatus, ta.MEDICALHISTORY medicalHis, ta.CONDITIONTOOK conditionTook, bis.basicname tshirt, ta.INVITATIONCODE invitCode, ta.TEAMNUMBER teamNum, ta.GAMECODE gameCode, ta.FILE attach, ta.ADDTIME addDt, ta.ADDIP addIp, ta.STATUS stat, ta.CHILDSEX childSex, bic.basicname childCertType, ta.CHILDCERTNO childCertNo, ta.CHILDBIRTHDAY childBirthDay, bihc.basicname childHealthStatus, ta.CHILDBLOODTYPE childBloodType, ta.CHILDMEDICALHISTORY childMedicalHis, ta.CHILDCONDITIONTOOK childConditionTook, bisc.basicname childTshirt, ta.CHANNEL_ID channelId, ta.APV_STS apvSts, ta.IS_GET isGet, ta.GET_DT getDt, ta.GET_CREATE_USER getCreateUser, tpo.TYPE payType, tpo.OUT_TRADE_NO tradeNo, tpo.STATUS payStatus FROM t_apply ta, t_pay_order tpo, basicinfo bi, basicinfo bis, basicinfo bih, basicinfo bic, basicinfo bisc, basicinfo bihc WHERE ta.APPLY_ID = tpo.APPLY_ID AND tpo.STATUS = 1 and ta.CERTTYPE = bi.basic_id and bis.basic_id = ta.TSHIRT and bih.basic_id = ta.HEALTHSTATUS AND ta.CHILDCERTTYPE = bic.basic_id AND bisc.basic_id = ta.CHILDTSHIRT AND bihc.basic_id = ta.CHILDHEALTHSTATUS and ta.group_id=? and ta.MOBILE = ? AND ta.CERTNO = ?";
+		} else {
+			sql = "SELECT ta.APPLY_ID applyId, ta.TEAM_ID teamId, ta.TEAM_NAME teamName, ta.SPORT_ID sportId, ta.SPORT_NAME sportName, ta.TYPE_ID typeId, ta.GROUP_ID groupId, ta.GROUP_NAME groupName, ta.TRUENAME trueName, ta.AGE age, ta.BIRTHDAY birthday, ta.SEX sex, ta.MOBILE mobile, ta.PROLEVEL prolevel, bi.basicname certType, ta.CERTNO certNo, ta.COUNTRY country, ta.PROVINCE_ID provinceId, ta.PROVINCENAME provinceName, ta.CITY_ID cityId, ta.CITYNAME cityName, ta.ADDRESS address, ta.EMAIL email, ta.CONTACTNAME contactName, ta.CONTACTTEL contactTel, ta.BLOODTYPE bloodType, bih.basicname healthStatus, ta.MEDICALHISTORY medicalHis, ta.CONDITIONTOOK conditionTook, bis.basicname tshirt, ta.INVITATIONCODE invitCode, ta.TEAMNUMBER teamNum, ta.GAMECODE gameCode, ta.FILE attach, ta.ADDTIME addDt, ta.ADDIP addIp, ta.STATUS stat , ta.CHANNEL_ID channelId, ta.APV_STS apvSts, ta.IS_GET isGet, ta.GET_DT getDt, ta.GET_CREATE_USER getCreateUser, tpo.TYPE payType, tpo.OUT_TRADE_NO tradeNo, tpo.STATUS payStatus, bi.basicname FROM t_apply ta, t_pay_order tpo, basicinfo bi, basicinfo bis, basicinfo bih WHERE ta.APPLY_ID = tpo.APPLY_ID AND tpo.STATUS = 1 and ta.CERTTYPE = bi.basic_id and bis.basic_id = ta.TSHIRT and bih.basic_id = ta.HEALTHSTATUS and ta.group_id=? and ta.MOBILE = ? AND ta.CERTNO = ?";
+		}
+		List<Map<String, Object>> list =  baseDAO.getGenericBySQL(sql, new Object[]{groupId, mobile, certNo});
+
+		if(list != null && list.size() > 0){
+			return list.get(0);
+		}
+		return null;
+	}
+
+	/* (非 Javadoc)
+	 * <p>Title: isExist</p>
+	 * <p>Description: </p>
+	 * @param certNo
+	 * @param mobile
+	 * @return 
+	 * @see com.spt.entry.service.WebService#isExist(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public Map<String, Object> isExist(String certNo, String mobile) {
+		String sql = "SELECT tp.group_id groupId FROM t_apply tp, t_pay_order tpo WHERE tp.APPLY_ID = tpo.APPLY_ID AND tpo.STATUS = 1 AND tp.MOBILE = ? AND tp.CERTNO = ?";
+		List<Map<String, Object>> list = baseDAO.getGenericBySQL(sql, new Object[]{mobile, certNo});
+		if(list != null &&list.size() > 0){
+			return list.get(0);
+		}
+		return null;
+	}
+
+	/* (非 Javadoc)
+	 * <p>Title: isGradeExist</p>
+	 * <p>Description: </p>
+	 * @param certNo
+	 * @param mobile
+	 * @return 
+	 * @see com.spt.entry.service.H5Service#isGradeExist(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public int isGradeExist(String groupId, String certNo, String mobile) {
+		String sql = "select count(1) from t_apply tp, t_user_score tus, t_pay_order tpo WHERE tp.APPLY_ID = tpo.APPLY_ID AND tpo.STATUS = 1 AND tp.apply_id = tus.apply_id and tp.mobile = ? and tp.certno = ?";
+		if("4".equals(groupId)){
+			sql += " and tus.cert_url is not null";
+		}
+		return baseDAO.getGenericIntToSQL(sql, new Object[]{mobile, certNo});
+	}
+
+	/* (非 Javadoc)
+	 * <p>Title: getApplyInfo</p>
+	 * <p>Description: </p>
+	 * @param certNo
+	 * @param mobile
+	 * @return 
+	 * @see com.spt.entry.service.H5Service#getApplyInfo(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public Map<String, Object> getApplyInfo(String certNo, String mobile) {
+		String sql = "select ta.apply_id applyId, ta.group_id groupId, ta.group_name groupName, ta.gameCode, ta.trueName, ta.sex, bi0.basicname certType, ta.certNo, ta.childName, ta.childAge, ta.childSex from t_apply ta, basicinfo bi0, t_pay_order tpo WHERE ta.APPLY_ID = tpo.APPLY_ID AND tpo.STATUS = 1 AND ta.certtype = bi0.basic_id and ta.mobile = ? and ta.certno = ?";
+		List<Map<String, Object>> list =  baseDAO.getGenericBySQL(sql, new Object[]{mobile, certNo});
+
+		if(list != null && list.size() > 0){
+			return list.get(0);
+		}
+		return null;
+	}
+
+	/* (非 Javadoc)
+	 * <p>Title: getScoreInfo</p>
+	 * <p>Description: </p>
+	 * @param applyId
+	 * @return 
+	 * @see com.spt.entry.service.H5Service#getScoreInfo(java.lang.String)
+	 */
+	@Override
+	public Map<String, Object> getScoreInfo(String applyId) {
+		String sql = "SELECT tus.apply_id applyId, tus.score_time1 scoreTime1, tus.score_time2 scoreTime2, tus.score_time3 scoreTime3, tus.score_time scoreTime, tus.score_rank scoreRank, tus.cert_url certUrl FROM t_user_score tus, t_pay_order tpo WHERE tus.APPLY_ID = tpo.APPLY_ID AND tpo.STATUS = 1 AND tus.APPLY_ID = ?";
+		List<Map<String, Object>> list = baseDAO.getGenericBySQL(sql, new Object[]{applyId});
+		if(list != null && list.size() > 0){
+			return list.get(0);
+		}
+		return null;
+	}
+
+	/* (非 Javadoc)
+	 * <p>Title: updateCertStatus</p>
+	 * <p>Description: </p>
+	 * @param applyId 
+	 * @see com.spt.entry.service.H5Service#updateCertStatus(java.lang.String)
+	 */
+	@Override
+	public void updateCertStatus(String applyId) {
+		String sql = "update t_user_score tus set tus.cert_if_down = ?, tus.cert_down_dt = ? WHERE tus.apply_id = ?";
+		baseDAO.execteNativeBulk(sql, new Object[]{"2", new Date(), applyId});
+	}
+}

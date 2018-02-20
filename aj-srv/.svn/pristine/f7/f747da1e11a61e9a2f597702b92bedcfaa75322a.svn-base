@@ -1,0 +1,212 @@
+BODY,TD,INPUT,SELECT {
+	FONT-SIZE: $font$
+}
+
+A {
+	COLOR: #000000
+}.DlgBody {
+	background-color: #9BAABF;
+}
+.list_td_title {
+	color: #ffffff; 
+	height: 17px; 
+	font-family: "宋体"; 
+	font-size: 9pt; 
+	font-weight: bold; 
+	border: #999999; 
+	border-style: outset; 
+	border-top-width: 1px; 
+	border-right-width: 1px;
+	border-bottom-width: 1px; 
+	border-left-width: 1px; 	background-color: #609ceb;
+	text-align: center
+	}
+.list_td_context {
+	background-color: #ffffff; cellspacing:"0" ; cellpadding:"0"; height:20px
+}
+.list_td_context1 {
+	background-color: #acd7f7; cellspacing:"0" ; cellpadding:"0"; height:20px
+}
+.list_td_context2 {
+	background-color: #EEEEEE; cellspacing:"0" ; cellpadding:"0"; height:20px
+}
+.list_td_context3 {
+	background-color: #A6DEFF; cellspacing:"0" ; cellpadding:"0"; height:20px
+}
+
+BODY.clsMainBody { 
+	background-color : #85D2FF ;
+	MARGIN-LEFT: 10px; margin-top: 0 px; 
+	width: 100%; height: 100%; 
+	SCROLLBAR-FACE-COLOR: #85d2ff; //滚动条凸出部分的颜色
+	SCROLLBAR-HIGHLIGHT-COLOR: #0A00D1;//滚动条空白部分的颜色
+	SCROLLBAR-SHADOW-COLOR: #FF7417;//立体滚动条阴影的颜色
+	SCROLLBAR-3DLIGHT-COLOR: #425D7F;//滚动条亮边的颜色
+	SCROLLBAR-ARROW-COLOR: #5DE8FF;//上下按钮上三角箭头的颜色
+	SCROLLBAR-TRACK-COLOR: #85d2ff;//滚动条的背景颜色
+	SCROLLBAR-DARKSHADOW-COLOR: #0A00D1;//滚动条强阴影的颜色
+	SCROLLBAR-BASE-COLOR: #85d2ff；//滚动条的基本颜色
+}
+
+
+fieldset {
+	padding: 5px; border:1px #DDF4FF solid;
+}
+.input100 {
+	width: 100%;
+}
+
+.kuang {
+	BORDER-RIGHT: #A29C86 1px solid; 
+	BORDER-top: #A29C86 1px solid; 
+	BORDER-LEFT: #A29C86 1px solid; 
+	BORDER-BOTTOM:#A29C86 1px solid
+}
+.kuang1 {
+	BORDER-RIGHT: #A29C86 1px solid; 
+	 
+	BORDER-LEFT: #A29C86 1px solid; 
+	BORDER-BOTTOM:#A29C86 1px solid
+}
+.tabShow {
+	DISPLAY: block
+}
+.tabHide {
+	DISPLAY: none
+}
+.tabMainTd {
+	BORDER-RIGHT: #9A957A 1px solid; 
+	PADDING-RIGHT: 10px; 
+	PADDING-LEFT: 10px; 
+	PADDING-BOTTOM: 10px; 
+	BORDER-LEFT:#9A957A 1px solid;
+	PADDING-TOP: 10px; 
+	
+	BACKGROUND-COLOR: #EFECDD
+}
+.tabLabelTdActive {
+	BORDER-BOTTOM: #F5F4F9 1px solid
+}
+.tabLabelTdUnactive {
+	BORDER-BOTTOM: #9A957A 1px solid
+}
+.tabLabelActive {
+	BORDER-RIGHT: #9A957A 1px solid; 
+	PADDING-RIGHT: 4px;
+	PADDING-LEFT: 4px; 
+	PADDING-BOTTOM: 4px; 
+	BORDER-TOP: #9A957A 1px solid; 
+	BORDER-LEFT: #9A957A 1px solid; 
+	CURSOR: default; 
+	PADDING-TOP: 4px; 
+	HEIGHT: 20px; 
+	BACKGROUND-COLOR: #F5F4F9; 	
+	LINE-HEIGHT: 110%; 
+	TEXT-ALIGN:CENTER; 
+	width: 100%
+}
+.tabLabelSpaceActive {
+	BORDER-RIGHT: #9AA7B8 1px solid; 	
+	PADDING-BOTTOM: 1px; 
+	BORDER-TOP: #99A8BC 1px solid; 
+	BORDER-LEFT: #787D84 1px solid; 
+	CURSOR: default;	
+	PADDING-TOP: 3px;
+	HEIGHT: 22px;		
+	BACKGROUND-COLOR: #8993A1; 	
+}
+.tabLabelSpaceUnactive {
+	BORDER-RIGHT: #97A5B9 1px solid; 	
+	PADDING-BOTTOM: 1px; 
+	BORDER-TOP: #9BAABE 1px solid; 
+	BORDER-LEFT: #868F9B 1px solid;		
+	PADDING-TOP: 3px;
+	HEIGHT: 20px;		
+	BACKGROUND-COLOR: #909CAD; 	
+}
+.tabRightShadow {
+	BORDER-RIGHT: #97A5B9 1px solid; 	
+	PADDING-BOTTOM: 1px; 
+	BORDER-TOP: #9AA9BD 1px solid; 
+	BORDER-LEFT: #868F9B 1px solid;	
+	BORDER-Bottom: #97A5B9 1px solid;	
+	PADDING-TOP: 1px;
+	HEIGHT: 100%; 	 	
+}
+.tabBottomShadow {
+	BORDER-TOP: #6C6E70 1px solid; 
+	BORDER-Bottom: #909CAD 1px solid;	
+	WIDTH: 100%;
+	HEIGHT: 3;
+	BACKGROUND-COLOR: #8993A1;	 	
+}
+.tabTdSpaceActive{
+	BORDER-BOTTOM: #9A957A 1px solid	 		
+}
+.tabLabelUnactive {
+	BORDER-RIGHT: #B4B09C 1px solid; 
+	PADDING-RIGHT: 2px; 
+	PADDING-LEFT: 2px; 
+	PADDING-BOTTOM: 1px; 
+	BORDER-TOP: #B4B09C 1px solid; 
+	BORDER-LEFT: #B4B09C 1px solid; 
+	CURSOR: default; 
+	COLOR: #000000; 
+	PADDING-TOP: 5px; 
+	HEIGHT: 18px; 	
+	BACKGROUND-COLOR: #E3E8F2; 	
+	TEXT-ALIGN:CENTER; 
+	width: 100%
+}
+.topSpaceTab{
+	BORDER-RIGHT: #9A957A 1px solid; 	 
+	BORDER-LEFT: #9A957A 1px solid;					
+	BACKGROUND-COLOR: #F5F4F9; 	 		
+}
+.BottomSpaceTab{
+	BORDER-RIGHT: #9A957A 1px solid; 	 
+	BORDER-LEFT: #9A957A 1px solid; 
+	BORDER-Bottom: #9A957A 1px solid;				
+	BACKGROUND-COLOR: #F5F4F9; 	 		
+}
+.tdSpaceHr{		
+	BORDER-Top: #83853F 1px dotted;			
+	HEIGHT: 1px; 		 		
+}
+.tdLeftTap{		
+	BORDER-Top: #A29C86 1px solid;
+	
+	BORDER-Left: #A29C86 1px solid;			
+	HEIGHT: 100%; 		 		
+}
+.tdRightTap{		
+	BORDER-Top: #A29C86 1px solid;
+	
+	BORDER-Right: #A29C86 1px solid;			
+	HEIGHT: 100%; 		 		
+}
+.scrollBar {
+	
+	scrollbar-3dlight-color:#56B583;
+	scrollbar-darkshadow-color:#639E7C;
+	scrollbar-highlight-color:#D5EEE2;
+	scrollbar-shadow-color:#D5EEE2;
+	scrollbar-base-color:#D5EEE2;
+	scrollbar-face-color:#D5EEE2;
+	scrollbar-arrow-color:#1D432F;
+	SCROLLBAR-TRACK-COLOR: #FFFFFF;
+}
+
+
+
+.tableLeftConner {border:#9A987F 1px solid}
+
+.tableborder {}
+
+.tableborder td{border-right:#9A987F 1px solid;border-bottom:#9A987F 1px solid}
+
+.tableRBborder {border-right:#9A987F 1px solid;border-bottom:#9A987F 1px solid}
+
+.tabletitlebg {background-color:#E2E2C2}
+
+.tablebg {background-color:#EFEBDF}

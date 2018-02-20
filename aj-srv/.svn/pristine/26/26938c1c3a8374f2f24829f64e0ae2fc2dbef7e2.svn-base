@@ -1,0 +1,490 @@
+package com.aj.familyrelation.service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import javax.annotation.Resource;
+
+import net.sf.json.JSONObject;
+
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
+
+import com.aam.model.TUser;
+import com.aj.albummgr.vo.TAlbum;
+import com.aj.familyrelation.util.FamilyRelationUtil;
+import com.aj.familyrelation.vo.TFamilyRelationship;
+import com.aj.praylettermgr.service.QueryPrayLetterService;
+import com.aj.sys.vo.TCallEnum;
+import com.aj.sys.vo.TSysMsgAlert;
+import com.frame.core.dao.GenericDAO;
+import com.frame.ifpr.exception.PublicException;
+import com.frame.ifpr.service.PublishService;
+import com.frame.task.service.ThreadPoolTaskService;
+import com.util.Constant;
+import com.util.DateUtils;
+
+@Service("confirmRelationService")
+public class ConfirmRelationService_nouse implements PublishService{
+
+	private Logger log = Logger.getLogger(QueryPrayLetterService.class);
+	
+	@Resource
+	private GenericDAO baseDAO;
+	@Resource
+	private ThreadPoolTaskService threadPoolTaskService;
+	
+	@Override
+	public Object publishService(Object obj) throws PublicException {
+		
+		
+		JSONObject json = JSONObject.fromObject(obj);
+		
+		String serviceName = json.optString("serviceName");
+		JSONObject params = json.optJSONObject("params");
+		String userId = params.optString("userId");
+		String relationId = params.optString("relationId");
+		String oper = params.optString("oper"); //0同意  1拒绝  2确认全部关系  
+		
+		JSONObject returnJSON = new JSONObject();
+		returnJSON.put("serviceName", serviceName);
+		JSONObject result = new JSONObject();
+		if(userId == null || "".equals(userId)){
+			returnJSON.put("returnCode", Constant.RETURNCODE_FAILED);
+			returnJSON.put("result", result);
+			returnJSON.put("errorMsg", "userId为空！");
+			return returnJSON.toString();
+		}
+		if(relationId == null || "".equals(relationId)){
+			returnJSON.put("returnCode", Constant.RETURNCODE_FAILED);
+			returnJSON.put("result", result);
+			returnJSON.put("errorMsg", "relationId为空！");
+			return returnJSON.toString();
+		}
+		if(oper == null || "".equals(oper)){
+			returnJSON.put("returnCode", Constant.RETURNCODE_FAILED);
+			returnJSON.put("result", result);
+			returnJSON.put("errorMsg", "oper为空！");
+			return returnJSON.toString();
+		}
+		
+		String hsql = "from TFamilyRelationship where relationUserId = ? and id = ?";
+		List<TFamilyRelationship> realtionList = baseDAO.getGenericByHql(hsql, Integer.parseInt(userId), Integer.parseInt(relationId));
+		String querySql = "SELECT u.SEX create_user_sex, u.TRUE_NAME create_user_truename,u.NICK_NAME create_user_nickname FROM t_family_relationship r , t_user u WHERE r.CREATE_USER_ID = u.ID  AND r.id = ?";
+		List<Map<String, Object>> userSexs  = baseDAO.getGenericBySQL(querySql, new Object[]{relationId});
+		String userHsql = "from TUser where id = ?";
+		List<TUser> users = baseDAO.getGenericByHql(userHsql, Integer.parseInt(userId));
+		if(users == null || users.size() == 0){
+			returnJSON.put("returnCode", Constant.RETURNCODE_FAILED);
+			returnJSON.put("result", result);
+			returnJSON.put("errorMsg", "用户不存在！");
+			return returnJSON.toString();
+		}
+		TUser user = users.get(0);
+		if(user.getSex() != 0 && user.getSex() != 1){
+			returnJSON.put("returnCode", Constant.RETURNCODE_FAILED);
+			returnJSON.put("result", result);
+			returnJSON.put("errorMsg", "为了精准的生成家庭关系，请先设置个人性别！");
+			return returnJSON.toString();
+		}
+		
+		if(realtionList != null && realtionList.size()>0){
+			if("0".equals(oper)){
+			//同意
+				TFamilyRelationship relation = realtionList.get(0);
+				relation.setIsConfirm(0);
+				baseDAO.update(relation);
+				//生成每个家庭的家庭ID， 老公老婆是一对，同一个家庭ID
+				mergeFamilyId(relation.getCreateUserId(), relation.getRelationUserId(),relation.getCallId());
+				
+				int relationUserId = relation.getCreateUserId();
+				//生成一条反向的家庭关系记录
+				if(userSexs != null && userSexs.size() >0){
+					Map<String, Object> map  = userSexs.get(0);
+					//原始创建人性别
+					String create_user_sex = map.get("create_user_sex").toString();
+					int callId = relation.getCallId();
+					
+					int newCallId = FamilyRelationUtil.getCallId(create_user_sex, callId);
+					TFamilyRelationship rel = new TFamilyRelationship();
+					rel.setCallId(newCallId);
+					rel.setCreateDate(DateUtils.currentDate());
+					rel.setCreateUserId(Integer.parseInt(userId));
+					rel.setIsConfirm(0);
+					rel.setIsDel(1);
+					rel.setIsPrivate(1);
+					rel.setRelationUserId(relationUserId);
+					baseDAO.save(rel);
+					
+					String callName = queryCallNameById(callId);
+					String newCallName = queryCallNameById(newCallId);
+					//生成一条系统消息，通知关系申请人，被申请人已经接受关系
+					sendSysMsgToRelationUser(relationUserId, Integer.parseInt(relationId), 0, "系统消息", "您添加的家庭成员【"+callName+"】已被接受。");
+					//给当前用户（被申请人）发送添加确认的消息
+					sendSysMsgToRelationUser(relation.getRelationUserId(), Integer.parseInt(relationId), 0, "系统消息", "您已成功添加家庭成员“"+newCallName+"”（姓名"+map.get("create_user_truename")+"，昵称"+map.get("create_user_nickname")+"）。");
+					//查看这段关系是否私有，如果非私有，则关联其他家人
+					if(relation.getIsPrivate()  == 1){
+						//找出是否有关联角色， 提示是否自动引入
+						String sql = "SELECT c.NAME callName,u.TRUE_NAME trueName, u.NICK_NAME nickName FROM t_family_relationship r, t_call_enum c, t_user u WHERE u.id = r.RELATION_USER_ID AND  r.CALL_ID = c.ID AND  r.CREATE_USER_ID = ?  AND r.RELATION_USER_ID <> ?   AND r.RELATION_USER_ID <> ? AND (r.IS_DEL = 1  OR r.IS_DEL IS NULL) AND r.IS_PRIVATE = 1 AND r.IS_CONFIRM = 0";
+						List<Map<String, Object>> rels =  baseDAO.getGenericBySQL(sql, new Object[]{relationUserId,relationUserId, userId});
+						String allRealtions = "";
+						
+						if(rels != null && rels.size() >0){
+							for(int i=0;i<rels.size();i++){
+								allRealtions += "\""+rels.get(i).get("callName")+"\"(姓名："+rels.get(i).get("trueName")+",昵称："+rels.get(i).get("nickName")+")";
+							}
+							
+							//给当前用户(被申请人)发送是否引入关系的系统消息
+							String create_user_truename = map.get("create_user_truename") ==null ? "空" : map.get("create_user_truename").toString() ;
+							String create_user_nickname =  map.get("create_user_nickname") == null ? "空" : map.get("create_user_nickname").toString();
+							sendSysMsgToRelationUser(relation.getRelationUserId(), Integer.parseInt(relationId), 2, "系统消息", "您已成功添加家庭成员“"+newCallName+"”（姓名："+ create_user_truename +"，昵称："+ create_user_nickname +"）。系统检测到您添加的家庭成员“"+newCallName+"”具有成员"+allRealtions+"，是否自动引入？");
+							
+						}
+					}
+					
+				}
+				
+				result.put("succMsg", "确认成功");
+				//result.put("relationId", relationId);
+				//result.put("relationList", rels);
+				returnJSON.put("returnCode", Constant.RETURNCODE_SUCCESS);
+				returnJSON.put("result", result);
+				returnJSON.put("errorMsg", "");
+				return returnJSON.toString();
+			}else if("1".equals(oper)){
+				
+				TFamilyRelationship relation = realtionList.get(0);
+				relation.setIsConfirm(2);
+				baseDAO.update(relation);
+				String callName = queryCallNameById(relation.getCallId());
+				//生成一条系统消息，通知关系申请人，被申请人已经接受关系
+				sendSysMsgToRelationUser(relation.getCreateUserId(), Integer.parseInt(relationId), 0, "系统消息", "您添加的家庭成员【"+callName+"】已被拒绝。");
+				
+				
+				result.put("succMsg", "操作成功");
+				returnJSON.put("returnCode", Constant.RETURNCODE_SUCCESS);
+				returnJSON.put("result", result);
+				returnJSON.put("errorMsg", "");
+				return returnJSON.toString();
+			}else if("2".equals(oper)){
+					TFamilyRelationship relation = realtionList.get(0);
+					
+						//生成所有家庭关系
+						CreateFamilyRelationshipThread crt = new CreateFamilyRelationshipThread(relation.getCreateUserId()+"", relation.getRelationUserId()+"", relation.getCallId()+"", baseDAO);
+						try {
+							threadPoolTaskService.addTask(crt);
+						} catch (Exception e) {
+							log.info("生成家庭关系时异常："+e.getMessage());
+							e.printStackTrace();
+						}
+					
+					result.put("succMsg", "引入成功");
+					returnJSON.put("returnCode", Constant.RETURNCODE_SUCCESS);
+					returnJSON.put("result", result);
+					returnJSON.put("errorMsg", "");
+					return returnJSON.toString();
+			}else{
+				returnJSON.put("returnCode", Constant.RETURNCODE_FAILED);
+				returnJSON.put("result", result);
+				returnJSON.put("errorMsg", "错误的操作类型");
+				return returnJSON.toString();
+			}
+		}else{
+			returnJSON.put("returnCode", Constant.RETURNCODE_FAILED);
+			returnJSON.put("result", result);
+			returnJSON.put("errorMsg", "没有找到对应关系");
+			return returnJSON.toString();
+		}
+	}
+
+	private void mergeFamilyId(Integer createUserId, Integer relationUserId,Integer callId) {
+		String hsql = "from TUser where id = ?";
+		List<TUser> createUserList = baseDAO.getGenericByHql(hsql, createUserId);
+		List<TUser> userList = baseDAO.getGenericByHql(hsql, relationUserId);
+		if(callId == 5 || callId == 6){
+			//如果添加老婆,就把老婆的家庭Id设置成我的家庭ID，如果老婆添加了还没有亲脉号的孩子， 则孩子亲脉号跟着变动
+			//添加老公亦然
+			if(userList != null && userList.size() >0){
+				TUser user = userList.get(0);
+				String oldFamilyId = user.getFamilyId();
+				String newFamilyId = createUserList.get(0).getFamilyId();
+				user.setFamilyId(newFamilyId);
+				baseDAO.update(user);
+				//更新该用户下面相册类型为2的相册的familyid
+				baseDAO.update("update TAlbum set familyId = ? where createUserId = ? and familyId = ?", newFamilyId, relationUserId, oldFamilyId);
+				
+				//如果是老婆之前添加的无亲脉号的孩子， 那么直接更新所有家庭ID为 老婆家庭ID的所有孩子
+				hsql = "update TUser set familyId = ?  where familyId = ? ";
+				baseDAO.update(hsql, createUserList.get(0).getFamilyId(), oldFamilyId);
+				//更新老婆和老公结婚状态为已婚
+				updateUserMarriedStatus(createUserList.get(0) ,user);
+				//添加老公或老婆， 表示已经结婚， 那么系统自动生成一个家庭相册albumType=4
+				sysCreateAlbum(createUserId, createUserList.get(0).getFamilyId());
+				
+			}
+			
+		}else if(callId == 1 || callId == 2 ){
+			
+			
+			//添加爸爸，如果添加的爸爸，那么就查询是否有妈妈存在，如果有则把爸爸的家庭号更新成妈妈的家庭号，
+			//如果没有妈妈的亲脉号，则不更新
+			String sql = "";
+			
+			if(callId == 1){
+				//如果添加爸爸， 则查询妈妈的家庭号
+				sql = "SELECT u.FAMILYID, u.ID FROM t_family_relationship r, t_user u  WHERE u.ID = r.RELATION_USER_ID AND  r.CREATE_USER_ID = ? AND r.CALL_ID = 2 AND  (r.IS_DEL IS NULL OR r.IS_DEL =1)";
+			}else if(callId == 2){
+				//如果添加妈妈， 则查询爸爸的家庭号
+				sql = "SELECT u.FAMILYID,u.ID FROM t_family_relationship r, t_user u  WHERE u.ID = r.RELATION_USER_ID AND  r.CREATE_USER_ID = ? AND r.CALL_ID = 1 AND  (r.IS_DEL IS NULL OR r.IS_DEL =1)";
+			}
+			List<Map<String, Object>> motherList = baseDAO.getGenericBySQL(sql, new Object[]{createUserId});
+			if(motherList != null && motherList.size()>0){
+				String familyId = motherList.get(0).get("FAMILYID").toString();
+				int matherUserId =  Integer.parseInt(motherList.get(0).get("ID").toString());
+				if(userList != null && userList.size() >0){
+					
+					TUser matherUser = baseDAO.get(TUser.class, matherUserId);
+					
+					TUser fatherUser = userList.get(0);
+					String oldFamilyId = fatherUser.getFamilyId();
+					fatherUser.setFamilyId(familyId);
+					baseDAO.update(fatherUser);
+					//如下情况可能行不大：如果是父亲之前添加的无亲脉号的孩子， 那么直接更新所有家庭ID为 父亲家庭ID的所有孩子
+					hsql = "update TUser set familyId = ?  where familyId = ? ";
+					baseDAO.update(hsql, familyId, oldFamilyId);
+					
+					//更新父母结婚状态为已婚
+					updateUserMarriedStatus(matherUser ,fatherUser);
+					//已经结婚， 那么系统自动生成一个家庭相册albumType=4
+					sysCreateAlbum(createUserId, familyId);
+					
+				}
+			}
+		}else if(callId == 23 || callId == 24){
+			//添加后爸后妈
+			if(callId == 23){
+				//添加后爸
+				hsql = "from TFamilyRelationship where createUserId = ? and callId = 1 and isDel = 1 and isPrivate = 1";
+			}else if(callId == 24){
+				hsql = "from TFamilyRelationship where createUserId = ? and callId = 2 and isDel = 1 and isPrivate = 1";
+			}
+			List<TFamilyRelationship>  relationList = baseDAO.getGenericByHql(hsql,  createUserId);
+			if(relationList != null && relationList.size() > 0){
+				
+				//已经存在称谓为爸爸的关系，把之前的爸爸设为私有,并且更新爸爸的家庭号
+				Map<String, Object>  data = new HashMap<String, Object>();
+				Map<String, Object>  params = new HashMap<String, Object>();
+				params.put("userId", createUserId);
+				params.put("targetUserId", relationList.get(0).getRelationUserId());
+				params.put("oper", 3);
+				data.put("params", params);
+				try {
+					//设为私有  是否私有 0：是 1：否
+					hsql = "update TFamilyRelationship set isPrivate =  0 where isDel =  1 and  createUserId = ? and relationUserId = ? ";
+					int i = baseDAO.update(hsql, createUserId, relationList.get(0).getRelationUserId());
+					if(i > 0){
+						
+						//删除该家人和其他家人的所有关系，真删除
+						String sql = "DELETE FROM t_family_relationship r WHERE  (r.create_user_id = "+relationList.get(0).getRelationUserId() +" AND  r.relation_user_id <> "+createUserId+" ) OR (r.relation_user_id = "+createUserId+" AND r.create_user_id <> "+relationList.get(0).getRelationUserId()+" )";
+						baseDAO.deleteByHsql(sql);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				//更新爸爸or妈妈家庭号
+				hsql = "from TUser where id = ?";
+				TUser father  = (TUser) baseDAO.getGenericByHql(hsql, relationList.get(0).getRelationUserId()).get(0);
+				father.setFamilyId(UUID.randomUUID().toString());
+				baseDAO.update(father);
+			}
+			String sql = "";
+			
+			if(callId == 23){
+				//如果添加爸爸， 则查询妈妈的家庭号
+				sql = "SELECT u.FAMILYID, u.ID FROM t_family_relationship r, t_user u  WHERE u.ID = r.RELATION_USER_ID AND  r.CREATE_USER_ID = ? AND r.CALL_ID = 2 AND  (r.IS_DEL IS NULL OR r.IS_DEL =1)";
+			}else if(callId == 24){
+				//如果添加妈妈， 则查询爸爸的家庭号
+				sql = "SELECT u.FAMILYID,u.ID FROM t_family_relationship r, t_user u  WHERE u.ID = r.RELATION_USER_ID AND  r.CREATE_USER_ID = ? AND r.CALL_ID = 1 AND  (r.IS_DEL IS NULL OR r.IS_DEL =1)";
+			}
+			List<Map<String, Object>> motherList = baseDAO.getGenericBySQL(sql, new Object[]{createUserId});
+			if(motherList != null && motherList.size()>0){
+				String familyId = motherList.get(0).get("FAMILYID").toString();
+				int matherUserId =  Integer.parseInt(motherList.get(0).get("ID").toString());
+				if(userList != null && userList.size() >0){
+					
+					TUser matherUser = baseDAO.get(TUser.class, matherUserId);
+					
+					TUser fatherUser = userList.get(0);
+					String oldFamilyId = fatherUser.getFamilyId();
+					fatherUser.setFamilyId(familyId);
+					baseDAO.update(fatherUser);
+					//如下情况可能行不大：如果是父亲之前添加的无亲脉号的孩子， 那么直接更新所有家庭ID为 父亲家庭ID的所有孩子
+					hsql = "update TUser set familyId = ?  where familyId = ? ";
+					baseDAO.update(hsql, familyId, oldFamilyId);
+					
+					//更新父母结婚状态为已婚
+					updateUserMarriedStatus(matherUser ,fatherUser);
+					//已经结婚， 那么系统自动生成一个家庭相册albumType=4
+					sysCreateAlbum(createUserId, familyId);
+					
+				}
+			}
+		}else if(callId == 3 || callId == 4){
+			//添加岳父岳母，如果添加的岳父，那么就查询是否有岳母存在，如果有则把岳母的家庭号更新成岳父的家庭号，
+			//如果没有岳母的亲脉号，则不更新
+			String sql = "";
+			if(callId == 3){
+				//如果添加岳父， 则查询岳母的家庭号
+				sql = "SELECT u.FAMILYID,u.ID FROM t_family_relationship r, t_user u  WHERE u.ID = r.RELATION_USER_ID AND  r.CREATE_USER_ID = ? AND r.CALL_ID = 4 AND  (r.IS_DEL IS NULL OR r.IS_DEL =1)";
+			}else if(callId == 4){
+				//如果添加岳母， 则查询岳父的家庭号
+				sql = "SELECT u.FAMILYID,u.ID FROM t_family_relationship r, t_user u  WHERE u.ID = r.RELATION_USER_ID AND  r.CREATE_USER_ID = ? AND r.CALL_ID = 3 AND  (r.IS_DEL IS NULL OR r.IS_DEL =1)";
+			}
+			List<Map<String, Object>> motherList = baseDAO.getGenericBySQL(sql, new Object[]{createUserId});
+			if(motherList != null && motherList.size()>0){
+				String familyId = motherList.get(0).get("FAMILYID").toString();
+				int matherUserId =  Integer.parseInt(motherList.get(0).get("ID").toString());
+				if(userList != null && userList.size() >0){
+					TUser matherUser = baseDAO.get(TUser.class, matherUserId);
+					TUser fatherUser = userList.get(0);
+					fatherUser.setFamilyId(familyId);
+					baseDAO.update(fatherUser);
+					//岳父岳母的其他孩子就不管了
+					//更新父母结婚状态为已婚
+					updateUserMarriedStatus(matherUser ,fatherUser);
+					//已经结婚， 那么系统自动生成一个家庭相册albumType=4
+					sysCreateAlbum(createUserId, familyId);
+				}
+			}
+		}else if(callId == 7 || callId == 15){
+			//添加儿子儿媳，
+			String sql = "";
+			if(callId == 7){
+				//如果添加儿子， 则查询儿媳的家庭号
+				sql = "SELECT u.FAMILYID FROM t_family_relationship r, t_user u  WHERE u.ID = r.RELATION_USER_ID AND  r.CREATE_USER_ID = ? AND r.CALL_ID = 15 AND  (r.IS_DEL IS NULL OR r.IS_DEL =1)";
+			}else if(callId == 15){
+				//如果添加儿媳， 则查询儿子的家庭号
+				sql = "SELECT u.FAMILYID FROM t_family_relationship r, t_user u  WHERE u.ID = r.RELATION_USER_ID AND  r.CREATE_USER_ID = ? AND r.CALL_ID = 7 AND  (r.IS_DEL IS NULL OR r.IS_DEL =1)";
+			}
+			List<Map<String, Object>> motherList = baseDAO.getGenericBySQL(sql, new Object[]{createUserId});
+			if(motherList != null && motherList.size()>0){
+				String familyId = motherList.get(0).get("FAMILYID").toString();
+				if(userList != null && userList.size() >0){
+					TUser fatherUser = userList.get(0);
+					fatherUser.setFamilyId(familyId);
+					baseDAO.update(fatherUser);
+				}
+			}
+		}else if(callId == 8 || callId == 16){
+			//添加女儿女婿，
+			String sql = "";
+			if(callId == 8){
+				//如果添加女儿， 则查询女婿的家庭号
+				sql = "SELECT u.FAMILYID FROM t_family_relationship r, t_user u  WHERE u.ID = r.RELATION_USER_ID AND  r.CREATE_USER_ID = ? AND r.CALL_ID = 16 AND  (r.IS_DEL IS NULL OR r.IS_DEL =1)";
+			}else if(callId == 16){
+				//如果添加女婿， 则查询女儿的家庭号
+				sql = "SELECT u.FAMILYID FROM t_family_relationship r, t_user u  WHERE u.ID = r.RELATION_USER_ID AND  r.CREATE_USER_ID = ? AND r.CALL_ID = 8 AND  (r.IS_DEL IS NULL OR r.IS_DEL =1)";
+			}
+			List<Map<String, Object>> motherList = baseDAO.getGenericBySQL(sql, new Object[]{createUserId});
+			if(motherList != null && motherList.size()>0){
+				String familyId = motherList.get(0).get("FAMILYID").toString();
+				if(userList != null && userList.size() >0){
+					TUser fatherUser = userList.get(0);
+					fatherUser.setFamilyId(familyId);
+					baseDAO.update(fatherUser);
+				}
+			}
+		}
+		
+	}
+
+	private void sysCreateAlbum(Integer createUserId, String familyId) {
+		String createDate = DateUtils.currentDate();
+		TAlbum album = new TAlbum();
+		album.setAlbumName("结婚相册");
+		album.setAlbumType(4);
+		album.setCreateDate(createDate);
+		album.setCreateUserId(createUserId);
+		album.setDescription("系统生成");
+		album.setFamilyId(familyId);
+		album.setIsSysinit(0);
+		album.setOwnerUserId(createUserId);
+		album.setIsDir(0);
+		baseDAO.save(album);
+		TAlbum album1 = new TAlbum();
+		album1.setAlbumName("全家福");
+		album1.setAlbumType(4);
+		album1.setCreateDate(createDate);
+		album1.setCreateUserId(createUserId);
+		album1.setDescription("系统生成");
+		album1.setFamilyId(familyId);
+		album1.setIsSysinit(0);
+		album1.setOwnerUserId(createUserId);
+		album.setIsDir(0);
+		baseDAO.save(album1);
+		TAlbum album2 = new TAlbum();
+		album2.setAlbumName("家人相册");
+		album2.setAlbumType(4);
+		album2.setCreateDate(createDate);
+		album2.setCreateUserId(createUserId);
+		album2.setDescription("系统生成");
+		album2.setFamilyId(familyId);
+		album2.setIsSysinit(0);
+		album2.setOwnerUserId(createUserId);
+		album.setIsDir(0);
+		baseDAO.save(album2);
+		TAlbum album3= new TAlbum();
+		album3.setAlbumName("家的收藏");
+		album3.setAlbumType(4);
+		album3.setCreateDate(createDate);
+		album3.setCreateUserId(createUserId);
+		album3.setDescription("系统生成");
+		album3.setFamilyId(familyId);
+		album3.setIsSysinit(0);
+		album3.setOwnerUserId(createUserId);
+		album.setIsDir(0);
+		baseDAO.save(album3);
+		
+	}
+
+	private void updateUserMarriedStatus(TUser createUser, TUser relationUser) {
+		int marrayStatus = 0;
+		if(createUser.getIsMarried() != null &&createUser.getIsMarried() ==1){
+			marrayStatus =2;
+		}
+		createUser.setIsMarried(marrayStatus);
+		baseDAO.update(createUser);
+		marrayStatus = 0;
+		if(relationUser.getIsMarried() != null &&relationUser.getIsMarried() ==1){
+			marrayStatus =2;
+		}
+		relationUser.setIsMarried(marrayStatus);
+		baseDAO.update(relationUser);
+	}
+	private void sendSysMsgToRelationUser(Integer targetUserId, int relationId, int msgType,
+			String msgTitle, String msgContent) {
+		
+		TSysMsgAlert alert = new TSysMsgAlert();
+		alert.setCreateDate(DateUtils.currentDate());
+		alert.setHadRead(0);
+		alert.setMsgContent(msgContent);
+		alert.setMsgTitle(msgTitle);
+		alert.setMsgType(msgType);
+		alert.setRelationId(relationId+"");
+		alert.setReciveUserId(targetUserId);
+		baseDAO.save(alert);
+		
+	}
+	
+	public String queryCallNameById(int callId){
+		
+		String hsql = "from TCallEnum where id = ? ";
+		List<TCallEnum> callList =  baseDAO.getGenericByHql(hsql, callId);
+		if(callList != null && callList.size() >0){
+			return callList.get(0).getName();
+		}
+		return "";
+	}
+}

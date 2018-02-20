@@ -1,0 +1,194 @@
+.wy-header{
+    width:6.4rem;
+}
+.wy-header-personal{
+    text-align: center;
+    position: relative;
+    background-color: #43a5a8;
+}
+.wy-header-personal a{
+    display: inline-block;
+    font-size: 0.60rem;
+    color:white;
+    position: absolute;
+    left: 0.2rem;
+    top:0.05rem;
+}
+.wy-header-personal p{
+    font-size: 0.26rem;
+    color:white;
+    line-height: 1rem;
+}
+.wy-section{
+    width:6.4rem;
+}
+.wy-section form{
+    margin:2rem 0;
+}
+.wy-section-certificate{
+    margin: auto;
+    padding: 1rem 0;
+    width: 6rem;
+    height: 0.6rem;
+}
+.wy-section-certificate span{
+    float: left;
+    display: block;
+    width: 1.5rem;
+    height: 0.6rem;
+    line-height: 0.6rem;
+    background-color: #43a5a8;
+    color: #fff;
+    text-align: center;
+    font-size: 0.24rem;
+    border-radius: 0.05rem;
+}
+.wy-section-certificate input{
+    float: left;
+    margin-left: 0.15rem;
+    padding: 0 0.1rem;
+    width: 4.2rem;
+    height: 0.6rem;
+    line-height: 0.6rem;
+    font-size: 0.18rem;
+    border: 0.02rem solid #b5b5b5;
+    background-color: #fff;
+    box-sizing: border-box;
+    border-radius: 0.05rem;
+}
+.wy-section .wy-submit{
+    display: block;
+    margin: auto;
+    width: 1.8rem;
+    height: 0.6rem;
+    line-height: 0.6rem;
+    font-size: 0.24rem;
+    background-color: #43a5a8;
+    text-align: center;
+    color: white;
+    border-radius: 0.05rem;
+}
+.footer .wy-foot{
+    width: 6.4rem;
+    height: 0.02rem;
+    background: #333333;
+}
+.footer .wy-foot-js{
+    margin:0.1rem 0 0 0;
+    padding: 0.4rem 0;
+    width: 6.4rem;
+    height: auto;
+    text-align: center;
+    overflow: hidden;
+    background: #4bbec2;
+}
+.footer .wy-foot-js p{
+    padding:0.05rem 0;
+    font-size: 0.22rem;
+    color: #fff;
+
+}
+.wy-section .wy-section-no{
+    width: 4.5rem;
+    height: 2rem;
+    margin: 3rem auto 2.5rem;
+    border: 1px solid red;
+}
+.wy-section .wy-section-no h3{
+    background-color: red;
+    font-size: 0.2rem;
+    font-weight: bold;
+    margin: 0;
+    color: #fff;
+    padding: 0.05rem 0.1rem;
+}
+.wy-section .wy-section-no .wy-section-beijing{
+    margin: 0.2rem 0 0 1.2rem;
+    background: url(../images/wy-mls03.gif) left center no-repeat;
+    padding: 0.03rem 0.4rem;
+    line-height: 0.30rem;
+    color: #666;
+    min-height: 0.30rem;
+    background-size: 0.3rem;
+}
+.wy-section .wy-section-no .wy-section-beijing span{
+    font-size: 0.2rem;
+    font-weight: bold;
+    color: #000;
+}
+.wy-section-no .wy-section-fan{
+    text-align: center;
+    margin: 0.2rem 0;
+}
+.wy-number{
+    width:6.4rem;
+}
+.wy-number .wy-number-xx{
+    margin: 0 auto;
+    font-size: 0.20rem;
+    overflow: hidden;
+}
+.wy-number-xx .wy-xx-dr li .wy-xx-mc{
+    display: inline-block;
+    width: 30%;
+    padding: 0.1rem 0;
+    color: #444;
+    text-align: right;
+}
+.wy-number-xx .wy-xx-dr li .wy-xx-xx{
+    display: inline-block;
+    width: 65%;
+    padding: 0.1rem 0;
+    color: #444;
+    text-align: left;
+    margin-left: 0.2rem;
+}
+.wy-number .wy-xx-zp>p{
+    color:#0000FF;
+    display: inline-block;
+    margin-left: 0.4rem;
+}
+.wy-number .wy-xx-zp>p>a{
+    height: 0.5rem;
+}
+.wy-number .wy-xx-zp>p>a:hover{
+    border-bottom: 0.02rem solid #0000FF;
+}
+.wy-number .wy-xx-zp .wy-k-img img{
+    margin-top:0.1rem;
+    width:100%;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

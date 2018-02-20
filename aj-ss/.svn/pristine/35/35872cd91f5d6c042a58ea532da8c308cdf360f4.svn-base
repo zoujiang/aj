@@ -1,0 +1,24 @@
+package com.qm.shop.album.service;
+
+import java.util.List;
+import java.util.Map;
+
+import com.frame.core.vo.DataModel;
+import com.qm.shop.album.vo.ShopDynamicAlbumVO;
+
+public interface ShopDynamicAlbumService {
+
+	DataModel<Map<String, Object>> getList(ShopDynamicAlbumVO limitKey);
+
+	int save(ShopDynamicAlbumVO limitKey);
+
+	List<Map<String, Object>> queryListByShopIdAndUserId(String shopId,
+			String userId);
+
+	Map<String, Object> find(String id);
+
+	int update(ShopDynamicAlbumVO album);
+
+	List<Map<String, Object>> templateList();
+
+}

@@ -1,0 +1,26 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>第一章 概述</title>
+<link href="../css/General_help.css" rel="stylesheet" type=
+"text/css" />
+
+
+</head>
+
+
+<body>
+<div class="txtbodddy">
+<div class="Sectiontitle"> 
+  <h1>第一章 概述</h1> 
+</div>
+
+<!--文字区域-->
+<div class="mainarert">
+  <h2><a name="_Toc307062998" id="_Toc307062998">1.3 </a><a name="_Toc307062999" id="_Toc307062999">修改密码</a></h2>
+  <p><a name="_Toc216342870" id="_Toc216342870">单击&ldquo;登入&rdquo;按钮，进入系统主界面如图所示,</a>用户要修改密码时，点击修改密码，填写旧密码123abc，再填写新密码，点击保存。如图所示（注意新密码要和确认密码保持一致） </p>
+  <img src="img/ams_13_clip_image002.jpg" alt="" width="576" height="360" /><br clear="all" />
+</div></div>
+</body>
+</html>

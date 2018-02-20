@@ -1,0 +1,245 @@
+body{-webkit-text-size-adjust:none;font:400 14px/1.6 helvetica, verdana, san-serif;outline:0;min-width:320px;color:#444; margin:0; padding:0; display:block; background:#c5eaf9;}
+ul,li,dl,dt,dd,h1,h2,p{ list-style:none; margin:0; padding:0;}
+img{border:none;}
+.clearfix:after{display:block; overflow:hidden; clear:both; height:0; visibility:hidden; content:".";}
+.tanchu{ border-radius:8px; background:#fff; position:absolute; z-index:11; width:90%;left:5%;top:8%; padding-bottom:35px;}
+.logo{ width:100%; text-align:center; margin-top:30px;}
+.logo img{ width:90px;}
+.kouhao{width:100%; text-align:center; margin-top:15px; font-size:16px; color:#ff7839;}
+.xiazai,.fenxiang,.bofang{ display:block; line-height:40px;border-radius:40px;  text-align:center; width:120px; margin:0 auto; margin-top:15px;background:#f8f8f9; border:1px #ddd solid; color:#333;}
+.sj{ width:90%; margin:0 auto; margin-top:25px;  border-top:1px #dadada solid; padding:20px 0;border-bottom:1px #dadada solid;}
+.sj li{ float:left;}
+.sj li.sj_logo{ width:23%;}
+.sj li.sj_info{ width:72%; margin-left:5%; font-size:12px; margin-top:-2px;}
+.sj li.sj_info strong{ font-weight:normal; font-size:14px; color:#000;float:left; margin-bottom:3px;} 
+.sj li.sj_info span{float:right;color:#777;}
+.sj li.sj_info p{ display:block; float:left;color:#777;}
+.sj_logo img{ width:100%; height: 70px;}
+a{
+    color: #333;
+    text-decoration: none;
+ }
+.zhezhao{ background:#000; width:100%; position:absolute; z-index:10; height:100%; opacity:0.6;display: none;}
+.zp{position:absolute;z-index:11;text-align:center; width:100%;}
+.zp img{ width:76%;}
+.zp_big{position:absolute;z-index:11;text-align:center;top:180px; width:100%;display: none;}
+.zp_big img{ width:100%;}
+
+   
+*
+{
+    padding: 0px;
+    margin: 0px;
+    -webkit-box-sizing: border-box;
+}
+
+body
+{
+    background-color: black;
+} 
+
+#container
+{
+    width:100%;
+    height:100%;
+    position: absolute;
+    overflow: hidden;
+}
+#container > img, #container > div
+{
+    position: absolute;
+}
+#yunbiao >img , #yunbiao1>img
+{
+    position: absolute;
+}
+
+.div
+{
+    border: 8px solid #fff;
+    opacity: 0;
+}
+.wordspan
+{
+    width: 50%;
+    left: 25%;
+    position: absolute;
+    color: #fff;
+    font-size: 25px;
+    text-align: center;
+    text-shadow: 1px 1px 2px #000;
+    font-weight: bold;
+}
+#dibu
+{
+    bottom: 0px;
+}
+
+
+#titlebg{
+   left: 0px;
+   top:1000px;   
+   position: absolute;
+}
+#biaoti
+{
+    top: -402px;
+    position: absolute;
+    overflow: hidden;
+}
+
+@-webkit-keyframes div1_in
+{
+    0%{-webkit-transform:translate(0px,-500px) scale(1.2);opacity: 0}
+    20%{-webkit-transform:translate(0px,30px) scale(0.8);opacity: 1;-webkit-animation-timing-function: ease-out;}
+    80%{-webkit-transform:translate(0px,0px) scale(1);opacity: 1}
+    100%{-webkit-transform:translate(0px,-10px) scale(1.4);opacity: 0}
+
+}
+@-webkit-keyframes div2_in
+{
+    0%{-webkit-transform:translate(0px,500px);opacity: 0}
+    20%{-webkit-transform:translate(0px,10px);opacity: 1;-webkit-animation-timing-function: ease-out;}
+    80%{-webkit-transform:translate(0px,-10px);opacity: 1}
+    100%{-webkit-transform:translate(0px,-500px);opacity: 0}
+}
+@-webkit-keyframes div3_in
+{
+    0%{-webkit-transform:translate(0px,500px);opacity: 0}
+    20%{-webkit-transform:translate(0px,10px);opacity: 1;-webkit-animation-timing-function: ease-out;}
+    80%{-webkit-transform:translate(0px,-10px);opacity: 1}
+    100%{-webkit-transform:translate(0px,-500px);opacity: 0}
+}
+
+@-webkit-keyframes div4_in
+{
+    0%{-webkit-transform:translate(0px,500px);opacity: 0}
+    20%{-webkit-transform:translate(0px,40px);opacity: 1;-webkit-animation-timing-function: ease-out;}
+    80%{-webkit-transform:translate(0px,-40px);opacity: 1}
+    100%{-webkit-transform:translate(0px,-500px);opacity: 0}
+}
+@-webkit-keyframes div5_in
+{
+    0%{-webkit-transform:translate(0px,500px);opacity: 0}
+    20%{-webkit-transform:translate(0px,-20px);opacity: 1;-webkit-animation-timing-function: ease-out;}
+    80%{-webkit-transform:translate(0px,20px);opacity: 1}
+    100%{-webkit-transform:translate(0px,-500px);opacity: 0}
+}
+
+
+
+@-webkit-keyframes zhuan
+		{
+			0%
+			{
+				-webkit-transform:rotate(0deg);
+			}
+
+			100%
+			{
+				-webkit-transform:rotate(360deg);
+			}
+		}
+		
+		#musicinfo
+		{
+			color: #fff;
+			text-shadow: 1px 1px 2px #000;
+			font-size: 15px;
+			position: fixed;
+			left: 432px;
+		    top: 82px;
+		    width: 60px;
+		    height: 20px;
+		    z-index: 100;
+		    display: none;
+		    opacity: 1;
+		}
+#enddiv
+{
+   /*  position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.8);
+    z-index: 10000;
+    display: none; */
+    border-radius:8px; 
+    background:#fff; 
+    position:absolute; 
+    z-index:11; 
+    width:90%;
+    height:80%;
+    left:5%;
+    top:2%;  
+    padding-bottom:35px;
+    display: none;
+}
+#title_div
+{
+    width: 320px;
+    height: 200px;
+    left: 90px;
+    top: 250px;
+    color: #fff;
+    font-size: 25px;
+    position: relative;
+    line-height: 45px;
+    text-align: center;
+    font-family: 'Î¢ÈíÑÅºÚ';
+    display:table;
+}
+#title_line
+{
+    position: absolute;
+    width: 370px;
+    height: 2px;
+    background-color: #fff;
+    top: 415px;
+    left: 65px;
+}
+#reshowbtn
+{
+    /* position: absolute;
+    width: 150px;
+    height: 44px;
+    border-radius: 10px;
+    background-color: rgba(94,159,177,0.9);
+    color: #fff;
+    font-size: 22px;
+    text-align: center;
+    line-height: 44px;
+    top: 446px;
+    left: 74px; */
+}
+
+@-webkit-keyframes fadein
+{
+	from  {opacity: 0}
+	to    {opacity: 1}
+}
+@-webkit-keyframes fadeout
+{
+	from  {opacity: 1}
+	to    {opacity: 0}
+}
+#loadingdiv
+{
+	width: 100%;
+	height: 100%;
+	z-index: -20000;
+	background-color: gray;
+/* 	background-color: rgba(255,255,255,0.5); */
+	position: absolute;
+	pointer-events: none;
+}
+.loadingword
+{
+	font-size: 25px;
+	color: rgba(82,82,82,0.9);
+	font-family: 'Î¢ÈíÑÅºÚ';
+	text-align: center;
+	width: 300px;
+	position: relative;
+	top: 300px;
+	line-height: 50px;
+}

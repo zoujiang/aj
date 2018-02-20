@@ -1,0 +1,319 @@
+package com.spt.score.action;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.URLEncoder;
+import java.util.Date;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.frame.core.action.FtpImgDownUploadAction;
+import com.frame.core.service.AuthorService;
+import com.frame.core.util.DateUtil;
+import com.frame.core.util.GUID;
+import com.frame.core.util.StringUtil;
+import com.frame.core.util.SystemConfig;
+import com.frame.core.vo.DataModel;
+import com.frame.core.vo.MsgVo;
+import com.spt.entry.model.TImpJob;
+import com.spt.score.job.ScoreJobImpService;
+import com.spt.score.service.impl.JobExcelServiceImpl;
+import com.spt.score.service.impl.ScoreCertCfgServiceImpl;
+import com.spt.score.service.impl.ScoreJobServiceImpl;
+import com.spt.score.util.ScoreConsts;
+import com.spt.score.vo.ScoreLimitKey;
+import com.spt.score.vo.ScoreUploadVo;
+
+import net.sf.json.JSONObject;
+
+@Controller
+@RequestMapping("/score/job")
+@Scope("prototype")
+public class ScoreJobAction extends FtpImgDownUploadAction {
+	private Logger logger = Logger.getLogger(ScoreJobAction.class);
+	
+	@Autowired
+	private AuthorService authorService;
+	@Autowired
+	private ScoreJobServiceImpl scoreJobService;
+	@Autowired
+	private JobExcelServiceImpl jobExcelService;
+	@Autowired
+	private ScoreCertCfgServiceImpl scoreCertCfgService;
+	
+	
+	@RequestMapping("/list")
+	@ResponseBody
+	public DataModel<Map<String, Object>> getList(ScoreLimitKey limitKey){
+		
+		logger.info("getList request：" + JSONObject.fromObject(limitKey));
+		
+		DataModel<Map<String, Object>> dataModel = scoreJobService.getList(limitKey);
+		return dataModel;
+	}
+	
+	//保存
+	@RequestMapping("/uploadAndCert")
+	@ResponseBody
+	public MsgVo uploadAndCerter(ScoreUploadVo vo, HttpServletRequest request, HttpServletResponse response) {
+		MsgVo msg = upload(vo,request,response);
+		if (msg.isError()) {
+			return msg;
+		}
+		msg = doImp();
+		
+		if (msg.isError()) {
+			return msg;
+		}
+		return doCert();
+		
+	}
+	
+	//保存
+	@RequestMapping("/upload")
+	@ResponseBody
+	public MsgVo upload(ScoreUploadVo vo, HttpServletRequest request, HttpServletResponse response) {
+		logger.info("upload:");
+		
+		if (vo == null) {
+			return new MsgVo("请求有误");
+		}
+		
+		MsgVo msg = checkLogin();
+		if (msg.isError()) {
+			return msg;
+		}
+		
+		if (StringUtil.isEmpty(vo.getGroupId())) {
+			return new MsgVo("请选择组别");
+		}
+		
+		if (!"1、2、3、4、".contains(vo.getGroupId() + "、")) {
+			return new MsgVo("组别信息有误:" + URLEncoder.encode(vo.getGroupId()));
+		}
+		
+		/*if (StringUtil.isEmpty(vo.getJobName())) {
+			return new MsgVo("请输入导入备注名称");
+		}*/
+		
+		String dbFilePath = null;
+		
+		String jobId = null;
+		
+		if (StringUtil.isEmpty(vo.getJobId())) {
+			jobId = GUID.generateID("");
+		} else {
+			jobId = vo.getJobId();
+		}
+		
+		if (scoreCertCfgService.get(vo.getGroupId()) == null) {
+			return new MsgVo("请先为当前赛事组别配置【证书生成规则】");
+		}
+		
+		
+		//上传文件处理---end
+		try {
+			if (vo.getFile() == null || StringUtils.isEmpty(vo.getFile().getOriginalFilename()) ){
+				return new MsgVo("请选择需要导入的文件");
+			}
+			String fileName = vo.getFile().getOriginalFilename();
+			vo.setJobName(fileName);
+			if (fileName.lastIndexOf(".") == -1) {
+				return new MsgVo("文件类型有误");
+			}
+			String suffix =  fileName.substring(fileName.lastIndexOf(".") + 1);
+			if (!"xls".equals(suffix) && !"xlsx".equals(suffix)) {
+				return new MsgVo("文件类型有误，请正确使用模板xls,xlsx");
+			}
+			
+			long size = vo.getFile().getSize();
+			if (size == 0) {
+				return new MsgVo("文件为空");
+			}
+			
+			Long maxSize = Long.parseLong(SystemConfig.getValue("file.upload.size")) * 1024 * 1000;
+			if (vo.getFile().getSize() > maxSize) {
+				return new MsgVo("请选择大小" + SystemConfig.getValue("file.upload.size") + "M以内的文件");
+			}
+			
+			//JobExcelUtil jobExcelUtil = new JobExcelUtil();
+			
+			msg = jobExcelService.checkImpExcel(vo.getFile().getInputStream(), vo.getGroupId(), suffix);
+			
+			if (msg.isError()) {
+				
+				return msg;
+			}
+			
+			//保存文件
+			String dateStr = DateUtil.dateFromat(new Date(), DateUtil.DATE_TIME_PATTERN4);
+			
+			String realPath = request.getSession().getServletContext().getRealPath("");
+			
+			realPath = realPath 
+					+ File.separator + "res" 
+					+ File.separator + "imp" 
+					+ File.separator + vo.getGroupId();
+			
+			//fileName = dateStr + "_" + vo.getGroupId() + "_" + vo.getJobName() + "_" + fileName;
+			fileName = dateStr + "_" + jobId  + "_" + vo.getGroupId() + "." + suffix;
+			//存到数据库中，统一用/
+			dbFilePath = "/res/imp/" + vo.getGroupId() + "/" + fileName;
+			
+			File savefile = new File(new File(realPath), fileName);            
+    		if (!savefile.getParentFile().exists()) {
+    			savefile.getParentFile().mkdirs();     
+    		}
+    		
+    		FileOutputStream fos = null;        
+    		InputStream in = null;
+		    try {            
+			    // 建立文件输出流           
+			    fos = new FileOutputStream(realPath + File.separator + fileName);        
+			    in = vo.getFile().getInputStream(); 
+				
+			    byte[] buffer = new byte[1024];            
+			    int len = 0;            
+			    while ((len = in.read(buffer)) != -1) {                
+			    	fos.write(buffer, 0, len);            
+			    }  
+			    fos.flush();
+		    } catch (Exception e) {            
+		    	logger.info("文件上传失败:" + e.toString());            
+	     		e.printStackTrace();   
+	     		return new MsgVo("文件上传失败:" + e.toString());
+		    } finally {   
+		    	if (fos != null) {
+		    		fos.close();
+		    	}
+		    	if (in != null) {
+		    		in.close();
+		    	}
+		    }
+		    
+		    
+		
+			String url = "";
+			//String url = this.fileUpload("ads", vo.getFile());
+			
+			//String url = "http://c.hiphotos.baidu.com/image/pic/item/0b46f21fbe096b635415ca2e0f338744ebf8ac44.jpg";
+			
+			logger.info("fileUpload----url:" + url);
+			msg = new MsgVo(true,realPath + fileName + "\n" + dbFilePath);
+			msg.setObj(url);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.info("upload error:" + e.toString());
+			msg = new MsgVo("文件上传失败:" + e.getMessage());
+		}
+		//文件上传完成--end
+		
+		TImpJob po = new TImpJob();
+		po.setJobId(jobId);
+		po.setJobGroupId(vo.getGroupId());
+		po.setJobName(vo.getJobName());
+		po.setJobFileName(vo.getJobName());
+		po.setJobFilePath(dbFilePath);
+		
+		String jobType = ScoreConsts.getGroupType(vo.getGroupId());
+		if (StringUtil.isEmpty(jobType)) {
+			return new MsgVo("组别信息有误:" + URLEncoder.encode(vo.getGroupId()));
+		}
+		
+		po.setJobType(jobType);
+		
+		if (StringUtil.isEmpty(vo.getJobId())) {
+			msg = scoreJobService.saveNew(po);
+		} else {
+			msg = scoreJobService.saveUpdate(po);
+		}
+		
+		return msg;
+	}
+	
+	
+	@RequestMapping("/makeCertByScore")
+	@ResponseBody
+	public MsgVo makeCertByScore(String id, HttpServletRequest request, HttpServletResponse response) {
+		if (StringUtil.isEmpty(id)) {
+			return new MsgVo("请求有误");
+		}
+		
+		MsgVo msg = checkLogin();
+		if (msg.isError()) {
+			return msg;
+		}
+		logger.info("makeCertByScore:" + authorService.getSessionUser().getAccount());
+		//msg = certMakeService.doCertMakeByApplyId(id);
+		msg = new MsgVo("请到成绩导入去生成证书");
+		logger.info("makeCertByScore-rel:" + JSONObject.fromObject(msg));
+		return msg;
+	}
+		
+		
+	
+	@Autowired
+	private ScoreJobImpService scoreJobImpService;
+	@RequestMapping("/doImp")
+	@ResponseBody
+	public MsgVo doImp() {
+		
+		MsgVo msg = checkLogin();
+		if (msg.isError()) {
+			return msg;
+		}
+		logger.info("doImp:" + authorService.getSessionUser().getAccount());
+		
+		return scoreJobImpService.doImpScore();
+		//return new MsgVo(true,"操作成功");
+	}
+	
+	@RequestMapping("/doCert")
+	@ResponseBody
+	public MsgVo doCert() {
+		MsgVo msg = checkLogin();
+		if (msg.isError()) {
+			return msg;
+		}
+		logger.info("doCert:" + authorService.getSessionUser().getAccount());
+		
+		//scoreJobImpService.doImpScore();
+		return scoreJobImpService.doCert();
+		//return new MsgVo(true,"生成证书处理成功");
+	}
+	
+	@RequestMapping("/doImpAndCert")
+	@ResponseBody
+	public MsgVo doImpAndCert(ScoreUploadVo vo, HttpServletRequest request, HttpServletResponse response) {
+		MsgVo msg = doImp();
+		
+		if (msg.isError()) {
+			return msg;
+		}
+		return doCert();
+	}
+	
+	
+	private MsgVo checkLogin() {
+		if (authorService.getSessionUser() == null) {
+			return new MsgVo("登录已失效，请重新登录");
+		}
+		return new MsgVo(true);
+	}
+	
+	
+	
+	
+}

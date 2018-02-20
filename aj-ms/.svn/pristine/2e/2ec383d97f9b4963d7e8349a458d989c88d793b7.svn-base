@@ -1,0 +1,142 @@
+package com.spt.entry.model;
+
+import java.sql.Timestamp;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+/**
+ * TGameCodeCfg entity. @author MyEclipse Persistence Tools
+ */
+@Entity
+@Table(name = "t_game_code_cfg")
+public class GameCodeCfg implements java.io.Serializable {
+
+	// Fields
+
+	private String cfgId;
+	private Integer groupId;
+	private String cfgPre;
+	private String startNum;
+	private String endNum;
+	private String reservedNums;
+	private String createUser;
+	private Timestamp createDt;
+	private String modifyUser;
+	private Timestamp modifyDt;
+
+	// Constructors
+
+	/** default constructor */
+	public GameCodeCfg() {
+	}
+
+	/** full constructor */
+	public GameCodeCfg(Integer groupId, String cfgPre, String startNum,
+			String endNum, String reservedNums, String createUser,
+			Timestamp createDt, String modifyUser, Timestamp modifyDt) {
+		this.groupId = groupId;
+		this.cfgPre = cfgPre;
+		this.startNum = startNum;
+		this.endNum = endNum;
+		this.reservedNums = reservedNums;
+		this.createUser = createUser;
+		this.createDt = createDt;
+		this.modifyUser = modifyUser;
+		this.modifyDt = modifyDt;
+	}
+
+	@Id
+	@Column(name = "CFG_ID", unique = true, nullable = false, length = 32)
+	public String getCfgId() {
+		return this.cfgId;
+	}
+
+	public void setCfgId(String cfgId) {
+		this.cfgId = cfgId;
+	}
+
+	@Column(name = "GROUP_ID")
+	public Integer getGroupId() {
+		return this.groupId;
+	}
+
+	public void setGroupId(Integer groupId) {
+		this.groupId = groupId;
+	}
+
+	@Column(name = "CFG_PRE", length = 32)
+	public String getCfgPre() {
+		return this.cfgPre;
+	}
+
+	public void setCfgPre(String cfgPre) {
+		this.cfgPre = cfgPre;
+	}
+
+	@Column(name = "START_NUM")
+	public String getStartNum() {
+		return this.startNum;
+	}
+
+	public void setStartNum(String startNum) {
+		this.startNum = startNum;
+	}
+
+	@Column(name = "END_NUM")
+	public String getEndNum() {
+		return this.endNum;
+	}
+
+	public void setEndNum(String endNum) {
+		this.endNum = endNum;
+	}
+
+	@Column(name = "RESERVED_NUMS", length = 1024)
+	public String getReservedNums() {
+		return this.reservedNums;
+	}
+
+	public void setReservedNums(String reservedNums) {
+		this.reservedNums = reservedNums;
+	}
+
+	@Column(name = "CREATE_USER", length = 32)
+	public String getCreateUser() {
+		return this.createUser;
+	}
+
+	public void setCreateUser(String createUser) {
+		this.createUser = createUser;
+	}
+
+	@Column(name = "CREATE_DT", length = 0)
+	public Timestamp getCreateDt() {
+		return this.createDt;
+	}
+
+	public void setCreateDt(Timestamp createDt) {
+		this.createDt = createDt;
+	}
+
+	@Column(name = "MODIFY_USER", length = 32)
+	public String getModifyUser() {
+		return this.modifyUser;
+	}
+
+	public void setModifyUser(String modifyUser) {
+		this.modifyUser = modifyUser;
+	}
+
+	@Column(name = "MODIFY_DT", length = 0)
+	public Timestamp getModifyDt() {
+		return this.modifyDt;
+	}
+
+	public void setModifyDt(Timestamp modifyDt) {
+		this.modifyDt = modifyDt;
+	}
+
+}

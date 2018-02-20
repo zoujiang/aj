@@ -1,0 +1,274 @@
+package com.spt.get.service.impl;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+
+import com.frame.core.dao.GenericDAO;
+import com.frame.core.service.AuthorService;
+import com.frame.core.util.StringUtil;
+import com.frame.core.vo.DataModel;
+import com.frame.core.vo.MsgVo;
+import com.frame.log.service.LogBizOprService;
+import com.spt.get.vo.GetLimitKey;
+
+@Service("getService")
+@Scope("prototype")
+public class GetServiceImpl  {
+
+	private Logger log = Logger.getLogger(this.getClass());
+	
+	@Autowired
+	private GenericDAO baseDAO;
+	@Autowired
+	private AuthorService authorService;
+	@Autowired
+	private LogBizOprService logBizOprService;
+	
+	public DataModel<Map<String, Object>> getList_不关联(GetLimitKey key) {
+		//一般查询不能用union all,太慢了
+		String sql_union_colum = " pay.pay.OUT_TRADE_NO order_Id,pay.BUY_USER pay_user,pay.TOTAL_FEE PAY_FEE, mt.* ";
+		
+		String sql_table = "(select " + sql_union_colum + " from t_apply mt left join  t_pay_order pay on mt.APPLY_ID = pay.APPLY_ID where mt.TYPE_ID <> 2 "
+						 + " union all "
+						 + " select " + sql_union_colum + " from t_apply mt left join  t_pay_order pay on mt.TEAM_ID = pay.TEAM_ID where mt.TYPE_ID = 2 "
+						 + ") mt "	;
+		
+		String sqlWhere = " where 1=1 and status = 3 ";
+		List<Object> sps = new ArrayList<Object>();
+		if (StringUtil.isNotEmpty(key.getGroupId())) {
+			sqlWhere += " and group_id = ?";
+			sps.add(Long.parseLong(key.getGroupId()));	
+		} 
+		if (StringUtil.isNotEmpty(key.getIsGet())) {
+			sqlWhere += " and is_get = ?";
+			sps.add(key.getIsGet());	
+		} 
+		
+		if (StringUtil.isNotEmpty(key.getType()) && StringUtil.isNotEmpty(key.getTypeVal())) {
+			
+			if (StringUtil.equals(key.getType(), "phone")) {
+				sqlWhere += " and mobile = ? ";
+				sps.add(key.getTypeVal());	
+			} else if (StringUtil.equals(key.getType(), "idcard")) {
+				sqlWhere += " and certno = ? ";
+				//sqlWhere += " and (certno = ? or childcertno = ?) ";
+				//sps.add(key.getTypeVal());	
+				sps.add(key.getTypeVal());	
+			} else if (StringUtil.equals(key.getType(), "name")) {
+				sqlWhere += " and truename = ? ";
+				//sqlWhere += " and (truename = ? or childname = ?) ";
+				//sps.add(key.getTypeVal());	
+				sps.add(key.getTypeVal());	
+			} else if (StringUtil.equals(key.getType(), "code")) {
+				sqlWhere += " and gamecode = ? ";
+				sps.add(key.getTypeVal());	
+			}
+			
+			
+		} 
+		
+		if (StringUtil.isNotEmpty(key.getSearchText())) {
+			sqlWhere += " and ( "
+					+ "	certno in (" + key.getSearchText() + ") or gamecode in (" + key.getSearchText() + ") "
+					+ " ) ";
+		}
+		
+		log.info(sps);
+		
+		sql_table = " t_apply ";
+		 List<Map<String, Object>> list = baseDAO.getGenericByPositionToSQL("select "
+		 		//+ " mt.*, "
+		 		+ " DATE_FORMAT(get_dt, '%Y-%m-%d %H:%i') getDtText, "
+		 		+ " APPLY_ID,GAMECODE,TRUENAME,MOBILE,CERTNO,TEAM_NAME,IS_GET,GROUP_NAME,SPORT_NAME "
+		 		//+ ", ORDER_ID,PAY_USER,PAY_FEE "
+		 		+ " from " + sql_table + sqlWhere + " order by apply_id desc", key.getOffset(), key.getPageSize(), sps.toArray()); 
+		 int totalCount = baseDAO.getGenericIntToSQL("select count(1) from " + sql_table + sqlWhere, sps.size() > 0 ? sps.toArray() : null);
+		
+		 return new DataModel<Map<String, Object>>(list,totalCount);
+		 
+	}
+	
+	public DataModel<Map<String, Object>> getListOrder(GetLimitKey key) {
+		
+
+		String sql_table = " t_apply mt left join  t_pay_order pay on mt.APPLY_ID = pay.APPLY_ID "	;
+		
+		//String sqlWhere = " where 1=1 and status = 3 and pay_status = 1 ";
+		String sqlWhere = " where 1=1 and  pay.status = 1 ";
+		List<Object> sps = new ArrayList<Object>();
+		if (StringUtil.isNotEmpty(key.getGroupId())) {
+			sqlWhere += " and group_id = ? ";
+			sps.add(Long.parseLong(key.getGroupId()));	
+		} 
+		if (StringUtil.isNotEmpty(key.getIsGet())) {
+			sqlWhere += " and is_get = ? ";
+			sps.add(key.getIsGet());	
+		} 
+		
+		if (StringUtil.isNotEmpty(key.getType()) && StringUtil.isNotEmpty(key.getTypeVal())) {
+			
+			if (StringUtil.equals(key.getType(), "phone")) {
+				sqlWhere += " and mt.mobile = ? ";
+				sps.add(key.getTypeVal());	
+			} else if (StringUtil.equals(key.getType(), "idcard")) {
+				sqlWhere += " and mt.certno = ? ";
+				//sqlWhere += " and (certno = ? or childcertno = ?) ";
+				//sps.add(key.getTypeVal());	
+				sps.add(key.getTypeVal());	
+			} else if (StringUtil.equals(key.getType(), "name")) {
+				sqlWhere += " and mt.truename = ? ";
+				//sqlWhere += " and (truename = ? or childname = ?) ";
+				//sps.add(key.getTypeVal());	
+				sps.add(key.getTypeVal());	
+			} else if (StringUtil.equals(key.getType(), "code")) {
+				sqlWhere += " and mt.gamecode = ? ";
+				sps.add(key.getTypeVal());	
+			}
+			
+			
+		} 
+		
+		if (StringUtil.isNotEmpty(key.getSearchText())) {
+			sqlWhere += " and ( "
+					+ "	mt.certno in (" + key.getSearchText() + ") or mt.gamecode in (" + key.getSearchText() + ") "
+					+ " ) ";
+		}
+		
+		log.info(sps);
+		
+		String sql  = "select "
+		 		//+ " mt.*, "
+		 		+ " DATE_FORMAT(mt.get_dt, '%Y-%m-%d %H:%i') getDtText, "
+		 		+ " mt.APPLY_ID,mt.GAMECODE,mt.TRUENAME,mt.MOBILE,mt.CERTNO,mt.TEAM_NAME,mt.IS_GET,mt.GROUP_NAME,mt.SPORT_NAME, "
+		 		+ " pay.OUT_TRADE_NO ORDER_ID,pay.BUY_USER PAY_USER,pay.TOTAL_FEE PAY_FEE "
+		 		+ " from  " + sql_table + sqlWhere + " order by mt.apply_id desc";
+		log.info(sql);
+		 List<Map<String, Object>> list = baseDAO.getGenericByPositionToSQL(sql, key.getOffset(), key.getPageSize(), sps.toArray()); 
+		 int totalCount = baseDAO.getGenericIntToSQL("select count(1) from " + sql_table + sqlWhere, sps.size() > 0 ? sps.toArray() : null);
+		
+		 return new DataModel<Map<String, Object>>(list,totalCount);
+		 
+	}
+	
+	public DataModel<Map<String, Object>> getListOrder_union(GetLimitKey key) {
+		
+		/*String sql_union_colum = " pay.STATUS pay_status,pay.BUY_USER pay_user,pay.TOTAL_FEE PAY_FEE,pay.OUT_TRADE_NO ORDER_ID,pay.BUY_USER PAY_USER,pay.TOTAL_FEE PAY_FEE " 
+									+ ",mt.GET_DT,  mt.APPLY_ID,mt.GAMECODE,mt.TRUENAME, mt.MOBILE, mt.CERTNO, mt.TEAM_NAME, mt.IS_GET, mt.GROUP_NAME, mt.SPORT_NAME   ";
+		*/
+		String sql_union_colum = " pay.STATUS pay_status,pay.OUT_TRADE_NO ORDER_ID,pay.BUY_USER PAY_USER,pay.TOTAL_FEE PAY_FEE " 
+									+ ",mt.GET_DT,  mt.APPLY_ID,mt.GAMECODE,mt.TRUENAME, mt.MOBILE, mt.CERTNO, mt.TEAM_NAME, mt.IS_GET, mt.GROUP_NAME, mt.SPORT_NAME   ";
+
+		String sql_table = "(select " + sql_union_colum + " from t_apply mt left join  t_pay_order pay on mt.APPLY_ID = pay.APPLY_ID where mt.TYPE_ID <> 2 and pay.STATUS=1 "
+						 + " union all "
+						 + " select " + sql_union_colum + " from t_apply mt left join  t_pay_order pay on mt.TEAM_ID = pay.TEAM_ID where mt.TYPE_ID = 2 and pay.STATUS=1 "
+						 + ") mt "	;
+		
+		//String sqlWhere = " where 1=1 and status = 3 and pay_status = 1 ";
+		String sqlWhere = " where 1=1 and  pay_status = 1 ";
+		List<Object> sps = new ArrayList<Object>();
+		if (StringUtil.isNotEmpty(key.getGroupId())) {
+			sqlWhere += " and group_id = ? ";
+			sps.add(Long.parseLong(key.getGroupId()));	
+		} 
+		if (StringUtil.isNotEmpty(key.getIsGet())) {
+			sqlWhere += " and is_get = ? ";
+			sps.add(key.getIsGet());	
+		} 
+		
+		if (StringUtil.isNotEmpty(key.getType()) && StringUtil.isNotEmpty(key.getTypeVal())) {
+			
+			if (StringUtil.equals(key.getType(), "phone")) {
+				sqlWhere += " and mobile = ? ";
+				sps.add(key.getTypeVal());	
+			} else if (StringUtil.equals(key.getType(), "idcard")) {
+				sqlWhere += " and certno = ? ";
+				//sqlWhere += " and (certno = ? or childcertno = ?) ";
+				//sps.add(key.getTypeVal());	
+				sps.add(key.getTypeVal());	
+			} else if (StringUtil.equals(key.getType(), "name")) {
+				sqlWhere += " and truename = ? ";
+				//sqlWhere += " and (truename = ? or childname = ?) ";
+				//sps.add(key.getTypeVal());	
+				sps.add(key.getTypeVal());	
+			} else if (StringUtil.equals(key.getType(), "code")) {
+				sqlWhere += " and gamecode = ? ";
+				sps.add(key.getTypeVal());	
+			}
+			
+			
+		} 
+		
+		if (StringUtil.isNotEmpty(key.getSearchText())) {
+			sqlWhere += " and ( "
+					+ "	certno in (" + key.getSearchText() + ") or gamecode in (" + key.getSearchText() + ") "
+					+ " ) ";
+		}
+		
+		log.info(sps);
+		
+		String sql  = "select "
+		 		//+ " mt.*, "
+		 		+ " DATE_FORMAT(get_dt, '%Y-%m-%d %H:%i') getDtText, "
+		 		+ " APPLY_ID,GAMECODE,TRUENAME,MOBILE,CERTNO,TEAM_NAME,IS_GET,GROUP_NAME,SPORT_NAME, "
+		 		+ " ORDER_ID,PAY_USER,PAY_FEE "
+		 		+ " from " + sql_table + sqlWhere + " order by apply_id desc";
+		log.info(sql);
+		 List<Map<String, Object>> list = baseDAO.getGenericByPositionToSQL(sql, key.getOffset(), key.getPageSize(), sps.toArray()); 
+		 int totalCount = baseDAO.getGenericIntToSQL("select count(1) from " + sql_table + sqlWhere, sps.size() > 0 ? sps.toArray() : null);
+		
+		 return new DataModel<Map<String, Object>>(list,totalCount);
+		 
+	}
+	
+	public MsgVo exeBatchGet(String psLine) {
+		if (authorService.getSessionUser() == null) {
+			return new MsgVo("请重新登录");
+		}
+		if (StringUtil.isEmpty(psLine)) {
+			return new MsgVo("请求有误");
+		}
+		
+		
+		baseDAO.execteNativeBulk(
+				"update t_apply set is_get = 1, get_dt = ?, get_create_user = ? where "
+				//+ " status = 3 "
+				+ " apply_id in (select apply_id from t_pay_order where status = 1) "
+				+ " and (is_get <> 1 or is_get is null) "
+				 + " and (	certno in (" + psLine + ") or gamecode in (" + psLine + ") "
+					 + " ) "
+				,new Date(), authorService.getSessionUser().getAccount());
+		
+		return new MsgVo(true, "操作成功");
+	}
+	
+	public MsgVo exeGet(String id, String isGet) {
+		if (authorService.getSessionUser() == null) {
+			return new MsgVo("请重新登录");
+		}
+		if (StringUtil.isEmpty(id) || StringUtil.isEmpty(isGet)) {
+			return new MsgVo("请求有误");
+		}
+		
+		if (!StringUtil.equals("1", isGet) && !StringUtil.equals("0", isGet)) {
+			return new MsgVo("请求有误.");
+		}
+		
+		baseDAO.execteNativeBulk(
+				"update t_apply set is_get = ?, get_dt = ?, get_create_user = ? where apply_id = ? ", 
+				isGet, new Date(), authorService.getSessionUser().getAccount(), id);
+		
+		return new MsgVo(true, "操作成功");
+	}
+	
+	
+	
+	
+	
+}

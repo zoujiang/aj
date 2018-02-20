@@ -1,0 +1,106 @@
+package com.qm.shop.album.service.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+
+import com.frame.core.dao.GenericDAO;
+import com.frame.core.vo.DataModel;
+import com.frame.log.service.LogBizOprService;
+import com.qm.shop.album.service.ShopDynamicAlbumService;
+import com.qm.shop.album.vo.ShopDynamicAlbumVO;
+
+@Service("shopDynamicAlbumService")
+@Scope("prototype")
+public class ShopDynamicAlbumServiceImpl  implements ShopDynamicAlbumService{
+
+	private Logger log = Logger.getLogger(this.getClass());
+	
+	@Autowired
+	private GenericDAO baseDAO;
+	
+	@Autowired
+	private LogBizOprService logBizOprService;
+	
+	@Override
+	public DataModel<Map<String, Object>> getList(ShopDynamicAlbumVO limitKey) {
+		
+		String sql = "SELECT a.id, u.user_tel userTel, a.album_name albumName, (SELECT COUNT(1) FROM t_shop_photo p WHERE p.album_id = a.id ) photoCount,  a.create_time createTime, t.template_url templateUrl,t.music_url musicUrl FROM t_shop_dynamic_album a, t_shop_info i, t_shop_customer_user u , t_album_template t WHERE a.shop_id = i.id  AND a.user_id = u.id and a.template_id = t.id";
+		String countSql = "SELECT count(a.id) FROM t_shop_dynamic_album a, t_shop_info i, t_shop_customer_user u, t_album_template t WHERE a.shop_id = i.id  AND a.user_id = u.id and a.template_id = t.id ";
+		List<String> param = new ArrayList<String>();
+		if(limitKey != null){
+			if(limitKey.getShopName() != null && !"".equals(limitKey.getShopName().toString())){
+				sql += " and i.shop_name like concat ('%',?,'%')";
+				countSql += " and i.shop_name like concat ('%',?,'%')";
+				param.add(limitKey.getShopName());
+			}
+			if(limitKey.getUserName() != null && !"".equals(limitKey.getUserName().toString())){
+				sql += " and u.username like concat ('%',?,'%')";
+				countSql += " and u.username like concat ('%',?,'%')";
+				param.add(limitKey.getUserName());
+			}
+			if(limitKey.getUserId() != null && !"".equals(limitKey.getUserId())){
+				sql += " and a.user_id = ? ";
+				countSql +=" and a.user_id = ? ";
+				param.add(limitKey.getUserId());
+			}
+			if(limitKey.getShopId() != null && !"".equals(limitKey.getShopId())){
+				sql += " and a.shop_id = ? ";
+				countSql +=" and a.shop_id = ? ";
+				param.add(limitKey.getShopId());
+			}
+		}
+		sql += " order by a.create_time desc";
+		List<Map<String, Object>> list = baseDAO.getGenericByPositionToSQL(sql, limitKey.getOffset(), limitKey.getPageSize(), param.toArray());
+		int total = baseDAO.getGenericIntToSQL(countSql, param.toArray());
+		return new DataModel<Map<String,Object>>(list, total);
+	}
+
+	@Override
+	public int save(ShopDynamicAlbumVO vo) {
+		String sql = "INSERT INTO t_shop_dynamic_album (id, shop_id, user_id, album_name, album_logo,template_id,  create_time) VALUES (?,?,?,?,?,?,?)";
+		
+		return baseDAO.execteNativeBulk(sql, vo.getId(),vo.getShopId(), vo.getUserId(), vo.getAlbumName(), vo.getAlbumLogo(), vo.getTemplateId(), vo.getCreateTime());
+	}
+
+	@Override
+	public List<Map<String, Object>> queryListByShopIdAndUserId(String shopId,
+			String userId) {
+		String sql = "select id albumId, album_name albumName from t_shop_dynamic_album where shop_id = ? and user_id = ? order by create_time";
+		return baseDAO.getGenericBySQL(sql, new Object[]{shopId, userId});
+	}
+
+	@Override
+	public Map<String, Object> find(String id) {
+	
+		String sql = "SELECT "+
+						" a.id , a.shop_id shopId, s.shop_name shopName, s.logo shopLogo, s.address shopAddrss, s.tel shopTel,  u.id userId, u.user_tel userTel,  a.album_name albumName, a.album_logo albumLogo, a.template_id templateId, t.template_logo templateLogo, t.template_url templateUrl, t.music_url musicUrl, s.tel, s.address "+
+						" FROM t_shop_dynamic_album a, t_shop_info s, t_shop_customer_user u , t_album_template t "+
+						" WHERE a.shop_id = s.id AND a.user_id = u.id AND a.template_id = t.id AND a.id = ?";
+		List<Map<String, Object>> list = baseDAO.getGenericBySQL(sql, new Object[]{id});
+		if(list != null && list.size() > 0){
+			return list.get(0);
+		}
+		return null;
+	}
+
+	@Override
+	public int update(ShopDynamicAlbumVO vo) {
+		
+		String sql = "update t_shop_dynamic_album set shop_id =?, user_id = ?, album_name=?, album_logo=?, template_id=? where id = ? ";
+		return baseDAO.execteNativeBulk(sql, vo.getShopId(), vo.getUserId(), vo.getAlbumName(), vo.getAlbumLogo(), vo.getTemplateId(), vo.getId());
+	}
+
+	@Override
+	public List<Map<String, Object>> templateList() {
+		String sql = "select id, template_name templateName, template_logo templateLogo, template_url templateUrl from t_album_template where status = 0 order by sort";
+		return baseDAO.getGenericBySQL(sql, null);
+	}
+
+	
+}

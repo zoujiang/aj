@@ -1,0 +1,118 @@
+package com.qm.shop.account.service.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+
+import com.frame.core.dao.GenericDAO;
+import com.frame.core.util.GUID;
+import com.frame.core.util.SparkLib;
+import com.frame.core.vo.DataModel;
+import com.frame.log.service.LogBizOprService;
+import com.frame.system.po.User;
+import com.frame.system.po.UserRole;
+import com.qm.shop.account.service.ShopAccountService;
+import com.qm.shop.account.vo.ShopAccountVO;
+
+@Service("shopAccountService")
+@Scope("prototype")
+public class ShopAccountServiceImpl  implements ShopAccountService{
+
+	private Logger log = Logger.getLogger(this.getClass());
+	
+	@Autowired
+	private GenericDAO baseDAO;
+	
+	@Autowired
+	private LogBizOprService logBizOprService;
+	
+	@Override
+	public DataModel<Map<String, Object>> getList(ShopAccountVO limitKey) {
+		
+		//String sql = "SELECT  a.id, i.shop_name shopName, a.username, a.tel, a.nickname, a.create_time createTime, a.status FROM t_shop_account a , t_shop_info i WHERE a.shop_id = i.id ";
+		String sql = "select  a.id, i.shop_name shopName, account username, a.tele tel, a.name nickname, DATE_FORMAT(a.create_dt,'%Y-%m-%d %H:%i:%s') createTime, a.ISENABLED status from t_sys_user a, t_shop_info i WHERE a.shop_id = i.id and a.ACCOUNT_TYPE = '4'";
+		String countSql = "select count(1) from t_sys_user a, t_shop_info i WHERE a.shop_id = i.id and a.ACCOUNT_TYPE = '4'";
+		List<String> param = new ArrayList<String>();
+		if(limitKey != null){
+			if(limitKey.getShopName() != null && !"".equals(limitKey.getShopName().toString())){
+				sql += " and i.shop_name like concat ('%',?,'%')";
+				countSql += " and i.shop_name like concat ('%',?,'%')";
+				param.add(limitKey.getShopName());
+			}
+			if(limitKey.getUsername() != null && !"".equals(limitKey.getUsername().toString())){
+				sql += " and a.name like concat ('%',?,'%')";
+				countSql += " and a.name like concat ('%',?,'%')";
+				param.add(limitKey.getUsername());
+			}
+		}
+		List<Map<String, Object>> list = baseDAO.getGenericByPositionToSQL(sql, limitKey.getOffset(), limitKey.getPageSize(), param.toArray());
+		int total = baseDAO.getGenericIntToSQL(countSql, param.toArray());
+		return new DataModel<Map<String,Object>>(list, total);
+	}
+
+	@Override
+	public int save(ShopAccountVO limitKey) {
+		String sql = "INSERT INTO  (id, username, PASSWORD, shop_id, tel, nickname, create_time, STATUS, email) VALUES (?,?,?,?,?,?,?,?,?)";
+		
+		return baseDAO.execteNativeBulk(sql, limitKey.getId(),limitKey.getUsername(), limitKey.getPassword(), limitKey.getShopId(), limitKey.getTel(), limitKey.getNickname(), limitKey.getCreateTime(), limitKey.getStatus(), limitKey.getEmail());
+	}
+
+	@Override
+	public int updateAccountStatus(String id, String status) {
+		String sql = "update t_sys_user set ISENABLED = ? where id = ?";
+		return baseDAO.execteNativeBulk(sql, status, id);
+	}
+
+	@Override
+	public Map<String, Object> findAccountById(String id) {
+		String sql = "SELECT  a.id, a.shop_id shopId, a.pwd password, a.email, a.account username, a.tele tel, a.name nickname, DATE_FORMAT(a.create_dt,'%Y-%m-%d %H:%i:%s') createTime, a.isenabled status FROM t_sys_user a  WHERE a.id = ? ";
+		List<Map<String, Object>> list = baseDAO.getGenericBySQL(sql, new Object[]{id});
+		if(list != null && list.size() > 0){
+			return list.get(0);
+		}
+		return null;
+	}
+
+	@Override
+	public int update(ShopAccountVO v) {
+		
+		//String sql = "update t_shop_account set  shop_id = ?, status = ?, username = ? ,nickname = ? , tel = ?, email = ? , password = ? where id = ?";
+		String sql = "update t_sys_user set  shop_id = ?, isenabled = ?, account = ? ,name = ? , tele = ?, email = ? , pwd = ? where id = ?";
+		return baseDAO.execteNativeBulk(sql, v.getShopId(), v.getStatus(), v.getUsername(), v.getNickname(), v.getTel(), v.getEmail(), SparkLib.encodePassword(v.getPassword(), com.frame.core.constant.Constant.MAX_PASSWORD) , v.getId());
+	}
+
+	@Override
+	public Map<String, Object> findAccountByUsername(String username) {
+		String sql = "SELECT  a.id, a.shop_id shopId, a.pwd password, a.email, a.account username, a.tele tel, a.name nickname, DATE_FORMAT(a.create_dt,'%Y-%m-%d %H:%i:%s') createTime, a.isenabled status FROM t_sys_user a WHERE a.account = ? ";
+		List<Map<String, Object>> list = baseDAO.getGenericBySQL(sql, new Object[]{username});
+		if(list != null && list.size() > 0){
+			return list.get(0);
+		}
+		return null;
+	}
+
+	@Override
+	public int saveSysUser(User uv) {
+		int i = 1;
+		try {
+			baseDAO.save(uv);
+			//设置权限
+			UserRole role = new UserRole();
+			role.setId(GUID.generateID("UR"));
+			role.setUserId(uv.getId());
+			role.setRoleId("SHOPMANAGER");
+			 baseDAO.save(role);
+		} catch (Exception e) {
+			e.printStackTrace();
+			i = 0;
+		}
+		return i ;
+	}
+
+	
+}

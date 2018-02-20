@@ -1,0 +1,226 @@
+package com.spt.score.job;
+
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+
+import com.frame.core.dao.GenericDAO;
+import com.frame.core.util.DateUtil;
+import com.frame.core.util.StringUtil;
+import com.frame.core.vo.MsgVo;
+import com.spt.entry.model.TCertCfg;
+import com.spt.entry.model.TImpJob;
+import com.spt.entry.model.TUserScore;
+import com.spt.score.util.CertImgTextUtil;
+import com.spt.score.util.ScoreConsts;
+
+@Service("certMakeService")
+@Scope("prototype")
+public class CertMakeServiceImpl {
+	private static Logger logger = Logger.getLogger(CertMakeServiceImpl.class);
+	
+	@Autowired
+	private GenericDAO baseDAO;
+	
+	
+	public void doCertMake() {
+		
+		List<TImpJob> list = baseDAO.getGenericByHql("from TImpJob t where t.jobStatus = ? and t.certStatus = ? order by createDt asc", ScoreConsts.status_处理成功,ScoreConsts.status_待处理);
+		
+		if (list == null || list.isEmpty()) {
+			logger.info("doCertMake is empty");
+			return;
+		}
+		
+		logger.info("doCertMake size:" + list.size());
+		
+		for (TImpJob po : list) {
+			doCertMake(po);
+		}
+		logger.info("doCertMake end size:" + list.size());
+		
+	}
+	
+	/*public MsgVo doCertMakeByApplyId(String applyId) {
+		
+		TUserScore score = baseDAO.get(TUserScore.class, applyId);
+		if (score == null) {
+			return new MsgVo("没找到成绩记录");
+		}
+		
+		if (StringUtil.isEmpty(score.getScoreJobId())) {
+			return new MsgVo("没有任务关联");
+		}
+		
+		TImpJob job = baseDAO.get(TImpJob.class, score.getScoreJobId());
+		if (job == null) {
+			return new MsgVo("没找到成绩任务");
+		}
+		
+		return doCertMake(job);
+	}*/
+	
+	public MsgVo doCertMake(TImpJob job) {
+
+		logger.info("doCertMake :" + job.getJobId());
+		
+		//List<TUserScore> list = baseDAO.getGenericByHql("from TUserScore t where t.scoreJobId = ? and t.certStatus = 1 order by scoreDt asc", job.getJobId());
+		
+		
+		List<Map<String, Object>> list = baseDAO.getGenericBySQL("select mt.*, "
+		 		+ " lt.TRUENAME, lt.CHILDNAME, lt.GAMECODE, lt.GROUP_NAME "
+		 		+ " from t_user_score mt "
+		 		+ " left join t_apply lt on mt.APPLY_ID = lt.APPLY_ID  "
+		 		+ " where mt.score_job_id = ? and mt.cert_status <> 0 ", new Object[]{job.getJobId()});
+		
+		if (list == null || list.isEmpty()) {
+			logger.info("doCertMake score is empty:" + job.getJobId());
+			
+			baseDAO.execteBulk("update TImpJob set certStatus = " + ScoreConsts.status_处理成功 + 
+					" ,certStartDt = null, certEndDt = ? "  + 
+					" where id = ? and certStatus = ? ", new Date(), job.getJobId(), ScoreConsts.status_待处理);
+			
+			return new MsgVo("没找到需要生成的记录");
+		}
+		
+		String groupType = ScoreConsts.getGroupType(job.getJobGroupId());
+		
+		if (StringUtil.isEmpty(groupType)) {
+			logger.info("doCertMake groupType is empty:" + job.getJobId() + ".groupId:" + job.getJobGroupId());
+			return new MsgVo("组别类型有误：" + job.getJobGroupId());
+		}
+		
+		TCertCfg certCfg = baseDAO.get(TCertCfg.class, job.getJobGroupId());
+		if (certCfg == null) {
+			logger.info("doCertMake TCertCfg is not exists:" + job.getJobId());
+			return new MsgVo("请先配置【证书生成规则】");
+		}
+		
+		if (StringUtil.isEmpty(certCfg.getBackImg())) {
+			logger.info("doCertMake backImg is empty:" + job.getJobId());
+			return new MsgVo("证书背景图片为空");
+		}
+		String templatePath = ScoreConsts.getRealPath() + certCfg.getBackImg();
+		logger.info("doCertMake backImg:" + job.getJobId() + "." + templatePath);
+		
+		
+		baseDAO.execteBulk("update TImpJob set certStatus =  " + ScoreConsts.status_处理中 + 
+					" ,certStartDt = ? "  + 
+					" where id = ?", new Date(), job.getJobId());
+		
+		try {
+			
+			String dbPath = "/res/cert/" + job.getJobGroupId() + "/";
+			
+			File dir = new File(ScoreConsts.getRealPath() + dbPath);
+			if (!dir.exists() || !dir.isDirectory()) {
+				dir.mkdirs();
+			}
+			
+			for (Map<String, Object> row : list) {
+				
+				
+				CertImgTextUtil imgText = new CertImgTextUtil();
+				BufferedImage d = imgText.loadImageLocal(templatePath); 
+				BufferedImage bi = null;
+				imgText.setFont("宋体", 10);
+				imgText.setColor(Color.BLACK);
+				
+				if (ScoreConsts.jobType_迷你.equals(job.getJobType())) {
+					imgText.setFont("宋体", 90);
+					bi = imgText.modifyImage(d, strNull(row, "TRUENAME"), 1148, 1190);
+			        bi = imgText.modifyImage(d, strNull(row, "GAMECODE"), 2479, 1190);
+				} else if (ScoreConsts.jobType_亲子.equals(job.getJobType())) {
+					imgText.setFont("宋体", 90);
+			        bi = imgText.modifyImage(d, strNull(row, "GAMECODE"), 1088, 1165);
+			        bi = imgText.modifyImage(d, strNull(row, "TRUENAME"), 1857, 1165);
+			        //bi = imgText.modifyImage(d, strNull(row, "CHILDNAME"), 68, 22);
+			        bi = imgText.modifyImage(d, "     " + strNull(row, "CHILDNAME"), 2479, 1165);//加空格控制距离，宽度大了写不了字
+				} else if (ScoreConsts.jobType_半程.equals(job.getJobType())) {
+					imgText.setFont("宋体", 80);
+					bi = imgText.modifyImage(d, strNull(row, "TRUENAME"), 680, 1132);
+			        bi = imgText.modifyImage(d, strNull(row, "GAMECODE"), 1595, 1132);
+			        bi = imgText.modifyImage(d, strNull(row, "GROUP_NAME"), 746, 1315);
+				    bi = imgText.modifyImage(d, strNull(row, "SCORE_TIME"), 746, 1612);
+				    bi = imgText.modifyImage(d, strNull(row, "SCORE_RANK"), 1706, 1612);
+				    imgText.setFont("宋体", 63);
+				    bi = imgText.modifyImage(d, strNull(row, "SCORE_TIME1"), 883, 1788);
+				    //bi = imgText.modifyImage(d, strNull(row, "SCORE_TIME2"), 1193, 1858);
+				    //bi = imgText.modifyImage(d, strNull(row, "SCORE_TIME3"), 1493, 1858);
+				    bi = imgText.modifyImage(d, strNull(row, "SCORE_TIME2"), 1520, 1788);
+				} else if (ScoreConsts.jobType_全程.equals(job.getJobType())) {
+					imgText.setFont("宋体", 80);
+					bi = imgText.modifyImage(d, strNull(row, "TRUENAME"), 680, 1132);
+			        bi = imgText.modifyImage(d, strNull(row, "GAMECODE"), 1595, 1132);
+			        bi = imgText.modifyImage(d, strNull(row, "GROUP_NAME"), 746, 1315);
+				    bi = imgText.modifyImage(d, strNull(row, "SCORE_TIME"), 746, 1612);
+				    bi = imgText.modifyImage(d, strNull(row, "SCORE_RANK"), 1706, 1612);
+				    imgText.setFont("宋体", 65);
+				    bi = imgText.modifyImage(d, strNull(row, "SCORE_TIME1"), 1180, 1788);
+				} 
+				
+				String dateStr = DateUtil.dateFromat(new Date(), DateUtil.DATE_TIME_PATTERN4);
+				String fileName = dateStr + "_" + strNull(row, "GAMECODE") + ".jpg";
+				
+				fileName = dbPath + fileName;
+				logger.info("doCertMake certGen:" + job.getJobId() + "." + ScoreConsts.getRealPath() + fileName);
+		        
+				imgText.writeImageLocal(ScoreConsts.getRealPath() + fileName, bi); 
+				
+		        baseDAO.execteBulk("update TUserScore set certStatus = 2 " + 
+						" ,certGenDt = ? "  + 
+						" ,certJobId = ? "  + 
+						" ,certUrl = ? "  + 
+						" where applyId = ?", 
+								new Date(), 
+								job.getJobId(), 
+								fileName, 
+								strNull(row, "APPLY_ID"));
+			}
+			
+			logger.info("doCertMake ok:" + job.getJobId() + ".size:" + list.size());
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.info("doCertMake error:" + job.getJobId() + "." + e.toString());
+			
+			baseDAO.execteBulk("update TImpJob set certStatus = " + ScoreConsts.status_处理失败 + 
+					" ,certEndDt = ? "  + 
+					" where id = ?", new Date(), job.getJobId());
+			
+			return new MsgVo("生成失败:" + e.toString());
+		} finally {
+			
+		}
+		
+		baseDAO.execteBulk("update TImpJob set certStatus = " + ScoreConsts.status_处理成功 + 
+				" ,certEndDt = ? "  + 
+				" where id = ?", new Date(), job.getJobId());
+		
+		return new MsgVo(true, "生成证书处理成功");
+		
+	}
+	
+	private String strNull(Map row, String key) {
+		Object val = row.get(key);
+		if (val == null) {
+			return "";
+		}
+		return val.toString();
+	}
+	
+	
+	
+	
+
+
+}

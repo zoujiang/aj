@@ -1,0 +1,54 @@
+package com.spt.score.util;
+
+import java.io.File;
+import java.net.URLEncoder;
+
+import com.frame.core.vo.MsgVo;
+
+public class ScoreConsts {
+	
+	public static String status_待处理 = "0";
+	public static String status_处理中 = "1";
+	public static String status_处理成功 = "2";
+	public static String status_处理失败 = "3";
+	
+	//作业类型（1-全程模板，2-半程模板，3-迷你模板,4-亲子模板)
+	public static String jobType_全程 = "1";
+	public static String jobType_半程 = "2";
+	public static String jobType_迷你 = "3";
+	public static String jobType_亲子 = "4";
+	
+
+	
+	public static String getRealPath() {
+		/*File file = new File(ScoreConsts.class.getClass().getResource("/").getPath().substring(1));
+		return file.getParentFile().getParentFile().getPath();*/
+		
+		String url = Thread.currentThread().getContextClassLoader().getResource("/").getPath();
+		//url = url.replace("/WEB-INF/classes/", "/temp/");
+		return url.replace("/WEB-INF/classes/", "");
+	}
+	
+	public static String getGroupType(String groupId) {
+		
+		/*
+		 * 作业类型（1-全程模板，2-半程模板，3-迷你模板,4-亲子模板)
+		 * 亲子：4
+		迷你：3,11
+		半程：1.9
+		全场：2,10*/
+		
+		if ("4".equals(groupId)) {
+			return jobType_亲子;
+		} else if ("3".equals(groupId) || "11".equals(groupId) ) {
+			return jobType_迷你;
+		} else if ("2".equals(groupId) || "10".equals(groupId) ) {
+			return jobType_全程;
+		} else if ("1".equals(groupId) || "9".equals(groupId) ) {
+			return jobType_半程;
+		} else {
+			return null;
+		}
+	}
+	
+}

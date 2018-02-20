@@ -1,0 +1,143 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
+		<meta name="format-detection" content="telephone=no">
+		<meta content="yes" name="apple-mobile-web-app-capable">
+		<meta content="black" name="apple-mobile-web-app-status-bar-style">
+		<link rel="icon" type="image/ico" href="">
+		<meta http-equiv="pragma" content="no-cache">
+		<meta http-equiv="cache-control" content="no-cache">
+		<title>
+			童话宝宝相册
+		</title>
+		
+		<script type="text/javascript" async="" src="./vds.js">
+		</script>
+		<script src="./jweixin-1.2.0.js">
+		</script>
+		<script src="./jquery.2.1.4.min.js">
+		</script>
+		<link rel="stylesheet" href="./makaElementEffect.v1.css">
+		<script src="./statisticSDK.8f69.js">
+		</script>
+		
+		<link href="./main.270d347dc53448af20c8.css" rel="stylesheet">
+	</head>
+	<body>
+		<div class="maka-canvas" style="width: 100%; height: 100%; left: 0px; top: 0px; position: absolute;">
+			<!-----所有page的页面---->
+			<div class="maka-pages" id="maka-pages" style="touch-action: pan-x; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); display: block;">
+				<div class="SPpage" style="display: none; position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; background: white; z-index: 1999; touch-action: pan-y; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+					<iframe border="0" style="border:0;outline:0" width="100%" height="100%"
+					src="./saved_resource.html">
+					</iframe>
+				</div>
+				<div class="maka-page maka-page-0" style="z-index: 999; display: block;">
+					
+					<div class="maka-eleCanvas maka-eleCanvas-0" style="width: 100%; height: 100%; left: 0.198413px; top: 0px; position: absolute;">
+						<div style="width: 100%; height: 100%; left: 0px; top: 0px; position: absolute; opacity: 1; transform: rotate(0deg); cursor: pointer;">
+							<div class="pullUp animated" style="position: absolute; width: 100%; height: 100%; overflow: hidden; border-radius: 0px; box-shadow: black 0px 0px 0px; background-image: url(&quot;http://img2.maka.im/user/1920238/images/8ee5ea0fbed2d1fc679cba76dd915ca1.jpg@0-0-640-1008a_90Q.src&quot;); background-repeat: no-repeat; background-size: 100% 100%; background-position: 0px 0px; animation: pullUp 1000ms ease 1600ms both running;">
+								<img src="./8ee5ea0fbed2d1fc679cba76dd915ca1.jpg@0-0-640-1008a_90Q.src"
+								style="opacity: 0;">
+							</div>
+						</div>
+						<div style="width: 91px; height: 109px; left: 80%; bottom: 14%; position: absolute; opacity: 1; transform: rotate(0deg); cursor: pointer;">
+							<div class="pullUp animated" style="position: absolute; width: 100%; height: 100%; overflow: hidden; border-radius: 0px; box-shadow: black 0px 0px 0px; background-image: url(&quot;./06c625448afed84c34f06f1264c1ff4f.png@0-0-155-187a_90Q.src&quot;); background-repeat: no-repeat; background-size: 100% 100%; background-position: 0px 0px; animation: pullUp 1000ms ease 9000ms both running;">
+								<img src="./06c625448afed84c34f06f1264c1ff4f.png@0-0-155-187a_90Q.src"
+								style="opacity: 0;">
+							</div>
+						</div>
+						<div style="width: 100%; height: 16%; left: 0px; bottom: 0px; position: absolute; opacity: 1; transform: rotate(0deg); cursor: pointer;">
+							<div class="rotateIn animated" style="position: absolute; width: 100%; height: 100%; overflow: hidden; border-radius: 0px; box-shadow: black 0px 0px 0px; background-image: url(&quot;http://img2.maka.im/user/1920238/images/ef1558d5d25d13df6d9ef21888c8bfd9.png@0-0-640-156a_90Q.src&quot;); background-repeat: no-repeat; background-size: 100% 100%; background-position: 0px 0px; animation: rotateIn 1000ms ease 0ms both running;">
+								<img src="./ef1558d5d25d13df6d9ef21888c8bfd9.png@0-0-640-156a_90Q.src"
+								style="opacity: 0;">
+							</div>
+						</div>
+						<div style="width: 20%; height: 52px; left: -1px; bottom: 0px; position: absolute; opacity: 1; transform: rotate(0deg); cursor: pointer;">
+							<div class="fadeInLeft animated" style="position: absolute; width: 100%; height: 100%; overflow: hidden; border-radius: 0px; box-shadow: black 0px 0px 0px; background-image: url(&quot;http://img2.maka.im/user/1920238/images/bbe0270114eeff9005d1101de9b6aac8.png@0-0-108-89a_90Q.src&quot;); background-repeat: no-repeat; background-size: 100% 100%; background-position: 0px 0px; animation: fadeInLeft 1000ms ease 7500ms both running;">
+								<img src="./bbe0270114eeff9005d1101de9b6aac8.png@0-0-108-89a_90Q.src"
+								style="opacity: 0;">
+							</div>
+						</div>
+						<div style="width: 100%; height: 3px; left: 3px; bottom: 1px; position: absolute; opacity: 1; transform: rotate(0deg); cursor: pointer;">
+							<div class="fadeInRight animated" style="position: absolute; width: 100%; height: 100%; overflow: hidden; border-radius: 0px; box-shadow: black 0px 0px 0px; background-image: url(&quot;http://img2.maka.im/user/1920238/images/f8965c5e8782922a3bf8a393a62380eb.png@0-0-633-5a_90Q.src&quot;); background-repeat: no-repeat; background-size: 100% 100%; background-position: 0px 0px; animation: fadeInRight 1000ms ease 6500ms both running;">
+								<img src="./f8965c5e8782922a3bf8a393a62380eb.png@0-0-633-5a_90Q.src" style="opacity: 0;">
+							</div>
+						</div>
+						<div style="width: 100%; height: 3px; left: 5px; bottom: 14%; position: absolute; opacity: 1; transform: rotate(0deg); cursor: pointer;">
+							<div class="fadeInLeft animated" style="position: absolute; width: 100%; height: 100%; overflow: hidden; border-radius: 0px; box-shadow: black 0px 0px 0px; background-image: url(&quot;http://img2.maka.im/user/1920238/images/a7909f4fc0abbca21dc3aed70209902e.png@0-0-633-5a_90Q.src&quot;); background-repeat: no-repeat; background-size: 100% 100%; background-position: 0px 0px; animation: fadeInLeft 1000ms ease 6500ms both running;">
+								<img src="./a7909f4fc0abbca21dc3aed70209902e.png@0-0-633-5a_90Q.src" style="opacity: 0;">
+							</div>
+						</div>
+						<div style="width: 80%; height: 265px; left: 10%; top: 201px; position: absolute; opacity: 1; transform: rotate(0deg); cursor: pointer;">
+							<div class="rotateIn animated" style="position: absolute; width: 100%; height: 100%; overflow: hidden; border-radius: 0px; box-shadow: black 0px 0px 0px; background-image: url(&quot;http://img2.maka.im/user/1920238/images/4df5fe83311a6ba75c10c98b14ee6e4b.png@0-0-536-452a_90Q.src&quot;); background-repeat: no-repeat; background-size: 100% 100%; background-position: 0px 0px; animation: rotateIn 1000ms ease 3500ms both running;">
+								<img src="./4df5fe83311a6ba75c10c98b14ee6e4b.png@0-0-536-452a_90Q.src"
+								style="opacity: 0;">
+							</div>
+						</div>
+						<div style="width: 70%; height: 90px; left: 15%; top: 398px; position: absolute; opacity: 1; transform: rotate(0deg); cursor: pointer;">
+							<div class="zoomIn animated" style="position: absolute; width: 100%; height: 100%; overflow: hidden; border-radius: 0px; box-shadow: black 0px 0px 0px; background-image: url(&quot;http://img2.maka.im/user/1920238/images/860b4ebb0219ee9ffde397ebcb9f332c.png@0-0-482-154a_90Q.src&quot;); background-repeat: no-repeat; background-size: 100% 100%; background-position: 0px 0px; animation: zoomIn 1000ms ease 4000ms both running;">
+								<img src="./860b4ebb0219ee9ffde397ebcb9f332c.png@0-0-482-154a_90Q.src"
+								style="opacity: 0;">
+							</div>
+						</div>
+						<div style="width: 60%; height: 43px; left: 21%; bottom: 0px; position: absolute; opacity: 1; transform: rotate(0deg); cursor: pointer;">
+							<div class="zoomIn animated" style="position: absolute; width: 100%; height: 100%; overflow: hidden; border-radius: 0px; box-shadow: black 0px 0px 0px; background-image: url(&quot;./zhongwen.png&quot;); background-repeat: no-repeat; background-size: 100% 100%; background-position: 0px 0px; animation: zoomIn 1000ms ease 7000ms both running;">
+								<img src="./zhongwen.png"
+								style="opacity: 0;">
+							</div>
+						</div>
+						<div style="width: 47px; height: 66px; left: 80%; top: 74px; position: absolute; opacity: 1; transform: rotate(0deg); cursor: pointer;">
+							<div class="fadeInUp animated" style="position: absolute; width: 100%; height: 100%; overflow: hidden; border-radius: 0px; box-shadow: black 0px 0px 0px; background-image: url(&quot;http://img2.maka.im/user/1920238/images/b9a98e49fa8becb31ea5547d30281b65.png@0-0-81-112a_90Q.src&quot;); background-repeat: no-repeat; background-size: 100% 100%; background-position: 0px 0px; animation: fadeInUp 1000ms ease 10000ms both running;">
+								<img src="./b9a98e49fa8becb31ea5547d30281b65.png@0-0-81-112a_90Q.src"
+								style="opacity: 0;">
+							</div>
+						</div>
+						<div style="width: 66px; height: 67px; left: 100px; top: 273px; position: absolute; opacity: 1; transform: rotate(0deg); cursor: pointer;">
+							<div class="fadeInLeft animated" style="position: absolute; width: 100%; height: 100%; overflow: hidden; border-radius: 0px; box-shadow: black 0px 0px 0px; background-image: url(&quot;http://img2.maka.im/user/1920238/images/ea3c3960df6aa47647981ae0121394c6.png@0-0-112-115a_90Q.src&quot;); background-repeat: no-repeat; background-size: 100% 100%; background-position: 0px 0px; animation: fadeInLeft 1000ms ease 5500ms both running;">
+								<img src="./ea3c3960df6aa47647981ae0121394c6.png@0-0-112-115a_90Q.src"
+								style="opacity: 0;">
+							</div>
+						</div>
+						<div style="width: 75%; height: 73px; left: 35%; top: -8px; position: absolute; opacity: 1; transform: rotate(0deg); cursor: pointer;">
+							<div class="stretchRight animated" style="position: absolute; width: 100%; height: 100%; overflow: hidden; border-radius: 0px; box-shadow: black 0px 0px 0px; background-image: url(&quot;http://img2.maka.im/user/1920238/images/952ef01b9104be83065ff7cf60c3e6b9.png@0-0-514-124a_90Q.src&quot;); background-repeat: no-repeat; background-size: 100% 100%; background-position: 0px 0px; animation: stretchRight 1000ms ease 2500ms both running;">
+								<img src="./952ef01b9104be83065ff7cf60c3e6b9.png@0-0-514-124a_90Q.src"
+								style="opacity: 0;">
+							</div>
+						</div>
+						<div style="width: 55%; height: 67px; left: -4px; top: -9px; position: absolute; opacity: 1; transform: rotate(0deg); cursor: pointer;">
+							<div class="stretchLeft animated" style="position: absolute; width: 100%; height: 100%; overflow: hidden; border-radius: 0px; box-shadow: black 0px 0px 0px; background-image: url(&quot;http://img2.maka.im/user/1920238/images/c7e6d44e7ab4ef35b62fa5c47a334ffc.png@0-0-385-115a_90Q.src&quot;); background-repeat: no-repeat; background-size: 100% 100%; background-position: 0px 0px; animation: stretchLeft 1000ms ease 2000ms both running;">
+								<img src="./c7e6d44e7ab4ef35b62fa5c47a334ffc.png@0-0-385-115a_90Q.src"
+								style="opacity: 0;">
+							</div>
+						</div>
+						<div style="width: 98px; height: 70px; left: -1px; top: 111px; position: absolute; opacity: 1; transform: rotate(0deg); cursor: pointer;">
+							<div class="fadeInLeft animated" style="position: absolute; width: 100%; height: 100%; overflow: hidden; border-radius: 0px; box-shadow: black 0px 0px 0px; background-image: url(&quot;http://img2.maka.im/user/1920238/images/427e4cccaf1bb9abb12dd1ef85a54ef9.png@0-0-168-120a_90Q.src&quot;); background-repeat: no-repeat; background-size: 100% 100%; background-position: 0px 0px; animation: fadeInLeft 1000ms ease 6000ms both running;">
+								<img src="./427e4cccaf1bb9abb12dd1ef85a54ef9.png@0-0-168-120a_90Q.src"
+								style="opacity: 0;">
+							</div>
+						</div>
+						<div style="width: 32px; height: 28px; left: 90%; bottom: 0px; position: absolute; opacity: 1; transform: rotate(0deg); cursor: pointer;">
+							<div class="fadeInRight animated" style="position: absolute; width: 100%; height: 100%; overflow: hidden; border-radius: 0px; box-shadow: black 0px 0px 0px; background-image: url(&quot;http://img2.maka.im/user/1920238/images/e47f1f03bf71a35c75687afd332b2771.png@0-0-54-48a_90Q.src&quot;); background-repeat: no-repeat; background-size: 100% 100%; background-position: 0px 0px; animation: fadeInRight 1000ms ease 8000ms both running;">
+								<img src="./e47f1f03bf71a35c75687afd332b2771.png@0-0-54-48a_90Q.src" style="opacity: 0;">
+							</div>
+						</div>
+						<div style="position: absolute; width: 70%; height: 40px; top: 293px; left: 15%; transform: rotate(0deg); transform-origin: center center 0px; opacity: 1;">
+							<div class="zoomIn animated" style="width: 100%; height: 40px; color: rgb(255, 255, 255); font-size: 29px; text-align: center; font-weight: bold; text-decoration: none; line-height: 1.8; border-style: none; border-color: rgb(0, 0, 0); border-width: 0px; font-style: normal; border-radius: 0px; box-shadow: black 0px 0px 0px; word-wrap: break-word; white-space: pre-wrap; letter-spacing: -0.5px; font-family: makaOSS1478092045714; animation: zoomIn 1000ms ease 5000ms both running;">
+								欢乐一家亲
+							</div>
+						</div>
+						<div style="width: 40%; height: 102px; left: 30%; top: 278px; position: absolute; opacity: 1; transform: rotate(0deg); cursor: pointer;">
+							<div class="zoomIn animated" style="position: absolute; width: 100%; height: 100%; overflow: hidden; border-radius: 0px; box-shadow: black 0px 0px 0px; background-image: url(&quot;./renwu.png&quot;); background-repeat: no-repeat; background-size: 100% 100%; background-position: 0px 0px; animation: zoomIn 1000ms ease 4000ms both running;">
+								<img src="./renwu.png" style="opacity: 0;">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+
+</html>

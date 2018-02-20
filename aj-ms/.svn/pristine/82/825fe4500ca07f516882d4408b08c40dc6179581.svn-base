@@ -1,0 +1,150 @@
+package com.spt.entry.model;
+
+import java.io.Serializable;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+
+@Entity
+@Table(name="t_cert_cfg")
+@NamedQuery(name="TCertCfg.findAll", query="SELECT t FROM TCertCfg t")
+public class TCertCfg implements Serializable {
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@Column(name="CFG_ID")
+	private String cfgId;
+	
+	@Column(name="GROUP_ID")
+	private String groupId;
+
+	@Column(name="IS_NEED_SCORE")
+	private String isNeedScore;
+	
+	@Column(name="MIN_SCORE")
+	private String minScore;
+	
+	@Column(name="BACK_IMG")
+	private String backImg;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="CREATE_DT")
+	private Date createDt;
+
+	@Column(name="CREATE_USER")
+	private String createUser;
+
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="MODIFY_DT")
+	private Date modifyDt;
+
+	@Column(name="MODIFY_USER")
+	private String modifyUser;
+	
+	
+	public TCertCfg() {
+	}
+
+
+	public String getCfgId() {
+		return cfgId;
+	}
+
+
+	public void setCfgId(String cfgId) {
+		this.cfgId = cfgId;
+	}
+
+
+	public String getGroupId() {
+		return groupId;
+	}
+
+
+	public void setGroupId(String groupId) {
+		this.groupId = groupId;
+	}
+
+
+	public String getIsNeedScore() {
+		return isNeedScore;
+	}
+
+
+	public void setIsNeedScore(String isNeedScore) {
+		this.isNeedScore = isNeedScore;
+	}
+
+
+	public String getMinScore() {
+		return minScore;
+	}
+
+
+	public void setMinScore(String minScore) {
+		this.minScore = minScore;
+	}
+
+
+	public String getBackImg() {
+		return backImg;
+	}
+
+
+	public void setBackImg(String backImg) {
+		this.backImg = backImg;
+	}
+
+
+	public Date getCreateDt() {
+		return createDt;
+	}
+
+
+	public void setCreateDt(Date createDt) {
+		this.createDt = createDt;
+	}
+
+
+	public String getCreateUser() {
+		return createUser;
+	}
+
+
+	public void setCreateUser(String createUser) {
+		this.createUser = createUser;
+	}
+
+
+	public Date getModifyDt() {
+		return modifyDt;
+	}
+
+
+	public void setModifyDt(Date modifyDt) {
+		this.modifyDt = modifyDt;
+	}
+
+
+	public String getModifyUser() {
+		return modifyUser;
+	}
+
+
+	public void setModifyUser(String modifyUser) {
+		this.modifyUser = modifyUser;
+	}
+
+	
+
+	
+
+}

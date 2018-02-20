@@ -1,0 +1,129 @@
+package com.qm.shop.baseinfo.service.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+
+import com.frame.core.dao.GenericDAO;
+import com.frame.core.vo.DataModel;
+import com.frame.log.service.LogBizOprService;
+import com.qm.shop.baseinfo.service.ShopBaseinfoService;
+import com.qm.shop.baseinfo.vo.ShopInfoVO;
+import com.qm.shop.baseinfo.vo.TShopInfo;
+
+@Service("shopBaseinfoService")
+@Scope("prototype")
+public class ShopBaseinfoServiceImpl  implements ShopBaseinfoService{
+
+	private Logger log = Logger.getLogger(this.getClass());
+	
+	@Autowired
+	private GenericDAO baseDAO;
+	
+	@Autowired
+	private LogBizOprService logBizOprService;
+	
+	@Override
+	public DataModel<Map<String, Object>> getList(ShopInfoVO limitKey) {
+		
+		String sql = "SELECT  i.id, i.shop_name shopName, (SELECT  a.account FROM t_sys_user a WHERE a.shop_id = i.id AND ISENABLED = '1' and ACCOUNT_TYPE = '4' ORDER BY create_dt LIMIT 0,1) shopAccountName ,"+
+						"	i.regist_name registName, i.regist_tel registTel, id_card idCard, b.name bankName,  i.bank_card_name bankCardName, i.bank_card_no bankCardNo, i.percentage ,"+
+						"	i.zone_size zoneSize, i.create_time createTime, i.service_begin_time serviceBeginTime, i.service_end_time serviceEndTime, i.status, i.zone_used/1024/1024/1024 usedSize, " +
+						" ((select count(1) from t_shop_photo where album_id in (select id from t_shop_album where shop_id = i.id)) +  (select count(1) from t_shop_photo where album_id in (select id from t_shop_dynamic_album where shop_id = i.id)) ) photoCount "+
+						"	FROM t_shop_info i LEFT JOIN  t_bank b ON i.bank_id =  b.id  where 1=1 ";
+		String countSql = "select count(1) from t_shop_info where 1=1 ";
+		List<String> param = new ArrayList<String>();
+		if(limitKey != null){
+			if(limitKey.getShopName() != null && !"".equals(limitKey.getShopName().toString())){
+				sql += " and i.shop_name like concat ('%',?,'%')";
+				countSql += " and shop_name like concat ('%',?,'%')";
+				param.add(limitKey.getShopName());
+			}
+		}
+		sql += " order by i.recommend_ix, i.create_time ";
+		List<Map<String, Object>> list = baseDAO.getGenericByPositionToSQL(sql, limitKey.getOffset(), limitKey.getPageSize(), param.toArray());
+		int total = baseDAO.getGenericIntToSQL(countSql, param.toArray());
+		return new DataModel<Map<String,Object>>(list, total);
+	}
+
+	@Override
+	public List<Map<String, Object>> getAll() {
+		String sql = "SELECT id, shop_name shopName FROM t_shop_info WHERE STATUS = 0";
+		return baseDAO.getGenericBySQL(sql, null);
+	}
+
+	@Override
+	public Map<String, Object> findById(String shopId) {
+		String sql = "SELECT  i.id, i.shop_name shopName, (SELECT  a.account FROM t_sys_user a WHERE a.shop_id = i.id AND ISENABLED = '1' and ACCOUNT_TYPE = '4' ORDER BY create_dt LIMIT 0,1) shopAccountName ,"+
+				"	i.regist_name registName, i.regist_tel registTel, id_card idCard, b.name bankName,  i.bank_card_name bankCardName, i.bank_card_no bankCardNo, i.percentage ,"+
+				"	i.zone_size zoneSize, i.create_time createTime, i.service_begin_time serviceBeginTime, i.service_end_time serviceEndTime, i.status,  i.address, i.tel, i.gps, i.description, i.recommend_ix recommendS, "+ 
+				"   i.shop_category_id categoryId, i.show_in_first showInFirst, i.bank_id bankId, i.is_recommend isRecommend, i.logo shopLogo, i.show_pic showPic, brand_id brandId, i.zone_used/1024/1024/1024 usedSize "+
+				"	FROM t_shop_info i LEFT JOIN  t_bank b ON i.bank_id =  b.id  where  i.id = ? ";
+		List<Map<String, Object>> list = baseDAO.getGenericBySQL(sql, new Object[]{shopId});
+		if(list != null && list.size() > 0){
+			return list.get(0);
+		}
+		return null;
+	}
+
+	@Override
+	public int save(TShopInfo i) {
+		String sql ="INSERT INTO t_shop_info (id, shop_name, id_card, address, shop_category_id, gps, bank_id, bank_card_no, tel, bank_card_name, percentage, service_begin_time,service_end_time, logo, show_pic, description,create_time ,STATUS,zone_size, brand_id,is_recommend, regist_name , regist_tel, recommend_ix )"
+					+ " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+			return baseDAO.execteNativeBulk(sql, i.getId(), i.getShopName(), i.getIdCard(), 
+				i.getAddress(), i.getShopCategoryId(), i.getGps(), i.getBankId(), 
+				i.getBankCardNo(), i.getTel(), i.getBankCardName(), i.getPercentage(), 
+				i.getServiceBeginTime(), i.getServiceEndTime(), i.getLogo(), i.getShowPic(),
+				i.getDescription(), i.getCreateTime(),i.getStatus(), i.getZoneSize(), 
+				i.getBrandId(),i.getIsRecommend(), i.getRegistName(), i.getRegistTel(), i.getSort());
+		//return baseDAO.save(i);
+	}
+
+	@Override
+	public int modifyState(String id, String status) {
+		
+		String sql = "update t_shop_info set status = ? where id = ?";
+		return baseDAO.execteNativeBulk(sql, status, id);
+	}
+
+	@Override
+	public int update(TShopInfo i) {
+		// INSERT INTO t_shop_info (id, shop_name, id_card, address, shop_category_id, gps, bank_id, bank_card_no, tel, bank_card_name, percentage, service_begin_time,service_end_time, logo, show_pic, description,create_time ,STATUS,zone_size, show_in_first,is_recommend, regist_name , regist_tel, recommend_ix 
+		String sql = "update t_shop_info set shop_name = ?, id_card = ?, address = ?, shop_category_id = ?, gps = ?, bank_id = ?, bank_card_no = ?, tel = ?, bank_card_name = ?, percentage = ?, service_begin_time = ?,service_end_time = ?, logo = ?, show_pic = ?, description = ?,zone_size  = ?, brand_id  = ?,is_recommend  = ?, regist_name = ? , regist_tel  = ?, recommend_ix = ? where id = ?";
+		return baseDAO.execteNativeBulk(sql, i.getShopName(), i.getIdCard(), 
+				i.getAddress(), i.getShopCategoryId(), i.getGps(), i.getBankId(), 
+				i.getBankCardNo(), i.getTel(), i.getBankCardName(), i.getPercentage(), 
+				i.getServiceBeginTime(), i.getServiceEndTime(), i.getLogo(), i.getShowPic(),
+				i.getDescription(), i.getZoneSize(), 
+				i.getBrandId(),i.getIsRecommend(), i.getRegistName(), i.getRegistTel(), i.getSort(),i.getId());
+	}
+
+	@Override
+	public List<Map<String, Object>> getAllDataForExport(String shopName) {
+
+		String sql = "SELECT  i.id, i.shop_name shopName, (SELECT  a.account FROM t_sys_user a WHERE a.shop_id = i.id AND ISENABLED = '1' and ACCOUNT_TYPE = '4' ORDER BY create_dt LIMIT 0,1) shopAccountName ,"+
+						"	i.regist_name registName, i.regist_tel registTel, id_card idCard, b.name bankName,  i.bank_card_name bankCardName, i.bank_card_no bankCardNo, i.percentage ,"+
+						"	i.zone_size zoneSize, i.create_time createTime, i.service_begin_time serviceBeginTime, i.service_end_time serviceEndTime,CASE i.status   WHEN 0  THEN '正常'  ELSE '冻结'  END AS 'status' "+
+						"	FROM t_shop_info i LEFT JOIN  t_bank b ON i.bank_id =  b.id  where 1=1 ";
+		List<String> param = new ArrayList<String>();
+		if(shopName != null && !"".equals(shopName)){
+				sql += " and i.shop_name like concat ('%',?,'%')";
+				param.add(shopName);
+		}
+		return baseDAO.getGenericBySQL(sql, param.toArray());
+	}
+
+	@Override
+	public void updateZoneUsed(String shopId, long curUsedSize) {
+		
+		String sql = "update t_shop_info set zone_used = (zone_used + ?) where id = ?";
+		baseDAO.execteNativeBulk(sql, curUsedSize, shopId);
+	}
+
+	
+}

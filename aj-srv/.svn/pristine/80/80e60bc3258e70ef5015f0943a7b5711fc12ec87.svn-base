@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee 
+	http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+	id="WebApp_ID">
+	<display-name>spark</display-name>
+	<welcome-file-list>
+	    <welcome-file>index.jsp</welcome-file>
+	    <welcome-file>/newpages/login.jsp</welcome-file>
+  	</welcome-file-list>
+
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+			/WEB-INF/config/application-context.xml
+		</param-value>
+	</context-param>
+	<!-- 配置Spring容器 -->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<!-- 配置Quartz -->
+	<listener>
+		<listener-class>org.quartz.ee.servlet.QuartzInitializerListener</listener-class>
+	</listener>
+	<listener>  
+       <listener-class>  
+            com.frame.task.action.ContextLoaderListener  
+       </listener-class>  
+	</listener> 
+	
+	<servlet>
+		<servlet-name>spring-dispatcher-admin</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>
+				/WEB-INF/config/spring-dispather-admin.xml
+			</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>spring-dispatcher-admin</servlet-name>
+		<url-pattern>/admin/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>spring-dispatcher-admin</servlet-name>
+		<url-pattern>/service/*</url-pattern>
+	</servlet-mapping>
+	<!-- 将Hibernate的Session生命延长，为了解决由于Hibernate延迟加载，Session过早关闭问题 -->
+	<filter>
+		<filter-name>OpenSessionInViewFilter</filter-name>
+		<filter-class>org.springframework.orm.hibernate4.support.OpenSessionInViewFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>OpenSessionInViewFilter</filter-name>
+		<url-pattern>/admin/*</url-pattern>
+	</filter-mapping>
+	
+	
+	<!-- 信息安全审核 -->
+	<filter>
+		<filter-name>XSSFiler</filter-name>
+		<filter-class>
+		    com.frame.security.XSSSecurityFilter
+		</filter-class>
+		<init-param>
+			<param-name>securityconfig</param-name>
+			<param-value>
+			    /WEB-INF/config/xss/xss_security_config.xml
+			</param-value>
+		</init-param>
+	</filter>
+	<!-- 拦截请求类型 -->
+	<filter-mapping>
+	    <filter-name>XSSFiler</filter-name>
+	    <url-pattern>*.jsp</url-pattern>
+	</filter-mapping>
+	
+	
+	
+	
+  <!-- mkt接入鉴权系统后，如需使用鉴权系统，则使用该过滤器， 注视掉authenticationFilter过滤器。param-value为鉴权系统的地址    --> 
+        
+	
+	<filter>
+		<filter-name>sessionFilter</filter-name>
+		<filter-class>com.frame.core.filter.SessionFilter</filter-class>
+		<init-param>      
+				<param-name>login_url</param-name>
+				<param-value>http://localhost:8080/aj/pages/login.jsp</param-value>
+		</init-param>
+	</filter>
+	
+	<filter-mapping>
+		<filter-name>sessionFilter</filter-name>
+		<url-pattern>/admin/*</url-pattern>
+	</filter-mapping>
+	 <filter-mapping>
+		<filter-name>sessionFilter</filter-name>
+		<url-pattern>*.jsp</url-pattern>
+	</filter-mapping>	
+	<filter>
+		<filter-name>CharacterEncodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+		<init-param>
+			<param-name>forceEncoding</param-name>
+			<param-value>false</param-value>
+		</init-param>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>CharacterEncodingFilter</filter-name>
+		<url-pattern>*.jsp</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>CharacterEncodingFilter</filter-name>
+		<url-pattern>/admin/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>CharacterEncodingFilter</filter-name>
+		<url-pattern>/service/*</url-pattern>
+	</filter-mapping>
+	<!--end of 请求，响应编码GBK
+	<filter>
+		<filter-name>SparkSystemFilter</filter-name>
+		<filter-class>com.whty.mkt.frame.filter.SystemCommonFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>SparkSystemFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping> -->
+	<!-- session过期时间 -->
+	<session-config>
+		<session-timeout>300</session-timeout>
+	</session-config>
+
+</web-app>

@@ -1,0 +1,186 @@
+/** 
+ * Description: TODO(用一句话描述该文件做什么)  
+ * @className com.spt.entry.service.GameCodeService
+ * @author ChingWang    
+ * @date 2016-9-16 下午5:03:08
+ * @version V1.0   
+ * Copyright (C) 2016 www.demo.com Inc. All rights reserved.        
+ */
+
+package com.spt.entry.service;
+
+import java.util.List;
+import java.util.Map;
+
+import com.spt.entry.model.GameCodeCfg;
+
+public interface GameCodeService {
+
+	/** 
+	 * TODO（用一句话描述该方法做什么）
+	 * @param groupId
+	 * @return
+	 * @version
+	 * Date           Author         Version     Description
+	 * -----------------------------------------------------------------
+	 * 2016-9-16      Ching Wang     v1.0.0      create
+	 *
+	 */
+	public long getTotal(String groupId);
+
+	/** 
+	 * TODO（用一句话描述该方法做什么）
+	 * @param groupId
+	 * @param offset
+	 * @param limit
+	 * @return
+	 * @version
+	 * Date           Author         Version     Description
+	 * -----------------------------------------------------------------
+	 * 2016-9-16      Ching Wang     v1.0.0      create
+	 *
+	 */
+	public List<Map<String, Object>> getList(String groupId, int offset,
+			int limit);
+
+	/** 
+	 * TODO（用一句话描述该方法做什么）
+	 * @param codeCfg
+	 * @return
+	 * @version
+	 * Date           Author         Version     Description
+	 * -----------------------------------------------------------------
+	 * 2016-9-16      Ching Wang     v1.0.0      create
+	 *
+	 */
+	public boolean edit(GameCodeCfg codeCfg);
+
+	/** 
+	 * TODO（用一句话描述该方法做什么）
+	 * @param cfgId
+	 * @return
+	 * @version
+	 * Date           Author         Version     Description
+	 * -----------------------------------------------------------------
+	 * 2016-9-16      Ching Wang     v1.0.0      create
+	 *
+	 */
+	public GameCodeCfg getGameCodeCfg(String cfgId);
+
+	/** 
+	 * TODO（用一句话描述该方法做什么）
+	 * @param groupId
+	 * @return
+	 * @version
+	 * Date           Author         Version     Description
+	 * -----------------------------------------------------------------
+	 * 2016-9-17      Ching Wang     v1.0.0      create
+	 *
+	 */
+	public GameCodeCfg getGameCodeByGroupId(String groupId);
+
+	/** 
+	 * TODO（用一句话描述该方法做什么）
+	 * @param groupId
+	 * @param type
+	 * @param value
+	 * @version
+	 * Date           Author         Version     Description
+	 * -----------------------------------------------------------------
+	 * 2016-9-17      Ching Wang     v1.0.0      create
+	 *
+	 */
+	public void createGameCode(Map<String, Object> cfg, String type, String value);
+
+	/** 
+	 * TODO（用一句话描述该方法做什么）
+	 * @param groupId
+	 * @param searchType
+	 * @param searchValue
+	 * @version
+	 * Date           Author         Version     Description
+	 * -----------------------------------------------------------------
+	 * 2016-9-17      Ching Wang     v1.0.0      create
+	 *
+	 */
+	public List<Map<String, Object>> getGameCodeCfg(String groupId, String type,
+			String value);
+
+	/** 
+	 * TODO（用一句话描述该方法做什么）
+	 * @param groupId
+	 * @param searchType
+	 * @param searchValue
+	 * @return
+	 * @version
+	 * Date           Author         Version     Description
+	 * -----------------------------------------------------------------
+	 * 2016-9-17      Ching Wang     v1.0.0      create
+	 *
+	 */
+	public int getTotal(String groupId, String searchType, String searchValue);
+
+	/** 
+	 * TODO（用一句话描述该方法做什么）
+	 * @param groupId
+	 * @param searchType
+	 * @param searchValue
+	 * @version
+	 * Date           Author         Version     Description
+	 * -----------------------------------------------------------------
+	 * 2016-9-17      Ching Wang     v1.0.0      create
+	 *
+	 */
+	public void changeApvSts(String groupId, String searchType,
+			String searchValue);
+
+	/** 
+	 * TODO（用一句话描述该方法做什么）
+	 * @param applyId
+	 * @return
+	 * @version
+	 * Date           Author         Version     Description
+	 * -----------------------------------------------------------------
+	 * 2016-9-17      Ching Wang     v1.0.0      create
+	 *
+	 */
+	public Map<String, Object> getApplyById(String applyId);
+
+	/** 
+	 * TODO（用一句话描述该方法做什么）
+	 * @param applyId
+	 * @param gameCode
+	 * @return
+	 * @version
+	 * Date           Author         Version     Description
+	 * -----------------------------------------------------------------
+	 * 2016-9-17      Ching Wang     v1.0.0      create
+	 *
+	 */
+	public int getApplyByGameCode(String applyId, String gameCode);
+
+	/** 
+	 * TODO（用一句话描述该方法做什么）
+	 * @param applyId
+	 * @param gameCode
+	 * @version
+	 * Date           Author         Version     Description
+	 * -----------------------------------------------------------------
+	 * 2016-9-17      Ching Wang     v1.0.0      create
+	 *
+	 */
+	public void editGameCode(String applyId, String gameCode);
+
+	/** 
+	 * TODO（用一句话描述该方法做什么）
+	 * @param applyId
+	 * @version
+	 * Date           Author         Version     Description
+	 * -----------------------------------------------------------------
+	 * 2016-9-22      Ching Wang     v1.0.0      create
+	 *
+	 */
+	public void changeApvSts(String applyId);
+
+	
+}

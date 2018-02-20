@@ -1,0 +1,98 @@
+package com.spt.score.job;
+
+import java.util.List;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+
+import com.frame.core.dao.GenericDAO;
+import com.frame.core.jdbcdao.BaseDao;
+import com.frame.core.vo.MsgVo;
+import com.spt.entry.model.TImpJob;
+import com.spt.score.util.ScoreConsts;
+
+@Service("scoreJobImpService")
+@Scope("prototype")
+public class ScoreJobImpService {
+	private static Logger logger = Logger.getLogger(ScoreJobImpService.class);
+	
+	private static boolean inImp = false;	
+	private static boolean inCert = false;	
+	
+	@Autowired
+	private ScoreImportServiceImpl scoreImportService;
+	@Autowired
+	private CertMakeServiceImpl certMakeService;
+	
+	@Autowired
+	private BaseDao baseDao;
+	
+	@Autowired
+	private GenericDAO baseDAO;
+	
+	public MsgVo doImpScore() {
+		try {
+			if (inImp) {
+				logger.info("inImp job is working!");
+				return new MsgVo("成绩导入任务正在执行中.");
+			}
+			inImp = true;
+			
+			logger.info("inImp job start!");
+			
+			scoreImportService.doImport();
+			//scoreImportService.updateRank();   更新了没有用
+			
+			logger.info("inImp job done!");
+		} catch (Exception e) {
+			logger.info("inImp job error!" + e.toString());
+			e.printStackTrace();
+			return new MsgVo("成绩导入任务出错:" + e.toString());
+		} finally {
+			inImp = false;
+		}
+		return new MsgVo(true,"成绩导入任务处理成功");
+		
+	}
+	
+	public MsgVo doCert() {
+		try {
+			if (inCert) {
+				logger.info("inCert job is working!");
+				return new MsgVo("证书生成任务正在执行中.");
+			}
+			inCert = true;
+			
+			
+			List<TImpJob> list = baseDAO.getGenericByHql("from TImpJob t where t.jobStatus in (?,?) order by createDt asc",ScoreConsts.status_待处理,ScoreConsts.status_处理失败);
+			
+			if (list != null && !list.isEmpty()) {
+				logger.info("inCert job: doImport not empty.wait...");
+				//return doImpScore();
+				//return new MsgVo("证书生成任务正在执行中...");
+				return new MsgVo("成绩没有完全导入,不能生成证书.");
+			}
+			
+			scoreImportService.updateRank();
+			
+			logger.info("inCert job start!");
+			certMakeService.doCertMake();
+			logger.info("inCert job done!");
+		} catch (Exception e) {
+			logger.info("inCert job error!" + e.toString());
+			e.printStackTrace();
+			return new MsgVo("证书生成任务出错:" + e.toString());
+		} finally {
+			inCert = false;
+		}
+		
+		return new MsgVo(true,"证书生成任务处理成功");
+		
+	}
+	
+	
+
+
+}

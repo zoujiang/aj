@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-module
+  type="WEB"
+  name="aj-srv"
+  id="myeclipse.1366095745672"
+  context-root="/wcs"
+  j2ee-spec="5.0"
+  archive="aj-srv.war">
+  <attributes>
+    <attribute name="webrootdir" value="/WebContent" />
+  </attributes>
+</project-module>
+

@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>第二章 系统管理</title>
+<link href="../css/General_help.css" rel="stylesheet" type=
+"text/css" />
+
+
+</head>
+
+
+<body>
+<div class="txtbodddy">
+<div class="Sectiontitle"> 
+  <h1>第二章 系统管理</h1> 
+</div>
+
+<!--文字区域-->
+<div class="mainarert">
+  <h3><a name="_Toc306870615" id="_Toc306870615"></a><a name="_Toc229374442" id="_Toc229374442">２.2　</a>菜单管理 </h3>
+  <h4><a name="_概述" id="_概述"></a>概述 </h4>
+  <p>提供对菜单的增删改查功能,针对每个子系统操作的功能模块菜单的管理. </p>
+  <h4><a name="_新建菜单" id="_新建菜单"></a>操作 </h4>
+  <p align="left"><strong>1 spss_admin登入系统管理后，添加子菜单</strong>　　操作如下：如图所示 <br />
+     <br />
+    <img src="img/ams_22_clip_image006.jpg" alt="" width="567" height="245" /></p>
+  <p><strong><br />
+    　　2. spss_admin登入系统管理后，修改菜单　　</strong>操作如下：如图所示 <br />
+    <br />
+    <img src="img/ams_22_clip_image008.jpg" alt="" width="566" height="253" /><br />
+  　　<strong><br />
+  　　3. spss_admin登录系统管理后,删除菜单</strong>　　操作如下,如图所示 <br />
+  <br />
+  <img src="img/ams_22_clip_image018.jpg" alt="" width="566" height="237" /></p>
+  <h3><br clear="all" />
+  </h3>
+</div>
+</div>
+</body>
+</html>

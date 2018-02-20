@@ -1,0 +1,103 @@
+package com.spt.score.service.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+
+import com.frame.core.dao.GenericDAO;
+import com.frame.core.service.AuthorService;
+import com.frame.core.util.StringUtil;
+import com.frame.core.vo.DataModel;
+import com.frame.core.vo.MsgVo;
+import com.frame.log.service.LogBizOprService;
+import com.spt.entry.model.TImpJob;
+import com.spt.score.vo.ScoreLimitKey;
+
+@Service("scoreService")
+@Scope("prototype")
+public class ScoreServiceImpl  {
+
+	private Logger log = Logger.getLogger(this.getClass());
+	
+	@Autowired
+	private GenericDAO baseDAO;
+	@Autowired
+	private AuthorService authorService;
+	@Autowired
+	private LogBizOprService logBizOprService;
+	
+	public DataModel<Map<String, Object>> getList(ScoreLimitKey key) {
+		
+
+		String sql_table = " t_user_score mt left join t_apply lt on mt.APPLY_ID = lt.APPLY_ID ";
+		
+		String sqlWhere = " where 1=1 ";
+		List<Object> sps = new ArrayList<Object>();
+		if (StringUtil.isNotEmpty(key.getGroupId())) {
+			sqlWhere += " and lt.group_id = ? ";
+			sps.add(Long.parseLong(key.getGroupId()));	
+		} 
+		
+		if (StringUtil.isNotEmpty(key.getIsCrt())) {
+			int beginIndex = 0;
+			if (key.getIsCrt().startsWith("crt_")) {
+				beginIndex = 4;
+				sqlWhere += " and mt.cert_status = ? ";
+			} else if (key.getIsCrt().startsWith("down_")) {
+				beginIndex = 5;
+				sqlWhere += " and mt.cert_if_down = ? ";
+			} 
+			
+			sps.add(key.getIsCrt().substring(beginIndex));	
+		} 
+		
+		
+		if (StringUtil.isNotEmpty(key.getType()) && StringUtil.isNotEmpty(key.getTypeVal())) {
+			
+			if (StringUtil.equals(key.getType(), "phone")) {
+				sqlWhere += " and lt.mobile = ? ";
+				sps.add(key.getTypeVal());	
+			} else if (StringUtil.equals(key.getType(), "idcard")) {
+				sqlWhere += " and lt.certno = ? ";
+				//sqlWhere += " and (certno = ? or childcertno = ?) ";
+				//sps.add(key.getTypeVal());	
+				sps.add(key.getTypeVal());	
+			} else if (StringUtil.equals(key.getType(), "name")) {
+				sqlWhere += " and lt.truename = ? ";
+				//sqlWhere += " and (truename = ? or childname = ?) ";
+				//sps.add(key.getTypeVal());	
+				sps.add(key.getTypeVal());	
+			} else if (StringUtil.equals(key.getType(), "code")) {
+				sqlWhere += " and lt.gamecode = ? ";
+				sps.add(key.getTypeVal());	
+			}
+			
+			
+		} 
+		
+		log.info(sps);
+		
+		String sql  = "select "
+		 		+ " mt.*, "
+		 		+ " DATE_FORMAT(score_dt, '%Y-%m-%d %H:%i') getDtText, "
+		 		+ " lt.GAMECODE,lt.TRUENAME,lt.MOBILE,lt.CERTNO,lt.TEAM_NAME,lt.GROUP_NAME,lt.SPORT_NAME "
+		 		//+ " from " + sql_table + sqlWhere + " order by lt.group_id, mt.score_rank is null, mt.score_rank asc";
+				+ " from " + sql_table + sqlWhere + " order by mt.group_type, mt.score_rank is null, mt.score_rank asc";
+		 log.info(sql);
+		 List<Map<String, Object>> list = baseDAO.getGenericByPositionToSQL(sql, key.getOffset(), key.getPageSize(), sps.toArray()); 
+		 int totalCount = baseDAO.getGenericIntToSQL("select count(1) from " + sql_table + sqlWhere, sps.size() > 0 ? sps.toArray() : null);
+		
+		 return new DataModel<Map<String, Object>>(list,totalCount);
+		 
+	}
+	
+	
+	
+	
+	
+}

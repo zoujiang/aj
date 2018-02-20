@@ -1,0 +1,50 @@
+package com.spt.score.vo;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+
+import com.frame.core.util.pagination.key.LimitKey;
+
+public class ScoreLimitKey extends LimitKey {
+	private String groupId;
+	private String type;
+	private String typeVal;
+	private String isCrt;
+	
+	public String getGroupId() {
+		return groupId;
+	}
+	public void setGroupId(String groupId) {
+		this.groupId = groupId;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+	public String getTypeVal() {
+		return typeVal;
+	}
+	public void setTypeVal(String typeVal) {
+		if (typeVal == null) {
+			return;
+		}
+		try {
+			this.typeVal = URLDecoder.decode(typeVal,"utf8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			this.typeVal = typeVal;
+		}
+	}
+	public String getIsCrt() {
+		return isCrt;
+	}
+	public void setIsCrt(String isCrt) {
+		this.isCrt = isCrt;
+	}
+	
+	
+	
+
+}

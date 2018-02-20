@@ -1,0 +1,198 @@
+/** 
+ * Description: TODO(用一句话描述该文件做什么)  
+ * @className com.spt.entry.action.GameCodeAction
+ * @author ChingWang    
+ * @date 2016-9-16 下午5:01:23
+ * @version V1.0   
+ * Copyright (C) 2016 www.demo.com Inc. All rights reserved.        
+ */
+
+package com.spt.entry.action;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.alibaba.fastjson.JSONObject;
+import com.frame.core.util.DateUtil;
+import com.frame.core.util.ListRange;
+import com.frame.core.util.LogUtil;
+import com.frame.core.util.StringUtil;
+import com.spt.entry.model.GameCodeCfg;
+import com.spt.entry.service.GameCodeService;
+
+@Controller
+@RequestMapping("/gamecode")
+public class GameCodeAction {
+
+	@Autowired private GameCodeService gameCodeService;
+	
+	@RequestMapping("/getGameCodeCfgList")
+	@ResponseBody
+	public String getGameCodeCfgList(String groupId, int offset, int limit){
+		
+		ListRange<Map<String, Object>> range = new ListRange<Map<String, Object>>();
+		try{
+			long total = gameCodeService.getTotal(groupId);
+			range.setTotal(total);
+			List<Map<String, Object>> list = new ArrayList<Map<String,Object>>();
+			if(total > 0){
+				list = gameCodeService.getList(groupId, offset, limit);
+			}
+			range.setRows(list);
+		}catch (Exception e) {
+			LogUtil.info("查询数据异常{}", e.getLocalizedMessage());
+		}
+		return JSONObject.toJSONString(range);
+	}
+	
+	@RequestMapping("/edit")
+	@ResponseBody
+	public String edit(GameCodeCfg codeCfg){
+		JSONObject obj = new JSONObject();
+		if(gameCodeService.edit(codeCfg)){
+			obj.put("success", true);
+			obj.put("message", StringUtil.isEmpty(codeCfg.getCfgId())?"添加成功":"编辑成功");
+		} else {
+			obj.put("success", false);
+			obj.put("message", StringUtil.isEmpty(codeCfg.getCfgId())?"添加失败":"编辑失败");
+		}
+		return JSONObject.toJSONString(obj);
+	}
+	
+	@RequestMapping("/getGameCode")
+	@ResponseBody
+	public String getGameCode(String cfgId){
+		GameCodeCfg cfg = gameCodeService.getGameCodeCfg(cfgId);
+		return JSONObject.toJSONString(cfg);
+	}
+	
+	@RequestMapping("/getGameCodeByGroupId")
+	@ResponseBody
+	public String getGameCodeByGroupId(String groupId){
+		JSONObject obj = new JSONObject();
+		GameCodeCfg cfg = gameCodeService.getGameCodeByGroupId(groupId);
+		if(cfg != null){
+			obj.put("success", true);
+			obj.put("gameCode", cfg);
+		} else {
+			obj.put("success", false);
+			obj.put("message", "未找到号码生成规则");
+		}
+		return JSONObject.toJSONString(cfg);
+	}
+	
+	@RequestMapping("/generGameCode")
+	@ResponseBody
+	public String generGameCode(String groupId, String searchType, String searchValue){
+		JSONObject obj = new JSONObject();
+		 try {
+			//获取所有的gamecodecfg
+			 List<Map<String, Object>> cfgs = gameCodeService.getGameCodeCfg(groupId, searchType, searchValue);
+			 if(cfgs != null && cfgs.size() > 0){
+				 for(Map<String, Object> map : cfgs){
+					 gameCodeService.createGameCode(map, searchType, searchValue);
+				 }
+			 }
+			 obj.put("success", true);
+			 obj.put("message", "生成编号成功");
+		} catch (Exception e) {
+			e.printStackTrace();
+			obj.put("success", false);
+			obj.put("message", "生成编号失败");
+		}
+		return JSONObject.toJSONString(obj);
+	}
+	
+	@RequestMapping("/checkGameCode")
+	@ResponseBody
+	public String checkGameCode(String groupId, String searchType, String searchValue){
+		JSONObject obj = new JSONObject();
+		 try {
+			 //判断是否都生成了编号
+			 int count = gameCodeService.getTotal(groupId, searchType, searchValue);
+			 if(count > 0){
+				 obj.put("success", false);
+				 obj.put("message", "存在未生成编号的记录");
+			 } else {
+				 gameCodeService.changeApvSts(groupId, searchType, searchValue);
+				 obj.put("success", true);
+				 obj.put("message", "审核成功");
+			 }
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			obj.put("success", false);
+			obj.put("message", "审核失败");
+		}
+		return JSONObject.toJSONString(obj);
+	}
+	
+	@RequestMapping("/checkGameCodeById")
+	@ResponseBody
+	public String checkGameCodeById(String applyId){
+		JSONObject obj = new JSONObject();
+		 try {
+			 //判断是否都生成了编号
+			Map<String, Object> map = gameCodeService.getApplyById(applyId);
+			 if(map.get("gameCode") != null && !"".equals(map.get("gameCode").toString())){
+				 gameCodeService.changeApvSts(applyId);
+				 obj.put("success", true);
+				 obj.put("message", "审核成功");
+			 } else {
+				 obj.put("success", false);
+				 obj.put("message", "尚未生成编号的记录");
+			 }
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			obj.put("success", false);
+			obj.put("message", "审核失败");
+		}
+		return JSONObject.toJSONString(obj);
+	}
+	
+	@RequestMapping("/getApplyById")
+	@ResponseBody
+	public String getApplyById(String applyId){
+		JSONObject obj = new JSONObject();
+		Map<String, Object> map = gameCodeService.getApplyById(applyId);
+		if(map != null){
+			map.put("addDt", map.get("addDt") != null?DateUtil.dateFromat(new Date(Long.parseLong(map.get("addDt").toString()) * 1000), DateUtil.DATE_TIME_PATTERN2):"");
+			obj.put("success", true);
+			obj.put("apply", map);
+		} else {
+			obj.put("success", false);
+			obj.put("message", "信息不存在");
+		}
+		return JSONObject.toJSONString(obj);
+	}
+	
+	@RequestMapping("/editGameCode")
+	@ResponseBody
+	public String editGameCode(String applyId, String gameCode){
+		JSONObject obj = new JSONObject();
+		try {
+			int count = gameCodeService.getApplyByGameCode(applyId, gameCode);
+			if(count == 0){
+				gameCodeService.editGameCode(applyId, gameCode);
+				obj.put("success", true);
+				obj.put("message", "更新选手号码成功。");
+			} else {
+				obj.put("success", false);
+				obj.put("message", "选手号码已存在。");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			obj.put("success", false);
+			obj.put("message", "选手号码已存在。");
+		}
+		return JSONObject.toJSONString(obj);
+	}
+}

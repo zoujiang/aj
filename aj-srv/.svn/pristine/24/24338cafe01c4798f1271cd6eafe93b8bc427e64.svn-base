@@ -1,0 +1,16 @@
+package com.util;
+
+public class StringUtil {
+
+	/**
+	 * 电话号码把中间四位替换成****
+	 * */
+	public static String telTool(String tel){
+		
+		try {
+			return tel.substring(0, 3) +"****" + tel.substring(7);
+		} catch (Exception e) {
+			return "";
+		}
+	}
+}

@@ -1,0 +1,91 @@
+package com.spt.score.service.impl;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+
+import com.frame.core.dao.GenericDAO;
+import com.frame.core.service.AuthorService;
+import com.frame.core.util.StringUtil;
+import com.frame.core.vo.DataModel;
+import com.frame.core.vo.MsgVo;
+import com.frame.log.service.LogBizOprService;
+import com.spt.entry.model.TImpJob;
+import com.spt.score.vo.ScoreLimitKey;
+
+@Service("scoreJobService")
+@Scope("prototype")
+public class ScoreJobServiceImpl  {
+
+	private Logger log = Logger.getLogger(this.getClass());
+	
+	@Autowired
+	private GenericDAO baseDAO;
+	@Autowired
+	private AuthorService authorService;
+	@Autowired
+	private LogBizOprService logBizOprService;
+	
+	public DataModel<Map<String, Object>> getList(ScoreLimitKey key) {
+
+		String sql_table = " t_imp_job mt left join t_sports_group lt on mt.JOB_GROUP_ID = lt.id";
+		
+		String sqlWhere = " where 1=1 ";
+		List<Object> sps = new ArrayList<Object>();
+		if (StringUtil.isNotEmpty(key.getGroupId())) {
+			sqlWhere += " and job_group_id = ? ";
+			sps.add(Long.parseLong(key.getGroupId()));	
+		} 
+		
+		log.info(sps);
+		
+		String sql  = "select "
+		 		+ " mt.*, lt.GROUP_NAME, "
+		 		+ " DATE_FORMAT(mt.create_dt, '%Y-%m-%d %H:%i') createDtText "
+		 		+ " from " + sql_table + sqlWhere + " order by mt.create_dt desc";
+		 log.info(sql);
+		 List<Map<String, Object>> list = baseDAO.getGenericByPositionToSQL(sql, key.getOffset(), key.getPageSize(), sps.toArray()); 
+		 int totalCount = baseDAO.getGenericIntToSQL("select count(1) from " + sql_table + sqlWhere, sps.size() > 0 ? sps.toArray() : null);
+		
+		 return new DataModel<Map<String, Object>>(list,totalCount);
+		 
+	}
+	
+	public MsgVo saveNew(TImpJob po) {
+		po.setJobStatus("0"); //作业执行状态0-待导入，1-导入中，2-导入失败，3-导入失败)
+		po.setCertStatus("0");//证书生成状态(0-待生成，1-生成中，2-生成失败，3-生成失败)
+		po.setCreateDt(new Date());
+		po.setCreateUser(authorService.getSessionUser().getAccount());
+		
+		baseDAO.save(po);
+		return new MsgVo(true, "保存成功，稍后将进行导入");
+	}
+	
+	public MsgVo saveUpdate(TImpJob po) {
+		
+		TImpJob old = baseDAO.get(TImpJob.class, po.getJobId());
+		if (old == null) {
+			return new MsgVo("修改失败，记录不存在");
+		}
+		
+		po.setJobStatus("0"); //作业执行状态0-待导入，1-导入中，2-导入失败，3-导入失败)
+		po.setCertStatus("0");//证书生成状态(0-待生成，1-生成中，2-生成失败，3-生成失败)
+		po.setCreateDt(old.getCreateDt());
+		po.setCreateUser(old.getCreateUser());
+		po.setModifyDt(new Date());
+		po.setModifyUser(authorService.getSessionUser().getAccount());
+		
+		baseDAO.merge(po);
+		return new MsgVo(true,"修改成功，稍后将进行导入");
+	}
+	
+	
+	
+	
+}

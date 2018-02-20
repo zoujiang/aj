@@ -1,0 +1,157 @@
+package com.qm.shop.account.action;
+
+import java.io.UnsupportedEncodingException;
+import java.util.Date;
+import java.util.Map;
+
+import net.sf.json.JSONObject;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.frame.core.action.FtpImgDownUploadAction;
+import com.frame.core.constant.Constant;
+import com.frame.core.util.DateUtil;
+import com.frame.core.util.GUID;
+import com.frame.core.util.SparkLib;
+import com.frame.core.vo.DataModel;
+import com.frame.system.po.User;
+import com.frame.system.po.UserRole;
+import com.frame.system.vo.UserVo;
+import com.qm.shop.account.service.ShopAccountService;
+import com.qm.shop.account.vo.ShopAccountVO;
+import com.qm.shop.category.vo.ShopCategoryVO;
+
+
+@Controller
+@RequestMapping("/shop")
+@Scope("prototype")
+public class ShopAccountAction extends FtpImgDownUploadAction {
+	@Autowired
+	private ShopAccountService shopAccountService;
+	
+	
+	private Logger logger = Logger.getLogger(this.getClass());
+	
+	@RequestMapping("/account/list")
+	@ResponseBody
+	public DataModel<Map<String, Object>> list(ShopAccountVO limitKey) {
+		
+		if(limitKey != null && limitKey.getShopName() != null && !"".equals(limitKey.getShopName())){
+			try {
+				limitKey.setShopName(new String( limitKey.getShopName().getBytes("ISO-8859-1"),"utf-8"));
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+		}
+		DataModel<Map<String, Object>> dataModel = shopAccountService.getList(limitKey);
+		return dataModel;
+	}
+	@RequestMapping("/account/add")
+	@ResponseBody
+	public String add(ShopAccountVO limitKey) {
+		//limitKey.setId(GUID.generateID("SA"));
+		//limitKey.setCreateTime(DateUtil.dateFromatYYYYMMddHHmmss(new Date()));
+		User uv = new User();
+		String userId = GUID.generateID("SA");
+		uv.setAccount(limitKey.getUsername());
+		uv.setEmail(limitKey.getEmail());
+		uv.setId(userId);
+		uv.setIsEnabled(limitKey.getStatus());
+		uv.setMobile(limitKey.getTel());
+		uv.setName(limitKey.getNickname());
+		uv.setPwd(SparkLib.encodePassword(limitKey.getPassword(), Constant.MAX_PASSWORD));
+		uv.setTele(limitKey.getTel());
+		uv.setCreateDt(new Date());
+		uv.setAccountType("4");
+		uv.setShopId(limitKey.getShopId());
+		
+		//int i = shopAccountService.save(limitKey);
+		int i = shopAccountService.saveSysUser(uv);
+		
+		JSONObject modelMap = new JSONObject();  
+		if(i > 0){
+			modelMap.put("success", true);
+			modelMap.put("message", "保存成功");
+		}else{
+			modelMap.put("success", false);
+			modelMap.put("message", "保存失败");
+		}
+		return modelMap.toString();
+	}
+	@RequestMapping("/account/modifyState")
+	@ResponseBody
+	public String modifyState(String id, String status) {
+		JSONObject modelMap = new JSONObject();  
+			
+		int i = shopAccountService.updateAccountStatus(id, status);
+		if(i > 0){
+			modelMap.put("success", true);
+			modelMap.put("message", "更新成功");
+		}else{
+			modelMap.put("success", false);
+			modelMap.put("message", "更新失败");
+		}
+		return modelMap.toString();
+	}
+	
+	@RequestMapping("/account/find")
+	@ResponseBody
+	public String find(String id) {
+		JSONObject modelMap = new JSONObject();  
+		if(id != null  && !"".equals(id)){
+			
+			Map<String, Object> account = shopAccountService.findAccountById(id);
+			if(account != null && !account.isEmpty()){
+				account.put("password", SparkLib.decodePassword(account.get("password").toString()));
+				modelMap.put("success", true);
+				modelMap.put("message", account);
+			}else{
+				modelMap.put("success", false);
+				modelMap.put("message", "初始化失败");
+			}
+		}else{
+			modelMap.put("success", false);
+			modelMap.put("message", "参数错误");
+		}
+		return modelMap.toString();
+	}
+	@RequestMapping("/account/findByUsername")
+	@ResponseBody
+	public String findByUsername(String username) {
+		JSONObject modelMap = new JSONObject();  
+		if(username != null  && !"".equals(username)){
+			
+			Map<String, Object> account = shopAccountService.findAccountByUsername(username);
+			if(account != null && !account.isEmpty()){
+				modelMap.put("success", true);
+				modelMap.put("message", account);
+			}else{
+				modelMap.put("success", false);
+				modelMap.put("message", "初始化失败");
+			}
+		}else{
+			modelMap.put("success", false);
+			modelMap.put("message", "参数错误");
+		}
+		return modelMap.toString();
+	}
+	@RequestMapping("/account/update")
+	@ResponseBody
+	public String update(ShopAccountVO limitKey) {
+		int i = shopAccountService.update(limitKey);
+		JSONObject modelMap = new JSONObject();  
+		if(i > 0){
+			modelMap.put("success", true);
+			modelMap.put("message", "更新成功");
+		}else{
+			modelMap.put("success", false);
+			modelMap.put("message", "更新失败");
+		}
+		return modelMap.toString();
+	}
+}

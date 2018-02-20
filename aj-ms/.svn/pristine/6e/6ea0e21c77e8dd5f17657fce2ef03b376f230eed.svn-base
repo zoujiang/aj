@@ -1,0 +1,407 @@
+/** 
+ * Description: TODO(用一句话描述该文件做什么)  
+ * @className com.spt.entry.service.impl.GameCodeServiceImpl
+ * @author ChingWang    
+ * @date 2016-9-16 下午5:04:30
+ * @version V1.0   
+ * Copyright (C) 2016 www.demo.com Inc. All rights reserved.        
+ */
+
+package com.spt.entry.service.impl;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.hibernate.HibernateException;
+import org.hibernate.jdbc.Work;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.frame.core.dao.GenericDAO;
+import com.frame.core.service.AuthorService;
+import com.frame.core.util.DateUtil;
+import com.frame.core.util.GUID;
+import com.frame.core.util.StringUtil;
+import com.spt.entry.model.GameCodeCfg;
+import com.spt.entry.service.GameCodeService;
+
+@Service("gameCodeService")
+public class GameCodeServiceImpl implements GameCodeService {
+
+	@Autowired private GenericDAO baseDAO;
+
+	@Autowired private AuthorService authorService;
+	
+	/* (非 Javadoc)
+	 * <p>Title: getTotal</p>
+	 * <p>Description: </p>
+	 * @param groupId
+	 * @return 
+	 * @see com.spt.entry.service.GameCodeService#getTotal(java.lang.String)
+	 */
+	@Override
+	public long getTotal(String groupId) {
+		String sql = "select count(1) from t_game_code_cfg gcc, t_sports_group tsg where gcc.GROUP_ID = tsg.ID";
+		List<Object> params = new ArrayList<Object>();
+		if(StringUtil.isNotEmpty(groupId)){
+			sql += " and gcc.group_id=?";
+			params.add(Long.parseLong(groupId));
+		}
+		return baseDAO.getGenericIntToSQL(sql, params.toArray());
+	}
+
+	/* (非 Javadoc)
+	 * <p>Title: getList</p>
+	 * <p>Description: </p>
+	 * @param groupId
+	 * @param offset
+	 * @param limit
+	 * @return 
+	 * @see com.spt.entry.service.GameCodeService#getList(java.lang.String, int, int)
+	 */
+	@Override
+	public List<Map<String, Object>> getList(String groupId, int offset,
+			int limit) {
+		String sql = "select tsg.ID groupId, tsg.GROUP_NAME groupName, gcc.CFG_ID cfgId, gcc.CFG_PRE cfgPre, gcc.START_NUM startNum, gcc.END_NUM endNum, gcc.RESERVED_NUMS reservedNums from t_game_code_cfg gcc, t_sports_group tsg where gcc.GROUP_ID = tsg.ID";
+		List<Object> params = new ArrayList<Object>();
+		if(StringUtil.isNotEmpty(groupId)){
+			sql += " and gcc.group_id=?";
+			params.add(Long.parseLong(groupId));
+		}
+		return baseDAO.getGenericByPositionToSQL(sql, offset, limit, params.toArray());
+	}
+
+	/* (非 Javadoc)
+	 * <p>Title: edit</p>
+	 * <p>Description: </p>
+	 * @param codeCfg
+	 * @return 
+	 * @see com.spt.entry.service.GameCodeService#edit(com.spt.entry.model.GameCodeCfg)
+	 */
+	@Override
+	public boolean edit(GameCodeCfg codeCfg) {
+		try{
+			GameCodeCfg cfg = null;
+			if(StringUtil.isEmpty(codeCfg.getCfgId())){
+				cfg = codeCfg;
+				cfg.setCfgId(GUID.generateID(""));
+				cfg.setCreateUser(authorService.getSessionUserPo().getAccount());
+				cfg.setCreateDt(DateUtil.dateToTimestamp(new Date()));
+			}else{
+				cfg = baseDAO.get(GameCodeCfg.class, codeCfg.getCfgId());
+				cfg.setCfgPre(codeCfg.getCfgPre());
+				cfg.setGroupId(codeCfg.getGroupId());
+				cfg.setStartNum(codeCfg.getStartNum());
+				cfg.setEndNum(codeCfg.getEndNum());
+				cfg.setReservedNums(codeCfg.getReservedNums());
+				cfg.setModifyUser(authorService.getSessionUserPo().getAccount());
+				cfg.setModifyDt(DateUtil.dateToTimestamp(new Date()));
+			}
+			baseDAO.merge(cfg);
+			return true;
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	/* (非 Javadoc)
+	 * <p>Title: getGameCodeCfg</p>
+	 * <p>Description: </p>
+	 * @param cfgId
+	 * @return 
+	 * @see com.spt.entry.service.GameCodeService#getGameCodeCfg(java.lang.String)
+	 */
+	@Override
+	public GameCodeCfg getGameCodeCfg(String cfgId) {
+		return baseDAO.get(GameCodeCfg.class, cfgId);
+	}
+
+	/* (非 Javadoc)
+	 * <p>Title: getGameCodeByGroupId</p>
+	 * <p>Description: </p>
+	 * @param groupId
+	 * @return 
+	 * @see com.spt.entry.service.GameCodeService#getGameCodeByGroupId(java.lang.String)
+	 */
+	@Override
+	public GameCodeCfg getGameCodeByGroupId(String groupId) {
+		String hql = "from GameCodeCfg where groupId = ?";
+		List<GameCodeCfg> cfgs = baseDAO.getGenericByHql(hql, new Object[]{Long.parseLong(groupId)});
+		if(cfgs != null && cfgs.size() > 0){
+			return cfgs.get(0);
+		}
+		return null;
+	}
+
+	/* (非 Javadoc)
+	 * <p>Title: createGameCode</p>
+	 * <p>Description: </p>
+	 * @param groupId
+	 * @param searchType
+	 * @param searchValue 
+	 * @see com.spt.entry.service.GameCodeService#createGameCode(java.lang.String, java.lang.String, java.lang.String)
+	 */
+	@Override
+	public void createGameCode(final Map<String, Object> cfg, final String type, final String value) {
+		try {
+			baseDAO.getSession().doWork(new Work() {
+				
+				@Override
+				public void execute(Connection conn) throws SQLException {
+					try {
+						//获取groupId中最大的编号
+						String msql = "select max(gamecode) max from t_apply where gamecode IS NOT NULL AND gamecode <>'' and group_id = ?";
+						List<Map<String, Object>> list = baseDAO.getGenericBySQL(msql, new Object[]{Long.parseLong(cfg.get("groupId").toString())});
+						int max = 0;
+						if(list != null && list.size() > 0){
+							if(list.get(0).get("max") != null && !"".equals(list.get(0).get("max").toString())){
+								max = Integer.parseInt(list.get(0).get("max").toString().replace(cfg.get("cfgPre").toString(), "")) + 1;
+							} else {
+								max = Integer.parseInt(cfg.get("startNum").toString());
+							}
+						} else {
+							max = Integer.parseInt(cfg.get("startNum").toString());
+						}
+						int endNum = Integer.parseInt(cfg.get("endNum").toString());
+						//获取未编号记录
+						List<Object> params = new ArrayList<Object>();
+						String applySql = "select apply_id applyId from t_apply ta where (ta.gamecode IS NULL OR ta.gamecode ='') and ta.group_id = ?";
+						params.add(Long.parseLong(cfg.get("groupId").toString()));
+						if(StringUtil.isNotEmpty(type)&& StringUtil.isNotEmpty(value)){
+							if("gameCode".equals(type)){
+								applySql += " and ta.GAMECODE = ?";
+								params.add(value);
+							} else if("mobile".equals(type)) {
+								applySql += " and ta.MOBILE = ?";
+								params.add(value);
+							} else if("certNo".equals(type)) {
+								applySql += " and ta.CERTNO = ?";
+								params.add(value);
+							} else if("trueName".equals(type)) {
+								applySql += " and ta.TRUENAME = ?";
+								params.add(value);
+							}
+						}
+						applySql +=" order by ta.prolevel IS NULL ASC,ta.prolevel=0 ASC, ta.prolevel, ta.apply_id";
+						List<Map<String, Object>> maps = baseDAO.getGenericBySQL(applySql, params.toArray());
+						if(maps != null && maps.size() > 0){
+							String usql = "update t_apply set gamecode = ? where apply_id = ?";
+							PreparedStatement stmt = conn.prepareStatement(usql);
+							String format = "";
+							for(int i = 0; i < cfg.get("startNum").toString().length(); i++){
+								format+="0";
+							}
+							DecimalFormat df = new DecimalFormat(format); 
+							List<String> resList = new ArrayList<String>();
+							if(cfg.get("reservedNums") != null){
+								String reservedNums[] = cfg.get("reservedNums").toString().split(";");
+								for(String str : reservedNums){
+									resList.add(str);
+								}
+							}
+							for(Map<String, Object> map : maps){
+								while(resList.contains(df.format(max))){
+									max++;
+								}
+								if(max > endNum){
+									break;
+								}
+								stmt.setString(1, cfg.get("cfgPre") + df.format(max));
+								stmt.setLong(2, Long.parseLong(map.get("applyId").toString()));
+								stmt.addBatch();
+								max +=1;
+							}
+							stmt.executeBatch();
+						}
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			});
+		} catch (HibernateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	/* (非 Javadoc)
+	 * <p>Title: getGameCodeCfg</p>
+	 * <p>Description: </p>
+	 * @param groupId
+	 * @param type
+	 * @param value 
+	 * @see com.spt.entry.service.GameCodeService#getGameCodeCfg(java.lang.String, java.lang.String, java.lang.String)
+	 */
+	@Override
+	public List<Map<String, Object>> getGameCodeCfg(String groupId, String type, String value) {
+		List<Object> params = new ArrayList<Object>();
+		String sql = "SELECT cfg_id cfgId, group_id groupId, cfg_pre cfgPre, start_num startNum, end_num endNum, reserved_nums reservedNums FROM t_game_code_cfg WHERE 1=1 ";
+		if(StringUtil.isNotEmpty(groupId) || (StringUtil.isNotEmpty(type) && StringUtil.isNotEmpty(value))){
+			sql +="and group_id IN(SELECT DISTINCT ta.group_id FROM t_apply ta where 1=1";
+			if(StringUtil.isNotEmpty(groupId)){
+				sql += " and ta.group_id = ?";
+				params.add(Long.parseLong(groupId));
+			}
+			if(StringUtil.isNotEmpty(type)&& StringUtil.isNotEmpty(value)){
+				if("gameCode".equals(type)){
+					sql += " and ta.GAMECODE = ?";
+					params.add(value);
+				} else if("mobile".equals(type)) {
+					sql += " and ta.MOBILE = ?";
+					params.add(value);
+				} else if("certNo".equals(type)) {
+					sql += " and ta.CERTNO = ?";
+					params.add(value);
+				} else if("trueName".equals(type)) {
+					sql += " and ta.TRUENAME = ?";
+					params.add(value);
+				}
+			}
+			sql +=")";
+		}
+		
+		return baseDAO.getGenericBySQL(sql, params.toArray());
+	}
+
+	/* (非 Javadoc)
+	 * <p>Title: getTotal</p>
+	 * <p>Description: </p>
+	 * @param groupId
+	 * @param searchType
+	 * @param searchValue
+	 * @return 
+	 * @see com.spt.entry.service.GameCodeService#getTotal(java.lang.String, java.lang.String, java.lang.String)
+	 */
+	@Override
+	public int getTotal(String groupId, String type, String value) {
+		//获取位编号记录
+		List<Object> params = new ArrayList<Object>();
+		String sql = "select count(1) from t_apply ta, T_PAY_ORDER tpo where (ta.gamecode IS NULL OR ta.gamecode ='')";
+		if(StringUtil.isNotEmpty(groupId)){
+			sql += " and ta.group_id = ?";
+			params.add(Long.parseLong(groupId));
+		}
+		if(StringUtil.isNotEmpty(type)&& StringUtil.isNotEmpty(value)){
+			if("gameCode".equals(type)){
+				sql += " and ta.GAMECODE = ?";
+				params.add(value);
+			} else if("mobile".equals(type)) {
+				sql += " and ta.MOBILE = ?";
+				params.add(value);
+			} else if("certNo".equals(type)) {
+				sql += " and ta.CERTNO = ?";
+				params.add(value);
+			} else if("trueName".equals(type)) {
+				sql += " and ta.TRUENAME = ?";
+				params.add(value);
+			}
+		}
+		sql += " and ta.APPLY_ID = tpo.APPLY_ID and tpo.status = 1";
+		return baseDAO.getGenericIntToSQL(sql, params.toArray());
+	}
+
+	/* (非 Javadoc)
+	 * <p>Title: changeApvSts</p>
+	 * <p>Description: </p>
+	 * @param groupId
+	 * @param searchType
+	 * @param searchValue 
+	 * @see com.spt.entry.service.GameCodeService#changeApvSts(java.lang.String, java.lang.String, java.lang.String)
+	 */
+	@Override
+	public void changeApvSts(String groupId, String type, String value) {
+		List<Object> params = new ArrayList<Object>();
+		String sql = "update t_apply ta set ta.apv_sts = 1 where 1=1";
+		if(StringUtil.isNotEmpty(groupId)){
+			sql += " and ta.group_id = ?";
+			params.add(Long.parseLong(groupId));
+		}
+		if(StringUtil.isNotEmpty(type)&& StringUtil.isNotEmpty(value)){
+			if("gameCode".equals(type)){
+				sql += " and ta.GAMECODE = ?";
+				params.add(value);
+			} else if("mobile".equals(type)) {
+				sql += " and ta.MOBILE = ?";
+				params.add(value);
+			} else if("certNo".equals(type)) {
+				sql += " and ta.CERTNO = ?";
+				params.add(value);
+			} else if("trueName".equals(type)) {
+				sql += " and ta.TRUENAME = ?";
+				params.add(value);
+			}
+		}
+		sql += " and EXISTS (SELECT tp.apply_id FROM t_pay_order tp WHERE tp.status = 1 AND tp.APPLY_ID = ta.apply_id)";
+		baseDAO.execteNativeBulk(sql, params.toArray());
+	}
+
+	/* (非 Javadoc)
+	 * <p>Title: getApplyById</p>
+	 * <p>Description: </p>
+	 * @param applyId
+	 * @return 
+	 * @see com.spt.entry.service.GameCodeService#getApplyById(java.lang.String)
+	 */
+	@Override
+	public Map<String, Object> getApplyById(String applyId) {
+		String sql = "SELECT ta.TRUENAME trueName, ta.GROUP_NAME groupName, ta.MOBILE mobile, ta.CERTNO certNo, ta.TEAM_NAME teamName, ta.GAMECODE gameCode, ta.ADDTIME addDt, tpo.OUT_TRADE_NO tradeNo, ta.APV_STS apvSts FROM t_apply ta, t_pay_order tpo WHERE ta.APPLY_ID = tpo.APPLY_ID and ta.apply_id = ? ORDER BY ta.APPLY_ID, tpo.STATUS desc";
+		List<Map<String, Object>> maps = baseDAO.getGenericBySQL(sql, new Object[]{Long.parseLong(applyId)});
+		if(maps != null && maps.size() > 0){
+			return maps.get(0);
+		}
+		return null;
+	}
+
+	/* (非 Javadoc)
+	 * <p>Title: getApplyByGameCode</p>
+	 * <p>Description: </p>
+	 * @param applyId
+	 * @param gameCode
+	 * @return 
+	 * @see com.spt.entry.service.GameCodeService#getApplyByGameCode(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public int getApplyByGameCode(String applyId, String gameCode) {
+		String sql = "select count(1) from t_apply tp, t_pay_order tpo where tp.apply_id = tpo.apply_id and tpo.status = 1 and tp.gamecode = ? and tp.apply_Id <> ?";
+		return baseDAO.getGenericIntToSQL(sql, new Object[]{gameCode, Long.parseLong(applyId)});
+	}
+
+	/* (非 Javadoc)
+	 * <p>Title: editGameCode</p>
+	 * <p>Description: </p>
+	 * @param applyId
+	 * @param gameCode 
+	 * @see com.spt.entry.service.GameCodeService#editGameCode(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public void editGameCode(String applyId, String gameCode) {
+		String sql = "update t_apply set gamecode = ? where apply_Id = ?";
+		baseDAO.execteNativeBulk(sql, new Object[]{gameCode, Long.parseLong(applyId)});
+	}
+
+	/* (非 Javadoc)
+	 * <p>Title: changeApvSts</p>
+	 * <p>Description: </p>
+	 * @param applyId 
+	 * @see com.spt.entry.service.GameCodeService#changeApvSts(java.lang.String)
+	 */
+	@Override
+	public void changeApvSts(String applyId) {
+		List<Object> params = new ArrayList<Object>();
+		String sql = "update t_apply ta set ta.apv_sts = 1 where 1=1";
+		if(StringUtil.isNotEmpty(applyId)){
+			sql += " and ta.apply_id = ?";
+			params.add(Long.parseLong(applyId));
+		}
+		sql += " and EXISTS (SELECT tp.apply_id FROM t_pay_order tp WHERE tp.status = 1 AND tp.APPLY_ID = ta.apply_id)";
+		baseDAO.execteNativeBulk(sql, params.toArray());
+	}
+}
