@@ -71,7 +71,7 @@ public class XSSHttpRequestWrapper extends HttpServletRequestWrapper {
 	 */
 	@SuppressWarnings("unchecked")
 	private boolean checkParameter(){
-		Map<String,Object> submitParams = this.getParameterMap();
+		Map<String,String[]> submitParams = this.getParameterMap();
 		Set<String> submitNames = submitParams.keySet();
 		for(String submitName : submitNames){
 			Object submitValues = submitParams.get(submitName);

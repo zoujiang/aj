@@ -1,8 +1,6 @@
 package com.qm.entities;
 
-import com.frame.core.util.pagination.key.LimitKey;
-
-public class KindergartenPhoto extends LimitKey{
+public class KindergartenPhoto {
     private Integer id;
 
     private Integer type;
@@ -12,8 +10,6 @@ public class KindergartenPhoto extends LimitKey{
     private String photoUrl;
 
     private String videoUrl;
-
-    private Integer albumId;
 
     private String createTime;
 
@@ -28,22 +24,6 @@ public class KindergartenPhoto extends LimitKey{
     private String ownerId;
 
     private String digRelationUserId;
-    
-    private String kindergartenName;
-    
-    private String gradeName;
-    
-    private Integer photoNum;
-    
-    private String teacherName;
-    
-    private String createUserName;
-    
-    private Integer kindergartenId;
-    
-    private Integer gradeId;
-    
-    private String studentName;
 
     public Integer getId() {
         return id;
@@ -83,14 +63,6 @@ public class KindergartenPhoto extends LimitKey{
 
     public void setVideoUrl(String videoUrl) {
         this.videoUrl = videoUrl == null ? null : videoUrl.trim();
-    }
-
-    public Integer getAlbumId() {
-        return albumId;
-    }
-
-    public void setAlbumId(Integer albumId) {
-        this.albumId = albumId;
     }
 
     public String getCreateTime() {
@@ -148,71 +120,4 @@ public class KindergartenPhoto extends LimitKey{
     public void setDigRelationUserId(String digRelationUserId) {
         this.digRelationUserId = digRelationUserId == null ? null : digRelationUserId.trim();
     }
-
-	public String getKindergartenName() {
-		return kindergartenName;
-	}
-
-	public void setKindergartenName(String kindergartenName) {
-		this.kindergartenName = kindergartenName;
-	}
-
-	public String getGradeName() {
-		return gradeName;
-	}
-
-	public void setGradeName(String gradeName) {
-		this.gradeName = gradeName;
-	}
-
-	public Integer getPhotoNum() {
-		return photoNum;
-	}
-
-	public void setPhotoNum(Integer photoNum) {
-		this.photoNum = photoNum;
-	}
-
-	public String getTeacherName() {
-		return teacherName;
-	}
-
-	public void setTeacherName(String teacherName) {
-		this.teacherName = teacherName;
-	}
-
-	public String getCreateUserName() {
-		return createUserName;
-	}
-
-	public void setCreateUserName(String createUserName) {
-		this.createUserName = createUserName;
-	}
-
-	public Integer getKindergartenId() {
-		return kindergartenId;
-	}
-
-	public void setKindergartenId(Integer kindergartenId) {
-		this.kindergartenId = kindergartenId;
-	}
-
-	public Integer getGradeId() {
-		return gradeId;
-	}
-
-	public void setGradeId(Integer gradeId) {
-		this.gradeId = gradeId;
-	}
-
-	public String getStudentName() {
-		return studentName;
-	}
-
-	public void setStudentName(String studentName) {
-		this.studentName = studentName;
-	}
-	
-	
-    
 }

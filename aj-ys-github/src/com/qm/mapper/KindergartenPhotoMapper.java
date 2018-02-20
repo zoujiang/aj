@@ -19,5 +19,5 @@ public interface KindergartenPhotoMapper {
 
     int updateByPrimaryKey(KindergartenPhoto record);
 
-	List<KindergartenPhoto> queryPhotoByOwerId(@Param("owerId")Integer owerId);
+	List<KindergartenPhoto> queryPhotoByOwerId(@Param("ownerId") String ownerId);
 }

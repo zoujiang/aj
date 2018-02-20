@@ -27,6 +27,7 @@ import com.qm.entities.KindergartenStudent;
 import com.qm.service.KindergartenGradeService;
 import com.qm.service.KindergartenService;
 import com.qm.service.KindergartenStudentService;
+import com.qm.shop.Constant;
 import com.qm.shop.customer.action.ShopCustomerAction;
 import com.qm.shop.customer.service.ShopCustomerService;
 
@@ -56,6 +57,9 @@ public class KindergartenStudentAction extends FtpImgDownUploadAction{
 		student.setPageSize(limit);
 		List<KindergartenStudent> list = kindergartenStudentService.queryList(student);
 		for(KindergartenStudent s : list){
+			if(s.getPhoto() != null && !"".equals(s.getPhoto())){
+				s.setPhoto(Constant.imgPrefix + s.getPhoto());
+			}
 			KindergartenGrade grade = kindergartenGradeService.selectGradeAndTeacherByPrimaryKey(s.getGradeId());
 			if(grade != null){
 				s.setFirstTeacherName(grade.getFirstTeacherName());
@@ -157,6 +161,9 @@ public class KindergartenStudentAction extends FtpImgDownUploadAction{
 		JSONObject json = new JSONObject();
 		try {
 			KindergartenStudent  student = kindergartenStudentService.selectByPrimaryKey(id);
+			if(student.getPhoto() != null && !"".equals(student.getPhoto())){
+				student.setPhoto(Constant.imgPrefix + student.getPhoto());
+			}
 			json.put("success", true);
 			json.put("message", student);
 		} catch (Exception e) {

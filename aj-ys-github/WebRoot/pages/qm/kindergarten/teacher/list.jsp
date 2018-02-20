@@ -47,10 +47,10 @@ String id = request.getParameter("id");
 		}
 		//编辑
 		AppMgr.edit = function(id,valid,e){
-			layer_show("编辑幼儿园教师", getProjectName() +"/pages/qm/kindergarten/teacher/edit.jsp?id="+id,"800","400");
+			layer_show("编辑幼儿园教师", getProjectName() +"/pages/qm/kindergarten/teacher/edit.jsp?id="+id,"800","452");
 		}
 		AppMgr.add = function(e){
-    		layer_show("添加幼儿园教师", getProjectName() +"/pages/qm/kindergarten/teacher/add.jsp","800","400");
+    		layer_show("添加幼儿园教师", getProjectName() +"/pages/qm/kindergarten/teacher/add.jsp","800","452");
 		};
     	this.initDatas = function(){
     		

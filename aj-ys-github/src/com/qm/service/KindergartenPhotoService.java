@@ -13,7 +13,7 @@ public interface KindergartenPhotoService {
 
 	List<KindergartenStudent> queryListWithPotoNum(KindergartenStudent student);
 
-	List<KindergartenPhoto> queryPhotoByOwerId(Integer owerId);
+	List<KindergartenPhoto> queryPhotoByOwerId(String owerId);
 
 	int update(KindergartenPhoto photo);
 

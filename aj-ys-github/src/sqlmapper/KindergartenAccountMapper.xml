@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qm.mapper.KindergartenAccountMapper">
+  <resultMap id="BaseResultMap" type="com.qm.entities.KindergartenAccount">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="kindergarten_id" jdbcType="INTEGER" property="kindergartenId" />
+    <result column="tel" jdbcType="VARCHAR" property="tel" />
+    <result column="nickname" jdbcType="VARCHAR" property="nickname" />
+    <result column="create_time" jdbcType="VARCHAR" property="createTime" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="create_user" jdbcType="VARCHAR" property="createUser" />
+     <result column="kindergartenName" jdbcType="VARCHAR" property="kindergartenName" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, username, password, kindergarten_id, tel, nickname, create_time, status, email, 
+    create_user
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_kindergarten_account
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_kindergarten_account
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.qm.entities.KindergartenAccount">
+    insert into t_kindergarten_account (id, username, password, 
+      kindergarten_id, tel, nickname, 
+      create_time, status, email, 
+      create_user)
+    values (#{id,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
+      #{kindergartenId,jdbcType=INTEGER}, #{tel,jdbcType=VARCHAR}, #{nickname,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{email,jdbcType=VARCHAR}, 
+      #{createUser,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.qm.entities.KindergartenAccount">
+    insert into t_kindergarten_account
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="username != null">
+        username,
+      </if>
+      <if test="password != null">
+        password,
+      </if>
+      <if test="kindergartenId != null">
+        kindergarten_id,
+      </if>
+      <if test="tel != null">
+        tel,
+      </if>
+      <if test="nickname != null">
+        nickname,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="email != null">
+        email,
+      </if>
+      <if test="createUser != null">
+        create_user,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="username != null">
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null">
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="kindergartenId != null">
+        #{kindergartenId,jdbcType=INTEGER},
+      </if>
+      <if test="tel != null">
+        #{tel,jdbcType=VARCHAR},
+      </if>
+      <if test="nickname != null">
+        #{nickname,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="email != null">
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null">
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.qm.entities.KindergartenAccount">
+    update t_kindergarten_account
+    <set>
+      <if test="username != null">
+        username = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null">
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="kindergartenId != null">
+        kindergarten_id = #{kindergartenId,jdbcType=INTEGER},
+      </if>
+      <if test="tel != null">
+        tel = #{tel,jdbcType=VARCHAR},
+      </if>
+      <if test="nickname != null">
+        nickname = #{nickname,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="email != null">
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null">
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qm.entities.KindergartenAccount">
+    update t_kindergarten_account
+    set username = #{username,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
+      kindergarten_id = #{kindergartenId,jdbcType=INTEGER},
+      tel = #{tel,jdbcType=VARCHAR},
+      nickname = #{nickname,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      email = #{email,jdbcType=VARCHAR},
+      create_user = #{createUser,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+ 
+  
+  <select id="selectByCondition" parameterType="com.qm.entities.KindergartenAccount" resultMap="BaseResultMap">
+  	select 
+	  	a.id, a.username, a.password, a.kindergarten_id, a.tel, a.nickname, a.create_time, a.create_user, a.status, a.email, i.name kindergartenName 
+    from t_kindergarten_account a left join t_kindergarten_info i on a.kindergarten_id = i.id 
+    where
+     1=1 
+     <if test="username != null and username != ''">
+     	and a.username like concat('%', #{username, jdbcType=VARCHAR} , '%')
+     </if>
+     <if test="kindergartenName != null and kindergartenName != ''">
+     	and i.name like concat('%', #{kindergartenName, jdbcType=VARCHAR} , '%')
+     </if>
+     order by a.create_time 
+     limit #{offset}, #{pageSize}
+  </select>
+  
+  <select id="findByCondition" parameterType="com.qm.entities.KindergartenAccount" resultMap="BaseResultMap">
+  	select 
+	  	a.id, a.username, a.password, a.kindergarten_id, a.tel, a.nickname, a.create_time, a.create_user, a.status, a.email, i.name kindergartenName 
+    from t_kindergarten_account a left join t_kindergarten_info i on a.kindergarten_id = i.id 
+    where
+     1=1 
+     <if test="username != null and username != ''">
+     	and a.username = #{username, jdbcType=VARCHAR}
+     </if>
+     <if test="kindergartenId != null">
+        and  a.kindergarten_id = #{kindergartenId,jdbcType=INTEGER}
+      </if>
+     order by a.create_time 
+  </select>
+  
+  <select id="getTotal" parameterType="com.qm.entities.KindergartenAccount" resultType="int">
+  	select 
+	  	count(1)
+    from t_kindergarten_account a left join t_kindergarten_info i on a.kindergarten_id = i.id 
+    where
+     1=1 
+      <if test="username != null and username != ''">
+     	and a.username like concat('%', #{username, jdbcType=VARCHAR} , '%')
+     </if>
+     <if test="kindergartenName != null and kindergartenName != ''">
+     	and i.name like concat('%', #{kindergartenName, jdbcType=VARCHAR} , '%')
+     </if>
+  </select>
+</mapper>

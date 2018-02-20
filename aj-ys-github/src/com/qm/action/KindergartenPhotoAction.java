@@ -78,7 +78,7 @@ public class KindergartenPhotoAction extends FtpImgDownUploadAction{
 	
 	
 	@RequestMapping("/init")
-	public String queryPhotoByOwerId(Integer owerId){
+	public String queryPhotoByOwerId(String owerId){
 		
 		List<KindergartenPhoto> photoList = kindergartenPhotoService.queryPhotoByOwerId(owerId);
 		for(KindergartenPhoto photo : photoList){

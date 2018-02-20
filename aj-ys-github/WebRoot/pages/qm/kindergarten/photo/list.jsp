@@ -49,8 +49,8 @@ String id = request.getParameter("id");
 		AppMgr.manage = function(id,valid,e){
 			layer_show("管理学生照片/视频", getProjectName() +"/pages/qm/kindergarten/photo/manage.jsp?id="+id,"930","500");
 		}
-		AppMgr.add = function(e){
-    		layer_show("新增学生信息", getProjectName() +"/pages/qm/kindergarten/student/add.jsp","800","400");
+		AppMgr.add = function(id, valid,e){
+			layer_show("上传图片/视频", getProjectName() +"/pages/qm/kindergarten/photo/add.jsp?type=2&ownerId="+id,"850","400");
 		};
     	this.initDatas = function(){
     		
@@ -139,7 +139,7 @@ String id = request.getParameter("id");
    		        			 edit="<span  height = '23px'  width = '23px'><a style='color:blue;' href='#' onclick=\"AppMgr.manage('" + row.id + "','0',event)\" style='cursor: pointer' >管理&nbsp;</a></span>";
     		        	}else{
     		        		
-   		        			 edit="<span  height = '23px'  width = '23px'><a style='color:blue;' href='#' onclick=\"AppMgr.edit('" + row.id + "','0',event)\" style='cursor: pointer' >上传&nbsp;</a></span>";
+   		        			 edit="<span  height = '23px'  width = '23px'><a style='color:blue;' href='#' onclick=\"AppMgr.add('" + row.id + "','0',event)\" style='cursor: pointer' >上传&nbsp;</a></span>";
     		        	}
    		        		var down="<span  height = '23px'  width = '23px'><a style='color:blue;' href='#' onclick=\"AppMgr.del('" + row.id + "','0',event)\" style='cursor: pointer' >下载&nbsp;</a></span>";
     		        	return edit +down;

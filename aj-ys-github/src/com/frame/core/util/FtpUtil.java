@@ -166,7 +166,14 @@ public class FtpUtil {
 		 ftpClient.enterLocalPassiveMode();
 		 ftpClient.setControlEncoding("UTF-8");
 		 ftpClient.setFileTransferMode(ftpClient.BINARY_FILE_TYPE);
-		boolean result = ftpClient.storeFile(remoteFilePath, localIn);
+		boolean result =false;
+		try {
+			result = ftpClient.storeFile(remoteFilePath, localIn);
+			System.out.println(ftpClient.getReplyCode() +"---"+ftpClient.getReplyString());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return result;
 	}
 	/**

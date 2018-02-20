@@ -137,9 +137,9 @@ if(roleId == null || "".equals(roleId)){
 	                        </div>
 	               			<div class="form-group col-sm-6"> 
 	               				<label class="col-sm-4 control-label"><span style="color: red;">*</span>性别：</label> 
-	               				<div class="col-sm-8" style="margin-top: 5px;>
-	               					<input type="radio" name="sex" value="0" checked="checked"> 男
-	               					<input type="radio" name="sex" value="1"> 女
+	               				<div class="col-sm-8" style="margin-top: 5px;">
+	               					<input type="radio" id="ra0" name="sex" value="0" checked="checked"> 男
+	               					<input type="radio" id="ra1" name="sex" value="1"> 女
 	               				</div>
 						    </div>
                         </div>

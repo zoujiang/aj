@@ -272,11 +272,11 @@ if(roleId == null || "".equals(roleId)){
 						    <div class="form-group col-sm-8">
 	                            <label class="col-sm-3 control-label">级数规则：</label>
 	                            <div class="col-sm-9" style="margin-top: 5px;">
-	               					<input type="checkbox" name="rule" value="小小班" onclick="setClassName()" checked="checked">小小班&nbsp;&nbsp;&nbsp;&nbsp;
-	               					<input type="checkbox" name="rule" value="小班" onclick="setClassName()" checked="checked">小班&nbsp;&nbsp;&nbsp;&nbsp;
-	               					<input type="checkbox" name="rule" value="中班" onclick="setClassName()" checked="checked">中班&nbsp;&nbsp;&nbsp;&nbsp;
-	               					<input type="checkbox" name="rule" value="大班" onclick="setClassName()" checked="checked">大班&nbsp;&nbsp;&nbsp;&nbsp;
-	               					<input type="checkbox" name="rule" value="大大班" onclick="setClassName()" checked="checked">大大班
+	               					<input type="checkbox" name="rule" value="小小班" onclick="setClassName()" >小小班&nbsp;&nbsp;&nbsp;&nbsp;
+	               					<input type="checkbox" name="rule" value="小班" onclick="setClassName()" >小班&nbsp;&nbsp;&nbsp;&nbsp;
+	               					<input type="checkbox" name="rule" value="中班" onclick="setClassName()" >中班&nbsp;&nbsp;&nbsp;&nbsp;
+	               					<input type="checkbox" name="rule" value="大班" onclick="setClassName()" >大班&nbsp;&nbsp;&nbsp;&nbsp;
+	               					<input type="checkbox" name="rule" value="大大班" onclick="setClassName()" >大大班
 	               				</div>
 	                        </div>
                         </div>

@@ -21,6 +21,12 @@ String id = request.getParameter("id");
 	<link rel="stylesheet" href="${ctx }/resources/Gallery/css/blueimp-gallery.min.css" />
 	<link rel="stylesheet" href="${ctx }/resources/Gallery/css/blueimp-gallery-indicator.css" />
     <link rel="stylesheet" href="${ctx }/resources/Gallery/css/blueimp-gallery-video.css" /> 
+    
+    <link href="<c:url value='/resources/hplus4.1/css/font-awesome.min.css?v=4.4.0'></c:url>" rel="stylesheet">
+    <link href="<c:url value='/resources/hplus4.1/css/animate.min.css'></c:url>" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="<c:url value='/resources/hplus4.1/css/demo/webuploader-demo.min.css'></c:url>">
+    <link href="<c:url value='/resources/hplus4.1/css/style.min.css?v=4.1.0'></c:url>" rel="stylesheet">
+    
 	<style>
         .lightBoxGallery img {
             margin: 20px 10px;
@@ -32,6 +38,12 @@ String id = request.getParameter("id");
 	
 	
 	 function AppMgr(){
+		 
+		 AppMgr.add = function(e,ownerId){
+				layer_show("上传图片/视频", getProjectName() +"/pages/qm/kindergarten/photo/add.jsp?type=2&ownerId=<%=id %>","850","400");
+			};
+		 
+		 
 		 var kindergartenId = "";
 		 var firstTeacher = "";
 		 var secondTeacher = "";
@@ -52,7 +64,7 @@ String id = request.getParameter("id");
 	                	  var jsonarray = eval('('+jsonstr+')');
 	                	  
 	                	  data.forEach(function( p, index ) {
-	                		  		html += "<div style='position:relative;float: left'> ";
+	                		  		html += "<div style='position:relative;float: left;width:275px;height:325px'> ";
 	                		  		html += "<a href='"+ p.photoUrl+ "' title='' data-gallery='' >";
 	                                html += "<img src='"+ p.photoUrl +"'> </a>";
 	                                var pName = p.name;
@@ -62,6 +74,7 @@ String id = request.getParameter("id");
 	                                html += "<div style='position:absolute;z-indent:2;left:10px;bottom:0'  onclick=setIdToHideModel('"+p.id+"')><a id='PID_"+p.id+"' data-toggle='modal'  href='form_basic.html#modal-form'>"+ pName +"</a></div></div>";
 	                				
 	                	  });
+	                	  html += " <div id=\"blueimp-gallery\" class=\"blueimp-gallery blueimp-gallery-controls\"><div class=\"slides\"></div><h3 class=\"title\"></h3><a class=\"prev\">‹</a> <a class=\"next\">›</a><a class=\"close\">×</a><a class=\"play-pause\"></a><ol class=\"indicator\"></ol></div>";
 	                	  $("#img_content").html(html);
 	                  }else{
 	                	  layer.msg(data.message, {title:'提示', btn: ['确定'],icon: 6}, function(index){
@@ -104,39 +117,13 @@ String id = request.getParameter("id");
 	
 	 $(document).ready(function() {
 	  		new AppMgr().initDatas();
-	 
-	  		
-	  		 blueimp.Gallery([
-	  	        {
-	  	            title: 'Winform框架增量开发过程',
-	  	            href: 'aa.mp4',
-	  	            type: 'video/mp4',
-	  	            poster: 'bg.jpg'
-	  	        },
-	  	        {
-	  	            title: '混合框架图片显示及存储',
-	  	            href: 'aa.mp4',
-	  	            type: 'video/mp4',
-	  	            poster: 'bg.jpg'
-	  	        },
-	  	        {
-	  	            title: '混合框架增量开发过程',
-	  	            href: 'aa.mp4',
-	  	            type: 'video/mp4',
-	  	            poster: 'bg.jpg'
-	  	        },
-	  	        {
-	  	            title: '混合框架之WebAPI接入的增量开发过程',
-	  	            href: 'aa.mp4',
-	  	            type: 'video/mp4',
-	  	            poster: 'bg.jpg'
-	  	        }        
-	  	    ], 
-	  	    {
-	  	        container: '#blueimp-video-carousel',
-	  	        carousel: true
-	  	    });
+	  		 
 	 });
+	 function uploadFiles(){
+		 
+		 $("#modal-form-2").click();
+		 
+	 }
 	</script>
   </head>
   
@@ -147,57 +134,12 @@ String id = request.getParameter("id");
             <div class="ibox float-e-margins">
 
                 <div class="ibox-content">
-
                     <p>
-                       <button  id="btn_search" type="button" class="btn btn-inline btn-default" style="margin-top: 4px;">上传照片/视频</button> 
+                       <button  id="btn_search" type="button" onclick="AppMgr.add(event)"  class="btn btn-inline btn-default" style="margin-top: 4px;">上传照片/视频</button> 
                     </p>
                 </div>
                 <div class="lightBoxGallery" id="img_content">
-                	<!--   <div style="position:relative;float: left">
-                        <a href="http://ozwpnu2pa.bkt.clouddn.com/p_big1.jpg" title="图片" data-gallery="" >
-                            <img src="http://ozwpnu2pa.bkt.clouddn.com/p1.jpg">
-                        </a>
-                            <div style="position:absolute;z-indent:2;left:10px;bottom:0">新学期</div>
-                            </div>
-                	<div style="position:relative;float: left">
-                        <a href="http://ozwpnu2pa.bkt.clouddn.com/p_big1.jpg" title="图片" data-gallery="" >
-                            <img src="http://ozwpnu2pa.bkt.clouddn.com/p1.jpg">
-                        </a>
-                            <div style="position:absolute;z-indent:2;left:10px;bottom:0">新学期</div>
-                            </div>
-                	<div style="position:relative;float: left">
-                        <a href="http://ozwpnu2pa.bkt.clouddn.com/p_big1.jpg" title="图片" data-gallery="" >
-                            <img src="http://ozwpnu2pa.bkt.clouddn.com/p1.jpg">
-                        </a>
-                            <div style="position:absolute;z-indent:2;left:10px;bottom:0">新学期</div>
-                            </div>
-                	<div style="position:relative;float: left">
-                        <a href="http://ozwpnu2pa.bkt.clouddn.com/p_big1.jpg" title="图片" data-gallery="" >
-                            <img src="http://ozwpnu2pa.bkt.clouddn.com/p1.jpg">
-                        </a>
-                            <div style="position:absolute;z-indent:2;left:10px;bottom:0">新学期</div>
-                            </div>
-                        -->
-
-                        <div id="blueimp-gallery" class="blueimp-gallery  blueimp-gallery-controls">
-                            <div class="slides"></div>
-                            <h3 class="title"></h3>
-                            <a class="prev">‹</a>
-                            <a class="next">›</a>
-                            <a class="close">×</a>
-                            <a class="play-pause"></a>
-                            <ol class="indicator"></ol>
-                        </div>
-                        
-                    </div>
-                        <div id="blueimp-video-carousel" class="blueimp-gallery blueimp-gallery-controls  blueimp-gallery-carousel">
-						    <div class="slides"></div>
-						    <h3 class="title"></h3>
-						    <a class="prev">‹</a>
-						    <a class="next">›</a>
-						    <a class="play-pause"></a>
-						    <ol class="indicator"></ol>
-						</div>
+                  
 			</div>
         </div>
     </div>
@@ -224,7 +166,7 @@ String id = request.getParameter("id");
         </div>
     </div>
 </div>
-  </body>
+</body>
   <!--图片展示脚本-->
 <script src="${ctx }/resources/Gallery/js/blueimp-helper.js"></script>
 <script src="${ctx }/resources/Gallery/js/blueimp-gallery.min.js"></script>

@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qm.mapper.CouponShopInfoMapper">
+  <resultMap id="BaseResultMap" type="com.qm.entities.CouponShopInfo">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="shop_name" jdbcType="VARCHAR" property="shopName" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="shop_category" jdbcType="VARCHAR" property="shopCategory" />
+    <result column="gps" jdbcType="VARCHAR" property="gps" />
+    <result column="tel" jdbcType="VARCHAR" property="tel" />
+    <result column="service_begin_time" jdbcType="VARCHAR" property="serviceBeginTime" />
+    <result column="service_end_time" jdbcType="VARCHAR" property="serviceEndTime" />
+    <result column="logo" jdbcType="VARCHAR" property="logo" />
+    <result column="show_pic" jdbcType="VARCHAR" property="showPic" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="create_time" jdbcType="VARCHAR" property="createTime" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="is_recommend" jdbcType="INTEGER" property="isRecommend" />
+    <result column="regist_name" jdbcType="VARCHAR" property="registName" />
+    <result column="regist_tel" jdbcType="VARCHAR" property="registTel" />
+    <result column="recommend_ix" jdbcType="VARCHAR" property="recommendIx" />
+    <result column="brand_id" jdbcType="VARCHAR" property="brandId" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, shop_name, address, shop_category, gps, tel, service_begin_time, service_end_time, 
+    logo, show_pic, description, create_time, status, is_recommend, regist_name, regist_tel, 
+    recommend_ix, brand_id
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_coupon_shop_info
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from t_coupon_shop_info
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.qm.entities.CouponShopInfo">
+    insert into t_coupon_shop_info (id, shop_name, address, 
+      shop_category, gps, tel, 
+      service_begin_time, service_end_time, logo, 
+      show_pic, description, create_time, 
+      status, is_recommend, regist_name, 
+      regist_tel, recommend_ix, brand_id
+      )
+    values (#{id,jdbcType=VARCHAR}, #{shopName,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, 
+      #{shopCategory,jdbcType=VARCHAR}, #{gps,jdbcType=VARCHAR}, #{tel,jdbcType=VARCHAR}, 
+      #{serviceBeginTime,jdbcType=VARCHAR}, #{serviceEndTime,jdbcType=VARCHAR}, #{logo,jdbcType=VARCHAR}, 
+      #{showPic,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, 
+      #{status,jdbcType=INTEGER}, #{isRecommend,jdbcType=INTEGER}, #{registName,jdbcType=VARCHAR}, 
+      #{registTel,jdbcType=VARCHAR}, #{recommendIx,jdbcType=VARCHAR}, #{brandId,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.qm.entities.CouponShopInfo">
+    insert into t_coupon_shop_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="shopName != null">
+        shop_name,
+      </if>
+      <if test="address != null">
+        address,
+      </if>
+      <if test="shopCategory != null">
+        shop_category,
+      </if>
+      <if test="gps != null">
+        gps,
+      </if>
+      <if test="tel != null">
+        tel,
+      </if>
+      <if test="serviceBeginTime != null">
+        service_begin_time,
+      </if>
+      <if test="serviceEndTime != null">
+        service_end_time,
+      </if>
+      <if test="logo != null">
+        logo,
+      </if>
+      <if test="showPic != null">
+        show_pic,
+      </if>
+      <if test="description != null">
+        description,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="isRecommend != null">
+        is_recommend,
+      </if>
+      <if test="registName != null">
+        regist_name,
+      </if>
+      <if test="registTel != null">
+        regist_tel,
+      </if>
+      <if test="recommendIx != null">
+        recommend_ix,
+      </if>
+      <if test="brandId != null">
+        brand_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="shopName != null">
+        #{shopName,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null">
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="shopCategory != null">
+        #{shopCategory,jdbcType=VARCHAR},
+      </if>
+      <if test="gps != null">
+        #{gps,jdbcType=VARCHAR},
+      </if>
+      <if test="tel != null">
+        #{tel,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceBeginTime != null">
+        #{serviceBeginTime,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceEndTime != null">
+        #{serviceEndTime,jdbcType=VARCHAR},
+      </if>
+      <if test="logo != null">
+        #{logo,jdbcType=VARCHAR},
+      </if>
+      <if test="showPic != null">
+        #{showPic,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="isRecommend != null">
+        #{isRecommend,jdbcType=INTEGER},
+      </if>
+      <if test="registName != null">
+        #{registName,jdbcType=VARCHAR},
+      </if>
+      <if test="registTel != null">
+        #{registTel,jdbcType=VARCHAR},
+      </if>
+      <if test="recommendIx != null">
+        #{recommendIx,jdbcType=VARCHAR},
+      </if>
+      <if test="brandId != null">
+        #{brandId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.qm.entities.CouponShopInfo">
+    update t_coupon_shop_info
+    <set>
+      <if test="shopName != null">
+        shop_name = #{shopName,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null">
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="shopCategory != null">
+        shop_category = #{shopCategory,jdbcType=VARCHAR},
+      </if>
+      <if test="gps != null">
+        gps = #{gps,jdbcType=VARCHAR},
+      </if>
+      <if test="tel != null">
+        tel = #{tel,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceBeginTime != null">
+        service_begin_time = #{serviceBeginTime,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceEndTime != null">
+        service_end_time = #{serviceEndTime,jdbcType=VARCHAR},
+      </if>
+      <if test="logo != null">
+        logo = #{logo,jdbcType=VARCHAR},
+      </if>
+      <if test="showPic != null">
+        show_pic = #{showPic,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="isRecommend != null">
+        is_recommend = #{isRecommend,jdbcType=INTEGER},
+      </if>
+      <if test="registName != null">
+        regist_name = #{registName,jdbcType=VARCHAR},
+      </if>
+      <if test="registTel != null">
+        regist_tel = #{registTel,jdbcType=VARCHAR},
+      </if>
+      <if test="recommendIx != null">
+        recommend_ix = #{recommendIx,jdbcType=VARCHAR},
+      </if>
+      <if test="brandId != null">
+        brand_id = #{brandId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qm.entities.CouponShopInfo">
+    update t_coupon_shop_info
+    set shop_name = #{shopName,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      shop_category = #{shopCategory,jdbcType=VARCHAR},
+      gps = #{gps,jdbcType=VARCHAR},
+      tel = #{tel,jdbcType=VARCHAR},
+      service_begin_time = #{serviceBeginTime,jdbcType=VARCHAR},
+      service_end_time = #{serviceEndTime,jdbcType=VARCHAR},
+      logo = #{logo,jdbcType=VARCHAR},
+      show_pic = #{showPic,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      is_recommend = #{isRecommend,jdbcType=INTEGER},
+      regist_name = #{registName,jdbcType=VARCHAR},
+      regist_tel = #{registTel,jdbcType=VARCHAR},
+      recommend_ix = #{recommendIx,jdbcType=VARCHAR},
+      brand_id = #{brandId,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <select  id="queryByCondition" parameterType="com.qm.entities.CouponShopInfo" resultMap="BaseResultMap">
+	    select 
+	    <include refid="Base_Column_List" />
+	    from t_coupon_shop_info
+	    where 1=1
+	    <if test="shopName != null and shopName != ''">
+	    	and shop_name like concat('%',#{shopName,jdbcType=VARCHAR},'%')
+	    </if>
+	    <if test="status != null">
+	    	and status = #{status,jdbcType=INTEGER}
+	    </if>
+	    order by recommend_ix
+	    <if test="offset != null and offset > -1 and pageSize != null and pageSize > 0">
+		    limit #{offset}, #{pageSize}
+	    </if>
+    </select>
+    <select id="getTotal" parameterType="com.qm.entities.CouponShopInfo" resultType="int">
+    	select 
+	    	count(1)
+	    from t_coupon_shop_info
+	    where 1=1
+	    <if test="shopName != null and shopName != ''">
+	    	and shop_name like concat('%',#{shopName,jdbcType=VARCHAR},'%')
+	    </if>
+	    <if test="status != null">
+	    	and status = #{status,jdbcType=INTEGER}
+	    </if>
+    </select>
+</mapper>

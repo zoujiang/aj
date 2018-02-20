@@ -35,7 +35,7 @@ public class KindergartenPhotoServiceImpl implements KindergartenPhotoService {
 	}
 
 	@Override
-	public List<KindergartenPhoto> queryPhotoByOwerId(Integer owerId) {
+	public List<KindergartenPhoto> queryPhotoByOwerId(String owerId) {
 		
 		return kindergartenPhotoMapper.queryPhotoByOwerId(owerId);
 	}

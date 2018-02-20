@@ -1,221 +1,77 @@
-<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ page language="java" pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
 <%
 String path = request.getContextPath();
 String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
-String roleId = request.getParameter("roleId");
-if(roleId == null || "".equals(roleId)){
-	roleId = "";
-}
+String ownerId = request.getParameter("ownerId");
+String type = request.getParameter("type");
 %>
-
 <!DOCTYPE html>
 <html>
-
 <head>
-
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-
-    <title>管理平台-添加幼儿园学生</title>
-
+ 
+     <title>商户管理平台-照片管理</title>
 	<%@ include file="/pages/comm/jsp/inc.jsp"%>
 	
-	<script type="text/javascript" src="${ctx }/resources/hplus4.1/js/plugins/layer/laydate/laydate.js"></script>
+    <link rel="shortcut icon" href="favicon.ico"> <link href="<c:url value='/resources/hplus4.1/css/bootstrap.min.css?v=3.3.6'></c:url>" rel="stylesheet">
+    <link href="<c:url value='/resources/bootstrap-fileinput/css/fileinput.css'></c:url>" rel="stylesheet">
+    <script src="<c:url value='/resources/hplus4.1/js/bootstrap.min.js?v=3.3.6' ></c:url>"></script>
+    <script src="<c:url value='/resources/hplus4.1/js/content.min.js?v=1.0.0' ></c:url>"></script>
+    <script type="text/javascript" src="<c:url value='/resources/bootstrap-fileinput/js/fileinput.js'></c:url>" ></script>
+    <script type="text/javascript" src="<c:url value='/resources/bootstrap-fileinput/js/locales/zh.js'></c:url>"  ></script>
+    
+    <script type="text/javascript">
+    
+    $(document).ready(function () {
+    	$("#f_upload").fileinput({
+            theme: 'fa',
+            language:'zh',
+            uploadUrl: '<%=path %>/admin/fileUploadCommon/files/fileUpload', // you must set a valid URL here else you will get an error
+            overwriteInitial: false,
+            uploadExtraData:{"ownerId": '<%=ownerId %>', "type":'<%=type %>'},
+            showRemove:false,
+            maxFileSize: 1000000,
+            maxFilesNum: 100,
+            allowedFileTypes: ['image', 'video', 'flash'],
+            slugCallback: function (filename) {
+            	return filename.replace('(', '_');
+            }
+        }).on("fileuploaded", function (event, data, previewId, index) {
+        	var form = data.form, files = data.files, extra = data.extra,
+            response = data.response, reader = data.reader;
+            console.log("index:"+index);//打印出返回的json
+            console.log(response.success);//打印出返回的json
+            console.log(response.url);//打印出返回的json
+            console.log(response.type);//打印出路径
+        });
+            	
+    });
+	function returnToListPage(){
+		var index = parent.layer.getFrameIndex(window.name);
+		//parent.$('#apv_table').bootstrapTable('refresh');
+		parent.$("button[name='refresh']").click();
+		parent.layer.close(index);
+	}
 
-
-	<script type="text/javascript">
-	function AppMgr(){
-		 this.initDatas = function(){
-			 $.ajax({
-	             type: "GET",
-	             url: "<%=path %>/admin/kindergarten/kindergarten/all",
-	             dataType: "json",
-	             success: function(data){
-	            	 var arr = data.data;
-	            	 var html = "<option value=''>--请选择幼儿园-- </option>";
-	            	  $.each( arr, function(index, content)
-	            	  { 
-	            		  html += "<option value='"+content.id+"'>"+content.name+"</option>";
-	            	  });
-	            	  $("#kindergartenId").html(html);
-	         	 }
-	    	});
-	  	 }
-		 
-	 }
-	 $(document).ready(function() {
-	  		new AppMgr().initDatas();
-		});
-		function saveUser(){
-			
-			var kindergartenId = $("#kindergartenId").val();
-			if(kindergartenId == null || kindergartenId == ""){
-				layer.msg("所属幼儿园不能为空", {title:'提示', btn: ['确定'],icon: 6}, function(index){
-				});
-				$("#btn_save").attr("disabled", false);
-				return false;
-			}
-			var gradeId = $("#gradeId").val();
-			if(gradeId == null || gradeId == ""){
-				layer.msg("所属班级不能为空", {title:'提示', btn: ['确定'],icon: 6}, function(index){
-				});
-				$("#btn_save").attr("disabled", false);
-				return false;
-			}
-			var name = $("#name").val();
-			if(name == null || name == ''){
-				layer.msg("学生姓名能为空", {title:'提示', btn: ['确定'],icon: 6}, function(index){
-				});
-				$("#btn_save").attr("disabled", false);
-				return false;
-			}
-			var parentsName = $("#parentsName").val();
-			if(parentsName == null || parentsName == ''){
-				layer.msg("家长姓名能为空", {title:'提示', btn: ['确定'],icon: 6}, function(index){
-				});
-				$("#btn_save").attr("disabled", false);
-				return false;
-			}
-			var parentsTel = $("#parentsTel").val();
-			if(parentsTel == null || parentsTel == ''){
-				layer.msg("家长手机号码不能为空", {title:'提示', btn: ['确定'],icon: 6}, function(index){
-				});
-				$("#btn_save").attr("disabled", false);
-				return false;
-			}
-		
-			$("#userForm").ajaxSubmit({
-			     type: "post",
-			     url: "<%=path %>/admin/kindergarten/student/add",
-			     dataType: "json",
-			     success: function(obj){
-			    	 if(obj.success){
-							layer.msg(obj.message, {title:'提示', btn: ['确定'],icon: 6}, function(index){
-								var index = parent.layer.getFrameIndex(window.name);
-								//parent.$('#apv_table').bootstrapTable('refresh');
-								parent.$("button[name='refresh']").click();
-								parent.layer.close(index);
-					  		});
-						}
-						else{
-							layer.msg(obj.message, {title:'提示', btn: ['确定'],icon: 6}, function(index){
-							});
-						}
-			     }
-			 });
-			
-			$("#btn_save").attr("disabled", false);
-			
-		}
-		 $(function(){
-			$("#btn_save").click(function(){
-				$("#btn_save").attr("disabled", true);
-				saveUser();
-			});
-			
-		}); 
-		 
-		 
-		 function showGradeInfo(){
-		    	
-		    	var kindergartenId = $("#kindergartenId").val();
-		    	if(kindergartenId != ''){
-		    		$.ajax({
-			             type: "GET",
-			             url: "<%=path %>/admin/kindergarten/grade/list?offset=0&limit=100000&kindergartenId="+kindergartenId,
-			             dataType: "json",
-			             success: function(data){
-			            	 var arr = data.rows;
-			            	 var html = "<option value=''>---请选择---</option>";
-			            	  $.each( arr, function(index, content)
-			            	  { 
-			            		  html += "<option value='"+content.id+"'>"+content.name+"</option>";
-			            	  });
-			            	  $("#gradeId").html(html);
-			         	 }
-			    	});
-		    		
-		    	}
-		    }
 	</script>
-  </head>
-  
-  <body class="gray-bg" >
-    <div class="wrapper wrapper-content animated fadeInRight">
-            <div class="ibox float-e-margins" style="margin-bottom: 0px;">
-                <div class="ibox-content row">
-               	 	<form class="form-horizontal" id="userForm" action="<%=path %>/admin/shop/account/add" method="post">
-               	 		<div class="row">
-	               			<div class="form-group col-sm-6"> 
-	               				<label class="col-sm-4 control-label"><span style="color: red;">*</span>所属幼儿园：</label> 
-	               				<div class="col-sm-8">
-	               					<select class="form-control" name="kindergartenId" id="kindergartenId" onchange="showGradeInfo()">
-								    </select>
-	               				</div>
-						    </div>
-						    <div class="form-group col-sm-6">
-	                            <label class="col-sm-4 control-label"><span style="color: red;">*</span>学生姓名：</label>
-	                            <div class="col-sm-8">
-	               					<input type="text" class="form-control" name="name" id="name">
-	               				</div>
-	                        </div>
-                        </div>
-                        <div class="row">
-                       
-	               			<div class="form-group col-sm-6"> 
-	               				<label class="col-sm-4 control-label">年龄：</label> 
-	               				<div class="col-sm-8">
-	               					<input type="text" class="form-control"  name="age" id="age" > 
-	               				</div>
-						    </div>
-						    <div class="form-group col-sm-6"> 
-	               				<label class="col-sm-4 control-label"><span style="color: red;">*</span>性别：</label> 
-	               				<div class="col-sm-8" style="margin-top: 5px;">
-	               					<input type="radio" name="sex" id="sex_0" value="0" checked="checked"> 男 &nbsp;&nbsp;
-	               					<input type="radio" name="sex" id="sex_1" value="1"> 女
-	               				</div>
-						    </div>
-                        </div>
-                        <div class="row">
-	               			
-						    <div class="form-group col-sm-6"> 
-	               				<label class="col-sm-4 control-label"><span style="color: red;">*</span>家长姓名：</label> 
-	               				<div class="col-sm-8">
-	               					<input type="text" class="form-control"  name="parentsName" id="parentsName" > 
-	               				</div>
-						    </div>
-						    <div class="form-group col-sm-6"> 
-	               				<label class="col-sm-4 control-label"><span style="color: red;">*</span>手机号码：</label> 
-	               				<div class="col-sm-8">
-	               					<input type="text" class="form-control"  name="parentsTel" id="parentsTel" > 
-	               				</div>
-						    </div>
-                        </div>
-                        <div class="row">
-	               			
-						    <div class="form-group col-sm-6"> 
-	               				<label class="col-sm-4 control-label">所属班级：</label> 
-	               				 <div class="col-sm-8">
-	               					<select id="gradeId" name="gradeId" class="form-control input-inline"  width="280px">
-                    				</select>	
-	               				</div>
-						    </div>
-						    <div class="form-group col-sm-6"> 
-	               				<label class="col-sm-4 control-label">学生头像：</label> 
-	               				 <div class="col-sm-8">
-	               					<input class="form-control" type="file" id="logo" name="logoImg" >
-	               				</div>
-						    </div>
-                        </div>
-                       
-               		</form>
-               		<div class="hr-line-dashed"></div>
-               		<div class="text-center">
-               		 	<button id = "btn_save" type="button" class="btn btn-primary">保存</button>
-                       </div>
-                </div>
-            </div>
-      </div>
-  </body>
+</head>
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content animated fadeIn">
+     	<div class="ibox float-e-margins" style="margin-bottom: 0px;">
+             <div class="ibox-content row">
+    			<form class="form-horizontal" id="userForm" method="post" enctype="multipart/form-data">
+				   <input id="f_upload" type="file" name="file" multiple="multiple" />
+    		</form>
+		    <div class="hr-line-dashed"></div>
+			<div class="text-center">
+			 	<button id = "btn_save" onclick="returnToListPage()" type="button" class="btn btn-secondary radius">确定</button>
+			      </div>
+		    </div>
+   		 </div>
+    </div>
+    
+   
+</body>
 </html>
