@@ -32,6 +32,8 @@ public class KindergartenTeacher extends LimitKey{
     private String gradeNum;
     //任教班级名称集合
     private String gradeNumNames;
+    
+    private Integer userId;
 
     public Integer getId() {
         return id;
@@ -151,6 +153,14 @@ public class KindergartenTeacher extends LimitKey{
 
 	public void setGradeNumNames(String gradeNumNames) {
 		this.gradeNumNames = gradeNumNames;
+	}
+
+	public Integer getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = userId;
 	}
     
 }

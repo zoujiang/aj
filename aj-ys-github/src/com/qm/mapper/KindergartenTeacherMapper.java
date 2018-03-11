@@ -20,4 +20,6 @@ public interface KindergartenTeacherMapper {
     List<KindergartenTeacher> selectByCondition(KindergartenTeacher info);
 
 	int getTotal(KindergartenTeacher info);
+
+	List<KindergartenTeacher> select(KindergartenTeacher t);
 }

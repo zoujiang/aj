@@ -48,10 +48,14 @@ String type = request.getParameter("type");
             	
     });
 	function returnToListPage(){
-		var index = parent.layer.getFrameIndex(window.name);
-		//parent.$('#apv_table').bootstrapTable('refresh');
-		parent.$("button[name='refresh']").click();
-		parent.layer.close(index);
+		
+		layer.msg("上传成功，请重新刷新列表", {title:'提示', btn: ['确定'],icon: 6}, function(index){
+			var index = parent.layer.getFrameIndex(window.name);
+			//parent.$('#apv_table').bootstrapTable('refresh');
+			parent.$("button[name='refresh']").click();
+			parent.layer.close(index);
+  		});
+		
 	}
 
 	</script>

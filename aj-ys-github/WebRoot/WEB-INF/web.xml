@@ -8,7 +8,7 @@
   <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>
-			/WEB-INF/classes/config/application-context.xml
+			/WEB-INF/config/application-context.xml
 		</param-value>
   </context-param>
   <listener>
@@ -28,7 +28,7 @@
     <init-param>
       <param-name>contextConfigLocation</param-name>
       <param-value>
-				/WEB-INF/classes/config/spring-dispather-admin.xml
+				/WEB-INF/config/spring-dispather-admin.xml
 			</param-value>
     </init-param>
     <load-on-startup>1</load-on-startup>
@@ -57,7 +57,7 @@
     <init-param>
       <param-name>securityconfig</param-name>
       <param-value>
-			    /WEB-INF/classes/config/xss/xss_security_config.xml
+			    /WEB-INF/config/xss/xss_security_config.xml
 			</param-value>
     </init-param>
   </filter>

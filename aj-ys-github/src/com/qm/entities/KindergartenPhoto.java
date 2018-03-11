@@ -1,6 +1,8 @@
 package com.qm.entities;
 
-public class KindergartenPhoto {
+import com.frame.core.util.pagination.key.LimitKey;
+
+public class KindergartenPhoto extends LimitKey{
     private Integer id;
 
     private Integer type;
@@ -24,6 +26,10 @@ public class KindergartenPhoto {
     private String ownerId;
 
     private String digRelationUserId;
+    
+    private Integer albumId;
+    
+    private Integer gradeId;
 
     public Integer getId() {
         return id;
@@ -120,4 +126,22 @@ public class KindergartenPhoto {
     public void setDigRelationUserId(String digRelationUserId) {
         this.digRelationUserId = digRelationUserId == null ? null : digRelationUserId.trim();
     }
+
+	public Integer getAlbumId() {
+		return albumId;
+	}
+
+	public void setAlbumId(Integer albumId) {
+		this.albumId = albumId;
+	}
+
+	public Integer getGradeId() {
+		return gradeId;
+	}
+
+	public void setGradeId(Integer gradeId) {
+		this.gradeId = gradeId;
+	}
+	
+    
 }

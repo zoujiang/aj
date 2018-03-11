@@ -1,6 +1,7 @@
 package com.qm.mapper;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -26,4 +27,6 @@ public interface KindergartenGradeMapper {
 	KindergartenGrade selectGradeAndTeacherByPrimaryKey(Integer id);
 
 	List<KindergartenGrade> selectGradeNamesByIds(@Param("gradeNum") List<String> gradeNum);
+
+	List<Map<String, Object>> selectGradeAndTeacherInfo(Map<String, Object> param);
 }

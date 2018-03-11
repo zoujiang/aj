@@ -1,10 +1,16 @@
 ﻿<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 	<bean id="messageSend" class="com.qm.job.MessageSendJob"></bean>
+	<bean id="teacherTaskStatistics" class="com.qm.job.KindergartenTeacherTaskStatistics"></bean>
 	
 	<bean id="messageSendJob"
 		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
 		<property name="targetObject" ref="messageSend" />
+		<property name="targetMethod" value="process" />
+	</bean>
+	<bean id="teacherTaskStatisticsJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="teacherTaskStatistics" />
 		<property name="targetMethod" value="process" />
 	</bean>
 	<bean id="messageSendTrigger"
@@ -13,11 +19,18 @@
 		<property name="repeatInterval" value="60000" />
 		<property name="startDelay" value="3000" />
 	</bean>
+	<bean id="teacherTaskStatisticsTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="teacherTaskStatisticsJob" />
+		 <property name="cronExpression" value="0 0 0 26 * ?" />  <!--每月26号--> 
+            
+	</bean>
 	
 	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="triggers">
 			<list>
 				<!-- <ref bean="messageSendTrigger"/> -->
+				 <ref bean="teacherTaskStatisticsTrigger"/>
 			</list>
 		</property>
 	</bean>

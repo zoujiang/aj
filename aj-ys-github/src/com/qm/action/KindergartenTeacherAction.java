@@ -22,6 +22,8 @@ import com.frame.core.util.DateUtil;
 import com.frame.system.vo.UserExtForm;
 import com.qm.entities.KindergartenInfo;
 import com.qm.entities.KindergartenTeacher;
+import com.qm.entities.UserInfo;
+import com.qm.mapper.UserInfoMapper;
 import com.qm.service.KindergartenService;
 import com.qm.service.KindergartenTeacherService;
 import com.qm.shop.Constant;
@@ -40,6 +42,8 @@ public class KindergartenTeacherAction extends FtpImgDownUploadAction {
 	private ShopCustomerService shopCustomerService;
 	@Autowired
 	private KindergartenService kindergartenService;
+	@Autowired
+	private UserInfoMapper userInfoMapper;
 	
 	@RequestMapping("/list")
     public String list(String name, Integer kindergartenId, Integer type,  int limit, int offset) {
@@ -81,48 +85,78 @@ public class KindergartenTeacherAction extends FtpImgDownUploadAction {
         
         account.setCreateTime(DateUtil.dateFromatYYYYMMddHHmmss(new Date()));
         account.setCreateUser(userExtForm.getId());
+        
+        //p判断该用户的手机号是否注册过 亲脉 帐号，如果没有吗则创建一个
+        
+        Map<String, Object> userInfo = shopCustomerService.findAppUserByUserTel(account.getTel());
+		String password = 100000 +new Random().nextInt(899999) +"";
+		
+		
+		String userType = "";
+		String role = "";
+		if(account.getType() == 1){
+			role = "园长";
+			userType = "3";
+		}else if(account.getType() == 2){
+			role = "副园长";
+			userType = "3";
+		}else if(account.getType() == 3){
+			role = "管理人员";
+			userType = "4";
+		}else if(account.getType() == 4){
+			role = "主教";
+			userType = "2";
+		}else if(account.getType() == 5){
+			role = "副教";
+			userType = "2";
+		}else if(account.getType() == 6){
+			role = "保育员";
+			userType = "2";
+		}else if(account.getType() == 7){
+			role = "其他";
+		}
+		
+		if(userInfo == null || userInfo.isEmpty()){
+			try {
+				
+				//该手机号没注册， 后台给注册一个
+    			boolean b = registAppUser(account.getTel(), password, userType, this.shopCustomerService);
+    			if(b){
+    				
+    				KindergartenInfo kInfo = kindergartenService.selectByPrimaryKey(account.getKindergartenId());
+    				String content = kInfo.getName()+"幼儿园已经在“亲脉”系统中添加您为［"+role+"］,后台自动为您生成登录帐号：账号"+account.getTel()+"，密码"+password+"，您可以下载亲脉APP进入生活我的生活中查看赠送服务亲脉下载地址：http://qm.dbfish.net/d";
+    				boolean sendState = ShopCustomerAction.sendMsg(account.getTel(), content);
+    				logger.info("亲脉后台系统添加教师成功后，由于该教师还未注册过亲脉，所以自动生成帐号：" +account.getTel() +", 注册结果：" +sendState );
+    				
+    				userInfo = shopCustomerService.findAppUserByUserTel(account.getTel());
+    				account.setUserId(Integer.parseInt(userInfo.get("id")+""));
+    			}else{
+    				logger.info("新增幼儿园教师时，注册亲脉用户失败");
+                    json.put("success", false);
+                    json.put("message", "新增幼儿园教师时，注册亲脉用户失败");
+                    return json.toString();
+    			}
+			} catch (Exception e) {
+				logger.info("亲脉后台系统添加教师成功后，由于该教师还未注册过亲脉，所以自动生成帐号：但是发生异常：" + e);
+			}
+			
+		}else{
+			//已经注册过了， 把用户的类型更改为教师、园长或者管理人员
+			UserInfo user = new UserInfo();
+			user.setType(Integer.parseInt(userType));
+			user.setId(Integer.parseInt(userInfo.get("id")+""));
+			userInfoMapper.updateByPrimaryKeySelective(user);
+			account.setUserId(Integer.parseInt(userInfo.get("id")+""));
+		}
+        
+        
         try {
             int i = kindergartenTeacherService.save(account);
             if(i > 0){
                 json.put("success",true );
                 json.put("message", "新增成功");
                 
-                //p判断该用户的手机号是否注册过 亲脉 帐号，如果没有吗则创建一个
-                
-                Map<String, Object> userInfo = shopCustomerService.findAppUserByUserTel(account.getTel());
-        		String password = 100000 +new Random().nextInt(899999) +"";
-        		
-        		if(userInfo == null || userInfo.isEmpty()){
-        			try {
-        				//该手机号没注册， 后台给注册一个
-            			boolean b = registAppUser(account.getTel(), password, this.shopCustomerService);
-            			if(b){
-            				String role = "";
-            				if(account.getType() == 1){
-            					role = "园长";
-            				}else if(account.getType() == 2){
-            					role = "副园长";
-            				}else if(account.getType() == 3){
-            					role = "管理人员";
-            				}else if(account.getType() == 4){
-            					role = "主教";
-            				}else if(account.getType() == 5){
-            					role = "副教";
-            				}else if(account.getType() == 6){
-            					role = "保育员";
-            				}else if(account.getType() == 7){
-            					role = "其他";
-            				}
-            				KindergartenInfo kInfo = kindergartenService.selectByPrimaryKey(account.getKindergartenId());
-            				String content = kInfo.getName()+"幼儿园已经在“亲脉”系统中添加您为［"+role+"］,后台自动为您生成登录帐号：账号"+account.getTel()+"，密码"+password+"，您可以下载亲脉APP进入生活我的生活中查看赠送服务亲脉下载地址：http://qm.dbfish.net/d";
-            				boolean sendState = ShopCustomerAction.sendMsg(account.getTel(), content);
-            				logger.info("亲脉后台系统添加教师成功后，由于该教师还未注册过亲脉，所以自动生成帐号：" +account.getTel() +", 注册结果：" +sendState );
-            			}
-					} catch (Exception e) {
-						logger.info("亲脉后台系统添加教师成功后，由于该教师还未注册过亲脉，所以自动生成帐号：但是发生异常：" + e);
-					}
-        			
-        		}
+               
             }else{
                 json.put("success",false );
                 json.put("message", "新增失败");

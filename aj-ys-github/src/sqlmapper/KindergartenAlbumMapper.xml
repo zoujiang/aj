@@ -28,7 +28,7 @@
     delete from t_kindergarten_album
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.qm.entities.KindergartenAlbum">
+  <insert id="insert" parameterType="com.qm.entities.KindergartenAlbum" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
     insert into t_kindergarten_album (id, album_name, album_url, 
       album_desc, create_time, create_user, 
       shcool_id, grade_id, student, 
@@ -38,7 +38,7 @@
       #{shcoolId,jdbcType=INTEGER}, #{gradeId,jdbcType=INTEGER}, #{student,jdbcType=INTEGER}, 
       #{currentGradeName,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER})
   </insert>
-  <insert id="insertSelective" parameterType="com.qm.entities.KindergartenAlbum">
+  <insert id="insertSelective" parameterType="com.qm.entities.KindergartenAlbum" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
     insert into t_kindergarten_album
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -161,4 +161,42 @@
       type = #{type,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
+  
+  <select id="selectByCondition" parameterType="com.qm.entities.KindergartenAlbum" resultMap="BaseResultMap" >
+  
+	  select 
+	    <include refid="Base_Column_List" />
+	    from t_kindergarten_album
+	    where 1=1
+	    <if test="albumName != null">
+	       and album_name = #{albumName,jdbcType=VARCHAR}
+	      </if>
+	      <if test="albumUrl != null">
+	        and album_url = #{albumUrl,jdbcType=VARCHAR}
+	      </if>
+	      <if test="albumDesc != null">
+	        and album_desc = #{albumDesc,jdbcType=VARCHAR}
+	      </if>
+	      <if test="createTime != null">
+	        and create_time = #{createTime,jdbcType=VARCHAR}
+	      </if>
+	      <if test="createUser != null">
+	        and create_user = #{createUser,jdbcType=VARCHAR}
+	      </if>
+	      <if test="shcoolId != null">
+	        and shcool_id = #{shcoolId,jdbcType=INTEGER}
+	      </if>
+	      <if test="gradeId != null">
+	        and grade_id = #{gradeId,jdbcType=INTEGER}
+	      </if>
+	      <if test="student != null">
+	        and student = #{student,jdbcType=INTEGER}
+	      </if>
+	      <if test="currentGradeName != null">
+	        and current_grade_name = #{currentGradeName,jdbcType=VARCHAR}
+	      </if>
+	      <if test="type != null">
+	        and type = #{type,jdbcType=INTEGER}
+	      </if>
+  </select>
 </mapper>

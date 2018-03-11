@@ -3,7 +3,9 @@ package com.qm.shop.common.action;
 import java.io.IOException;
 import java.net.FileNameMap;
 import java.net.URLConnection;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,8 +28,14 @@ import com.frame.core.util.DateUtil;
 import com.frame.core.util.FtpUtil;
 import com.frame.core.util.SystemConfig;
 import com.frame.system.vo.UserExtForm;
+import com.qm.entities.KindergartenAlbum;
+import com.qm.entities.KindergartenGrade;
 import com.qm.entities.KindergartenPhoto;
+import com.qm.entities.KindergartenStudent;
+import com.qm.mapper.KindergartenAlbumMapper;
+import com.qm.mapper.KindergartenGradeMapper;
 import com.qm.mapper.KindergartenPhotoMapper;
+import com.qm.mapper.KindergartenStudentMapper;
 
 import net.sf.json.JSONObject;
 /**
@@ -42,6 +50,12 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 	
 	@Autowired
 	private KindergartenPhotoMapper kindergartenPhotoMapper;
+	@Autowired
+	private KindergartenAlbumMapper kindergartenAlbumMapper;
+	@Autowired
+	private KindergartenStudentMapper kindergartenStudentMapper;
+	@Autowired
+	private KindergartenGradeMapper kindergartenGradeMapper;
 	
 	@RequestMapping("/files/fileUpload")
 	@ResponseBody
@@ -89,6 +103,46 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 						if(isVedioFile(fileName)){
 							category = 2;
 						}
+						
+						KindergartenAlbum album = new KindergartenAlbum();
+						String currentClass = null;
+						Integer gradeId  = null;
+						if(type == 1){
+							gradeId =Integer.parseInt(ownerId);
+							//班级
+							KindergartenGrade grade = kindergartenGradeMapper.selectByPrimaryKey(Integer.parseInt(ownerId));
+							album.setShcoolId(grade.getKindergartenId());
+							album.setGradeId(Integer.parseInt(ownerId));
+							currentClass = getCurrentClass(grade);
+							
+							
+						}else if(type == 2){
+							//学生
+							KindergartenStudent student = kindergartenStudentMapper.selectByPrimaryKey(Integer.parseInt(ownerId));
+							album.setShcoolId( student.getKindergartenId());
+							album.setGradeId(student.getGradeId());
+							album.setStudent(Integer.parseInt(ownerId));
+							KindergartenGrade grade = kindergartenGradeMapper.selectByPrimaryKey(student.getGradeId());
+							currentClass = getCurrentClass(grade);
+							
+							gradeId = student.getGradeId();
+						}
+						
+						//查询是否已经有相册生成
+						album.setType(type);
+						album.setCurrentGradeName(currentClass);
+						List<KindergartenAlbum> albumList = kindergartenAlbumMapper.selectByCondition(album);
+						if(albumList == null || albumList.size() == 0){
+							album.setAlbumDesc("");
+							album.setAlbumName(currentClass);
+							album.setAlbumUrl(DBPath);
+							album.setCreateTime(DateUtil.dateFromatYYYYMMddHHmmss(new Date()));
+							album.setCreateUser(userExtForm.getAccount());
+							kindergartenAlbumMapper.insertSelective(album);
+						}else{
+							album = albumList.get(0);
+						}
+						
 						KindergartenPhoto photo = new KindergartenPhoto();
 						photo.setCategory(category);
 						photo.setCommentNum(0);
@@ -96,7 +150,9 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 						photo.setCreateUser(userExtForm.getAccount());
 						photo.setDigNum(0);
 						photo.setOwnerId(ownerId);
+						photo.setAlbumId(album.getId());
 						photo.setType(type);
+						photo.setGradeId(gradeId);
 						if(category == 1){
 							photo.setPhotoUrl(DBPath);
 						}else{
@@ -137,6 +193,29 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 			return result.toString();
 		}
 	}
+	private String getCurrentClass(KindergartenGrade grade2){
+		
+		String[] ruleNames = {"小小班","小班","中班","大班","大大班"};
+		String ruleString = "";
+		String rule = grade2.getRule();
+		char[] ruleChar = rule.toCharArray();
+		for(int i= 0 ; i< ruleChar.length ; i++){
+			if(ruleChar[i] == '1'){
+				ruleString += ruleNames[i] +";";
+			}
+		}
+		grade2.setRule(ruleString);
+		
+		String series = grade2.getSeries();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
+		String currentYear = sdf.format(new Date());
+		int index = Integer.parseInt(currentYear) - Integer.parseInt(series);
+		if(index > ruleString.split(";").length -1){
+			index = ruleString.split(";").length -1;
+		}
+		return ruleString.split(";")[index];
+	}
+	
 	
 	private final static String PREFIX_VIDEO="video/";
 

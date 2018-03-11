@@ -26,5 +26,11 @@ public class PrizeGrantServiceImpl implements PrizeGrantService {
 		
 		return prizeGrantInfoMapper.getTotal(info);
 	}
+
+	@Override
+	public void insertSelected(PrizeGrantInfo prize) {
+		
+		prizeGrantInfoMapper.insertSelective(prize);
+	}
 	
 }

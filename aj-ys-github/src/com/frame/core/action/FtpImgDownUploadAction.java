@@ -177,7 +177,7 @@ public class FtpImgDownUploadAction extends FileDownUploadAction {
 		}
 	}
 	
-	public  boolean registAppUser(String userTel, String password,ShopCustomerService customerService) {
+	public  boolean registAppUser(String userTel, String password, String userType,ShopCustomerService customerService) {
 		//生成验证信息
 		String id = GUID.generateID("SID_");
 		String tokenId = GUID.generateID("STKN");
@@ -192,6 +192,7 @@ public class FtpImgDownUploadAction extends FileDownUploadAction {
 			param.put("newPssword",  password);
 			param.put("smsValidateToken", tokenId);
 			param.put("ucode", "1111");
+			param.put("userType", userType);
 			jo.put("params", param);
 			String returnStr = HttpClient.doJSONPostMethod(SystemConfig.getValue("qm.app.interface.url"), jo.toString());
 			JSONObject returnJson = JSONObject.parseObject(returnStr);

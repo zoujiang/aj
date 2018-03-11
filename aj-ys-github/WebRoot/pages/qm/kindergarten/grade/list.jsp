@@ -60,7 +60,7 @@ String id = request.getParameter("id");
 	   		 for(var i=0 ; i<5; i++){
 	   			 serHtml += "<option value="+(year -i)+">" + (year -i) +"</option>" ;
 	   		 }
-	   		 $("#series").html(serHtml)
+	   		 $("#series").html(serHtml);
     		
     		$.ajax({
 	             type: "GET",

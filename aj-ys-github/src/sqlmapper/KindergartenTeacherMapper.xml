@@ -16,10 +16,11 @@
     <result column="kindegartenName" jdbcType="VARCHAR" property="kindegartenName" />
      <result column="createUserName" jdbcType="VARCHAR" property="createUserName" />
      <result column="gradeNum" jdbcType="VARCHAR" property="gradeNum" />
+     <result column="user_id" jdbcType="INTEGER" property="userId" />
   </resultMap>
   <sql id="Base_Column_List">
     id, kindergarten_id, name, sex, tel, type, age, recharge_tel_no, photo, create_user, 
-    create_time
+    create_time,user_id
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -35,11 +36,11 @@
     insert into t_kindergarten_teacher (id, kindergarten_id, name, 
       sex, tel, type, age, 
       recharge_tel_no, photo, create_user, 
-      create_time)
+      create_time,user_id)
     values (#{id,jdbcType=INTEGER}, #{kindergartenId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, 
       #{sex,jdbcType=INTEGER}, #{tel,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, #{age,jdbcType=INTEGER}, 
       #{rechargeTelNo,jdbcType=VARCHAR}, #{photo,jdbcType=VARCHAR}, #{createUser,jdbcType=VARCHAR}, 
-      #{createTime,jdbcType=VARCHAR})
+      #{createTime,jdbcType=VARCHAR}, #{userId,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="com.qm.entities.KindergartenTeacher">
     insert into t_kindergarten_teacher
@@ -77,6 +78,9 @@
       <if test="createTime != null">
         create_time,
       </if>
+      <if test="userId != null">
+        user_id,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -111,6 +115,9 @@
       </if>
       <if test="createTime != null">
         #{createTime,jdbcType=VARCHAR},
+      </if>
+       <if test="userId != null">
+         #{userId,jdbcType=INTEGER},
       </if>
     </trim>
   </insert>
@@ -147,6 +154,9 @@
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=VARCHAR},
       </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -161,7 +171,8 @@
       recharge_tel_no = #{rechargeTelNo,jdbcType=VARCHAR},
       photo = #{photo,jdbcType=VARCHAR},
       create_user = #{createUser,jdbcType=VARCHAR},
-      create_time = #{createTime,jdbcType=VARCHAR}
+      create_time = #{createTime,jdbcType=VARCHAR},
+      user_id = #{userId,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
    <select id="selectByCondition" parameterType="com.qm.entities.KindergartenTeacher" resultMap="BaseResultMap">
@@ -184,12 +195,19 @@
      order by a.create_time 
      limit #{offset}, #{pageSize}
   </select>
+   <select id="select" parameterType="com.qm.entities.KindergartenTeacher" resultMap="BaseResultMap">
+  	select 
+	  	<include refid="Base_Column_List" />
+    from t_kindergarten_teacher 
+     order by id 
+     limit #{offset}, #{pageSize}
+  </select>
   
   
   <select id="getTotal" parameterType="com.qm.entities.KindergartenTeacher" resultType="int">
   	select 
 	  	count(1)
-    from t_kindergarten_teacher a left join t_kindergarten_info i on a.kindergarten_id = i.id 
+    from t_kindergarten_teacher a 
     where
      1=1 
       <if test="name != null and name != ''">

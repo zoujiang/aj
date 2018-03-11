@@ -23,10 +23,10 @@
 		<property name="locations">
 			<list>
 				<value>
-					/WEB-INF/classes/config/hibernate/jdbc/jdbc.properties
+					/WEB-INF/config/hibernate/jdbc/jdbc.properties
 				</value>
 				<value>
-					/WEB-INF/classes/config/hibernate/hibernate.properties
+					/WEB-INF/config/hibernate/hibernate.properties
 				</value>
 			</list>
 		</property>
@@ -36,7 +36,7 @@
 		<!-- <property name="templateLoaderPath" value="/WEB-INF/config/template" /> -->
 		<property name="templateLoaderPaths">
 			<list>
-				<value>/WEB-INF/classes/config/template</value>
+				<value>/WEB-INF/config/template</value>
 				<value>/pages/spt/entry/templete</value>
 				<value>/spt/h5/templete</value>
 				<value>/spt/web/templete</value>

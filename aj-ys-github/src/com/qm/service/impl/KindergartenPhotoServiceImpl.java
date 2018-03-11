@@ -16,23 +16,6 @@ public class KindergartenPhotoServiceImpl implements KindergartenPhotoService {
 	@Autowired
 	private KindergartenPhotoMapper kindergartenPhotoMapper;
 
-	@Override
-	public List<KindergartenStudent> queryList(KindergartenStudent student) {
-		
-	 return null;
-	}
-
-	@Override
-	public int getTotal(KindergartenStudent student) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public List<KindergartenStudent> queryListWithPotoNum(KindergartenStudent student) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public List<KindergartenPhoto> queryPhotoByOwerId(String owerId) {
@@ -44,5 +27,23 @@ public class KindergartenPhotoServiceImpl implements KindergartenPhotoService {
 	public int update(KindergartenPhoto photo) {
 		
 		return kindergartenPhotoMapper.updateByPrimaryKeySelective(photo);
+	}
+
+	@Override
+	public int deleteByPrimary(Integer id) {
+		
+		return kindergartenPhotoMapper.deleteByPrimaryKey(id);
+	}
+
+	@Override
+	public List<KindergartenPhoto> queryListByTeacherIdAndDate(KindergartenPhoto photo) {
+		
+		return kindergartenPhotoMapper.selectByCondition(photo);
+	}
+
+	@Override
+	public int getTotal(KindergartenPhoto photo) {
+		
+		return kindergartenPhotoMapper.getTotal(photo);
 	}
 }

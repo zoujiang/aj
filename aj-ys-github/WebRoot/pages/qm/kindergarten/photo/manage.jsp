@@ -65,13 +65,14 @@ String id = request.getParameter("id");
 	                	  
 	                	  data.forEach(function( p, index ) {
 	                		  		html += "<div style='position:relative;float: left;width:275px;height:325px'> ";
-	                		  		html += "<a href='"+ p.photoUrl+ "' title='' data-gallery='' >";
-	                                html += "<img src='"+ p.photoUrl +"'> </a>";
+	                		  		html += "<a  href='"+ p.photoUrl+ "' title='' data-gallery='' >";
+	                                html += "<img style='max-width:275px;max-height:325px' src='"+ p.photoUrl +"'> </a>";
+	                                html += "<button onclick=deleteFile('"+p.id+"') type='button' class='kv-file-remove btn btn-sm btn-kv btn-default btn-outline-secondary' style='position:absolute;z-indent:2;left:120px;top:120px;width:40px;height:40px' title='删除文件'><i class='glyphicon glyphicon-trash'></i></button>";
 	                                var pName = p.name;
 	                                if(pName == null || pName == ''){
 	                                	pName = "添加名称";
 	                                }
-	                                html += "<div style='position:absolute;z-indent:2;left:10px;bottom:0'  onclick=setIdToHideModel('"+p.id+"')><a id='PID_"+p.id+"' data-toggle='modal'  href='form_basic.html#modal-form'>"+ pName +"</a></div></div>";
+	                                html += "<div style='position:absolute;z-indent:2;left:10px;bottom:0;width:250px'  onclick=setIdToHideModel('"+p.id+"')><a id='PID_"+p.id+"' data-toggle='modal'  href='form_basic.html#modal-form'>"+ pName +"</a> </div></div>";
 	                				
 	                	  });
 	                	  html += " <div id=\"blueimp-gallery\" class=\"blueimp-gallery blueimp-gallery-controls\"><div class=\"slides\"></div><h3 class=\"title\"></h3><a class=\"prev\">‹</a> <a class=\"next\">›</a><a class=\"close\">×</a><a class=\"play-pause\"></a><ol class=\"indicator\"></ol></div>";
@@ -84,6 +85,30 @@ String id = request.getParameter("id");
 	    	});
 	  	 }
 	 }
+	 function deleteFile(pId){
+		 layer.confirm('确定删除文件?删除后将不能恢复！', {icon: 3, title:'警告'}, function(index){
+			  //do something
+			  $.ajax({
+		             type: "GET",
+		             url: "<%=path %>/admin/kindergarten/photo/deleteFile",
+		             data: "id="+pId,
+		             dataType: "json",
+		             success: function(data){
+		                  if(data.success){
+		                	  layer.msg("删除成功", {title:'提示', btn: ['确定'],icon: 6}, function(index){
+		                		  
+		                		  new AppMgr().initDatas();
+								});
+		                  }else{
+		                	  layer.msg(data.message, {title:'提示', btn: ['确定'],icon: 6}, function(index){
+								});
+		                  }
+		         	 }
+		    	});
+			  layer.close(index);
+			});
+		 
+	 }
 	 function setIdToHideModel(pId){
 		 $("#hidePhotoId").val(pId);
 		 $("#photoName").val($("#PID_"+pId).text());
@@ -92,25 +117,31 @@ String id = request.getParameter("id");
 		 var pId = $("#hidePhotoId").val();
 		 var pName = $("#photoName").val();
 		 if(pId != null && pId != '' && pName != null && pName != ''){
+			 if(pName.length > 40){
+				 layer.msg("名称不能超过40个字", {title:'提示', btn: ['确定'],icon: 6}, function(index){
+					});
+			 }else{
+				 
+				 $.ajax({
+		             type: "GET",
+		             url: "<%=path %>/admin/kindergarten/photo/alterPhotoName",
+		             data: "id="+pId+"&name="+pName,
+		             dataType: "json",
+		             success: function(data){
+		                  if(data.success){
+		                	  $("#PID_"+pId).html(pName);
+		                	  layer.msg("修改成功", {title:'提示', btn: ['确定'],icon: 6}, function(index){
+		                		  
+		                		  $("#modal-form").click();
+								});
+		                  }else{
+		                	  layer.msg(data.message, {title:'提示', btn: ['确定'],icon: 6}, function(index){
+								});
+		                  }
+		         	 }
+		    	});
+			 }
 			 
-			 $.ajax({
-	             type: "GET",
-	             url: "<%=path %>/admin/kindergarten/photo/alterPhotoName",
-	             data: "id="+pId+"&name="+pName,
-	             dataType: "json",
-	             success: function(data){
-	                  if(data.success){
-	                	  $("#PID_"+pId).html(pName);
-	                	  layer.msg("修改成功", {title:'提示', btn: ['确定'],icon: 6}, function(index){
-	                		  
-	                		  $("#modal-form").click();
-							});
-	                  }else{
-	                	  layer.msg(data.message, {title:'提示', btn: ['确定'],icon: 6}, function(index){
-							});
-	                  }
-	         	 }
-	    	});
 		 }
 		 
 	 }

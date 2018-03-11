@@ -10,4 +10,6 @@ public interface PrizeGrantService {
 
 	int getTotal(PrizeGrantInfo info);
 
+	void insertSelected(PrizeGrantInfo prize);
+
 }

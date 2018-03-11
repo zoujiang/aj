@@ -20,4 +20,8 @@ public interface KindergartenPhotoMapper {
     int updateByPrimaryKey(KindergartenPhoto record);
 
 	List<KindergartenPhoto> queryPhotoByOwerId(@Param("ownerId") String ownerId);
+
+	List<KindergartenPhoto> selectByCondition(KindergartenPhoto photo);
+
+	int getTotal(KindergartenPhoto photo);
 }

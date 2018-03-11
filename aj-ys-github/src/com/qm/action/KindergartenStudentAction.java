@@ -109,7 +109,7 @@ public class KindergartenStudentAction extends FtpImgDownUploadAction{
 	        		if(userInfo == null || userInfo.isEmpty()){
 	        			try {
 	        				//该手机号没注册， 后台给注册一个
-	            			boolean b = registAppUser(student.getParentsTel(), password, this.shopCustomerService);
+	            			boolean b = registAppUser(student.getParentsTel(), "", password, this.shopCustomerService);
 	            			if(b){
 	            				
 	            				KindergartenInfo kInfo = kindergartenService.selectByPrimaryKey(student.getKindergartenId());
@@ -210,7 +210,7 @@ public class KindergartenStudentAction extends FtpImgDownUploadAction{
 		        		if(userInfo == null || userInfo.isEmpty()){
 		        			try {
 		        				//该手机号没注册， 后台给注册一个
-		            			boolean b = registAppUser(student.getParentsTel(), password, this.shopCustomerService);
+		            			boolean b = registAppUser(student.getParentsTel(), password, "", this.shopCustomerService);
 		            			if(b){
 		            				
 		            				KindergartenInfo kInfo = kindergartenService.selectByPrimaryKey(student.getKindergartenId());
