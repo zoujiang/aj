@@ -22,4 +22,6 @@ public interface KindergartenStudentMapper {
 	int getTotal(KindergartenStudent student);
 
 	List<KindergartenStudent> queryListWithPotoNum(KindergartenStudent student);
+
+	List<KindergartenStudent> queryListWithHonorNum(KindergartenStudent student);
 }

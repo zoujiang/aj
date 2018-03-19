@@ -46,4 +46,10 @@ public class KindergartenPhotoServiceImpl implements KindergartenPhotoService {
 		
 		return kindergartenPhotoMapper.getTotal(photo);
 	}
+
+	@Override
+	public List<KindergartenPhoto> selectByCondition(KindergartenPhoto p) {
+		
+		return kindergartenPhotoMapper.selectByCondition(p);
+	}
 }

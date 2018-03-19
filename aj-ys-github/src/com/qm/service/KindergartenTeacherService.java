@@ -18,4 +18,8 @@ public interface KindergartenTeacherService {
 
 	int deleteByPrimaryKey(Integer id);
 
+	int getNumberByType(int i);
+
+	KindergartenTeacher queryTeacherByTel(KindergartenTeacher validate);
+
 }

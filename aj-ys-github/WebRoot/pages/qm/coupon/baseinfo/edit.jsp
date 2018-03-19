@@ -253,7 +253,7 @@ String id = request.getParameter("id");
 					$("#btn_save").attr("disabled", false);
 					return false;
 				}
-				if(limitNum > totalNum){
+				if(limitNum - totalNum > 0){
 					layer.msg("单人领取限制数不能大于兑换券总份数", {title:'提示', btn: ['确定'],icon: 6}, function(index){
 					});
 					$("#btn_save").attr("disabled", false);

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.FileNameMap;
 import java.net.URLConnection;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -26,16 +27,21 @@ import com.frame.core.action.FtpImgDownUploadAction;
 import com.frame.core.constant.FtpConstant;
 import com.frame.core.util.DateUtil;
 import com.frame.core.util.FtpUtil;
+import com.frame.core.util.RandomGUID;
 import com.frame.core.util.SystemConfig;
 import com.frame.system.vo.UserExtForm;
 import com.qm.entities.KindergartenAlbum;
 import com.qm.entities.KindergartenGrade;
+import com.qm.entities.KindergartenHonor;
 import com.qm.entities.KindergartenPhoto;
 import com.qm.entities.KindergartenStudent;
 import com.qm.mapper.KindergartenAlbumMapper;
 import com.qm.mapper.KindergartenGradeMapper;
+import com.qm.mapper.KindergartenHonorMapper;
 import com.qm.mapper.KindergartenPhotoMapper;
 import com.qm.mapper.KindergartenStudentMapper;
+import com.qm.shop.Constant;
+import com.util.FileZipUtil;
 
 import net.sf.json.JSONObject;
 /**
@@ -51,15 +57,21 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 	@Autowired
 	private KindergartenPhotoMapper kindergartenPhotoMapper;
 	@Autowired
+	private KindergartenHonorMapper kindergartenHonorMapper;
+	@Autowired
 	private KindergartenAlbumMapper kindergartenAlbumMapper;
 	@Autowired
 	private KindergartenStudentMapper kindergartenStudentMapper;
 	@Autowired
 	private KindergartenGradeMapper kindergartenGradeMapper;
 	
+	/**
+	 * type  1:集体  2:geren 
+	 * cate  1：照片/视频  2：荣誉
+	 * */
 	@RequestMapping("/files/fileUpload")
 	@ResponseBody
-	public String fileUpload(@RequestParam(value = "file") MultipartFile file, Integer type, String ownerId, HttpServletRequest request) {
+	public String fileUpload(@RequestParam(value = "file") MultipartFile file, Integer type, String ownerId, Integer cate, HttpServletRequest request) {
 		
 		UserExtForm userExtForm = (UserExtForm) request.getSession().getAttribute(com.frame.core.constant.Constant.LoginAdminUser);
 
@@ -142,25 +154,43 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 						}else{
 							album = albumList.get(0);
 						}
-						
-						KindergartenPhoto photo = new KindergartenPhoto();
-						photo.setCategory(category);
-						photo.setCommentNum(0);
-						photo.setCreateTime(DateUtil.dateFromatYYYYMMddHHmmss(new Date()));
-						photo.setCreateUser(userExtForm.getAccount());
-						photo.setDigNum(0);
-						photo.setOwnerId(ownerId);
-						photo.setAlbumId(album.getId());
-						photo.setType(type);
-						photo.setGradeId(gradeId);
-						if(category == 1){
-							photo.setPhotoUrl(DBPath);
-						}else{
-							photo.setVideoUrl(DBPath);
+						if(cate == 1){
+							
+							KindergartenPhoto photo = new KindergartenPhoto();
+							photo.setCategory(category);
+							photo.setCommentNum(0);
+							photo.setCreateTime(DateUtil.dateFromatYYYYMMddHHmmss(new Date()));
+							photo.setCreateUser(userExtForm.getAccount());
+							photo.setDigNum(0);
+							photo.setOwnerId(ownerId);
+							photo.setAlbumId(album.getId());
+							photo.setType(type);
+							photo.setGradeId(gradeId);
+							if(category == 1){
+								photo.setPhotoUrl(DBPath);
+							}else{
+								photo.setVideoUrl(DBPath);
+							}
+							kindergartenPhotoMapper.insertSelective(photo);
+							
+							//生成压缩包
+							createZipPackage(album.getId(), type, ownerId, currentClass);
+						}else if(cate == 2){
+							//荣誉
+							
+							KindergartenHonor honor = new KindergartenHonor();
+							honor.setCategory(category);
+							honor.setCommentNum(0);
+							honor.setCreateTime(DateUtil.dateFromatYYYYMMddHHmmss(new Date()));
+							honor.setCreateUser(userExtForm.getAccount());
+							honor.setDigNum(0);
+							honor.setOwnerId(ownerId);
+							honor.setAlbumId(album.getId());
+							honor.setType(type);
+							honor.setGradeId(gradeId);
+							honor.setPhotoUrl(DBPath);
+							kindergartenHonorMapper.insertSelective(honor);
 						}
-						kindergartenPhotoMapper.insertSelective(photo);
-						
-						
 						
 					} catch (Exception e) {
 						log.error(e.getMessage());
@@ -192,6 +222,55 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 			result.put("url", "");
 			return result.toString();
 		}
+	}
+	private void createZipPackage(final Integer albumId, final Integer type, final String ownerId, final String currentClass) {
+		new Thread(){
+
+			@Override
+			public void run() {
+				KindergartenPhoto photo = new KindergartenPhoto();
+			//	photo.setType(type);
+			//	photo.setOwnerId(ownerId);
+				photo.setAlbumId(albumId);
+				List<KindergartenPhoto> photoList = kindergartenPhotoMapper.selectByCondition(photo);
+				List<String> urlList = new ArrayList<String>();
+				for(KindergartenPhoto p : photoList){
+					if(p.getCategory() == 1){
+						urlList.add(p.getPhotoUrl());
+					}else if(p.getCategory() == 2){
+						urlList.add(p.getVideoUrl());
+					}
+				}
+				String to ="/kindergarten/Album/"+ albumId +".zip" ;
+				String targetUrl = Constant.resPath + to ;
+				String[] arr = {};
+				delOldZipFile(to);
+				FileZipUtil.zip(urlList.toArray(arr), targetUrl);
+				
+				KindergartenAlbum album = new KindergartenAlbum();
+				album.setId(albumId);
+				album.setDownloadUrl(to);
+				album.setDownloadSecret(RandomGUID.getRandomString(4));
+				kindergartenAlbumMapper.updateByPrimaryKeySelective(album);
+			}
+
+		}.start();
+		
+	}
+	private void delOldZipFile(String remoteFilePath) {
+		String ftpAddress = (String) SystemConfig.getValue(FtpConstant.FTP_ADDRESS);
+		String username = (String) SystemConfig.getValue(FtpConstant.USERNAME);
+		String password = (String) SystemConfig.getValue(FtpConstant.PASSWORD);
+		String port = (String) SystemConfig.getValue(FtpConstant.PORT);
+		String path = (String) SystemConfig.getValue(FtpConstant.FTP_PATH);
+		FtpUtil ftp = new FtpUtil(ftpAddress, Integer.parseInt(port), username, password);
+		try {
+			ftp.login();
+			ftp.delFile(remoteFilePath);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 	}
 	private String getCurrentClass(KindergartenGrade grade2){
 		

@@ -3,6 +3,7 @@
 String path = request.getContextPath();
 String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
 String id = request.getParameter("id");
+String type = request.getParameter("type");
 
 %>
 
@@ -40,7 +41,7 @@ String id = request.getParameter("id");
 	 function AppMgr(){
 		 
 		 AppMgr.add = function(e,ownerId){
-				layer_show("上传图片/视频", getProjectName() +"/pages/qm/kindergarten/photo/add.jsp?type=2&ownerId=<%=id %>","850","400");
+				layer_show("上传图片/视频", getProjectName() +"/pages/qm/kindergarten/photo/add.jsp?type=<%=type%>&ownerId=<%=id %>","850","400");
 			};
 		 
 		 
@@ -53,7 +54,7 @@ String id = request.getParameter("id");
 			 $.ajax({
 	             type: "GET",
 	             url: "<%=path %>/admin/kindergarten/photo/init",
-	             data: "owerId=<%=id %>",
+	             data: "owerId=<%=id %>&type=<%=type%>",
 	             dataType: "json",
 	             success: function(data){
 	                  if(data.success){

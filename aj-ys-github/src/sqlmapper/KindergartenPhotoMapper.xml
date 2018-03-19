@@ -208,8 +208,25 @@
    select 
     <include refid="Base_Column_List" />
     from t_kindergarten_photo
-    where create_user = #{createUser,jdbcType=VARCHAR} and left(create_time, 7) = #{createTime,jdbcType=VARCHAR}
-  	limit #{offset}, #{limit}
+    where 1=1 
+     <if test="createUser != null and createUser != ''">
+    	and	 create_user = #{createUser,jdbcType=VARCHAR}
+     </if> 
+     <if test="createTime != null and createTime != ''">
+      	and left(create_time, 7) = #{createTime,jdbcType=VARCHAR}
+     </if>
+     <if test="type != null">
+     	and type = #{type,jdbcType=INTEGER}
+     </if>
+     <if test="ownerId != null and ownerId != '' ">
+     	and owner_id = #{ownerId,jdbcType=VARCHAR}
+     </if>
+     <if test="albumId != null ">
+     	and album_id = #{albumId,jdbcType=INTEGER}
+     </if>
+      <if test="offset != null and pageSize != null">
+		  	limit #{offset}, #{pageSize}
+      </if>
   </select>
   <select id="getTotal" parameterType="com.qm.entities.KindergartenPhoto" resultType="java.lang.Integer">
    select 

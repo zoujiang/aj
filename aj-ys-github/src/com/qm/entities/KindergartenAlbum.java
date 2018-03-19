@@ -22,6 +22,12 @@ public class KindergartenAlbum {
     private String currentGradeName;
 
     private Integer type;
+    
+    private String downloadUrl;
+    
+    private String downloadSecret;
+    
+    private String shortAddress;
 
     public Integer getId() {
         return id;
@@ -110,4 +116,29 @@ public class KindergartenAlbum {
     public void setType(Integer type) {
         this.type = type;
     }
+
+	public String getDownloadUrl() {
+		return downloadUrl;
+	}
+
+	public void setDownloadUrl(String downloadUrl) {
+		this.downloadUrl = downloadUrl;
+	}
+
+	public String getDownloadSecret() {
+		return downloadSecret;
+	}
+
+	public void setDownloadSecret(String downloadSecret) {
+		this.downloadSecret = downloadSecret;
+	}
+
+	public String getShortAddress() {
+		return shortAddress;
+	}
+
+	public void setShortAddress(String shortAddress) {
+		this.shortAddress = shortAddress;
+	}
+    
 }

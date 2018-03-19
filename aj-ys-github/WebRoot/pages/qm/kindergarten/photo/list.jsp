@@ -46,11 +46,14 @@ String id = request.getParameter("id");
     		});
 		}
 		//编辑
-		AppMgr.manage = function(id,valid,e){
-			layer_show("管理学生照片/视频", getProjectName() +"/pages/qm/kindergarten/photo/manage.jsp?id="+id,"930","500");
+		AppMgr.manage = function(id,type,e){
+			layer_show("管理学生照片/视频", getProjectName() +"/pages/qm/kindergarten/photo/manage.jsp?id="+id+"&type="+type,"930","500");
 		}
 		AppMgr.add = function(id, valid,e){
 			layer_show("上传图片/视频", getProjectName() +"/pages/qm/kindergarten/photo/add.jsp?type=2&ownerId="+id,"850","400");
+		};
+		AppMgr.download = function(id, type,e){
+			layer_show("下载", getProjectName() +"/pages/qm/kindergarten/photo/downloadlist.jsp?type=2&ownerId="+id,"850","400");
 		};
     	this.initDatas = function(){
     		
@@ -123,10 +126,10 @@ String id = request.getParameter("id");
     		    },{
     		    	field:'firstTeacherName',
     		    	title:'教师'
-    		    },{
+    		    },/*{
     		    	field:'createUser',
     		    	title:'添加人'
-    		    },{
+    		    }, */{
     		    	field:'createTime',
     		    	title:'添加时间'
     		    },{
@@ -136,12 +139,12 @@ String id = request.getParameter("id");
     		        	var edit = "";
     		        	if(row.photoNum > 0){
     		        		
-   		        			 edit="<span  height = '23px'  width = '23px'><a style='color:blue;' href='#' onclick=\"AppMgr.manage('" + row.id + "','0',event)\" style='cursor: pointer' >管理&nbsp;</a></span>";
+   		        			 edit="<span  height = '23px'  width = '23px'><a style='color:blue;' href='#' onclick=\"AppMgr.manage('" + row.id + "','2',event)\" style='cursor: pointer' >管理&nbsp;</a></span>";
     		        	}else{
     		        		
    		        			 edit="<span  height = '23px'  width = '23px'><a style='color:blue;' href='#' onclick=\"AppMgr.add('" + row.id + "','0',event)\" style='cursor: pointer' >上传&nbsp;</a></span>";
     		        	}
-   		        		var down="<span  height = '23px'  width = '23px'><a style='color:blue;' href='#' onclick=\"AppMgr.del('" + row.id + "','0',event)\" style='cursor: pointer' >下载&nbsp;</a></span>";
+   		        		var down="<span  height = '23px'  width = '23px'><a style='color:blue;' href='#' onclick=\"AppMgr.download('" + row.id + "','2',event)\" style='cursor: pointer' >下载&nbsp;</a></span>";
     		        	return edit +down;
     		        },
     		        width: 200
@@ -196,7 +199,36 @@ String id = request.getParameter("id");
     		
     	}
     }
-    
+    function viewTeamPhoto(){
+    	var gradeId = $("#gradeId").val();
+    	if(gradeId == null || gradeId == ''){
+    		layer.msg("请先选择班级", {title:'提示', btn: ['确定'],icon: 6}, function(index){
+				parent.layer.close(index);
+	  		});
+    	}else{
+    		layer_show("管理集体照片/视频", getProjectName() +"/pages/qm/kindergarten/photo/manage.jsp?id="+gradeId+"&type=1","930","500");
+    	}
+    }
+    function downloadTeamPhoto(){
+    	var gradeId = $("#gradeId").val();
+    	if(gradeId == null || gradeId == ''){
+    		layer.msg("请先选择班级", {title:'提示', btn: ['确定'],icon: 6}, function(index){
+				parent.layer.close(index);
+	  		});
+    	}else{
+    		layer_show("下载", getProjectName() +"/pages/qm/kindergarten/photo/downloadlist.jsp?type=1&ownerId="+gradeId,"850","400");
+    	}
+    }
+    function addTeamPhoto(){
+    	var gradeId = $("#gradeId").val();
+    	if(gradeId == null || gradeId == ''){
+    		layer.msg("请先选择班级", {title:'提示', btn: ['确定'],icon: 6}, function(index){
+				parent.layer.close(index);
+	  		});
+    	}else{
+    		layer_show("上传集体图片/视频", getProjectName() +"/pages/qm/kindergarten/photo/add.jsp?type=1&ownerId="+gradeId,"850","400");
+    	}
+    }
     </script>
 </head>
 
@@ -211,8 +243,9 @@ String id = request.getParameter("id");
                     			</select>
                          学生姓名：<input type="text" placeholder="学生姓名" class="form-control input-inline"  id="name" name="name" width="280px">
                            <button  id="btn_search" type="button" class="btn btn-inline btn-default" style="margin-top: 4px;"> 搜索</button> 
-                           <button  id="btn_search" type="button" class="btn btn-inline btn-default" style="margin-top: 4px;">查看集体照片/视频</button> 
-                           <button  id="btn_search" type="button" class="btn btn-inline btn-default" style="margin-top: 4px;">下载集体照片/视频</button> 
+                           <button  id="btn_search" type="button" class="btn btn-inline btn-default" style="margin-top: 4px;" onclick="addTeamPhoto()">上传集体照片/视频</button> 
+                           <button  id="btn_search" type="button" class="btn btn-inline btn-default" style="margin-top: 4px;" onclick="viewTeamPhoto()">查看集体照片/视频</button> 
+                           <button  id="btn_search" type="button" class="btn btn-inline btn-default" style="margin-top: 4px;" onclick="downloadTeamPhoto()">下载集体照片/视频</button> 
                     </div>
                 </div>
                 <table id="user_table"></table>

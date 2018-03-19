@@ -20,7 +20,7 @@ import com.frame.system.vo.UserExtForm;
  */
 public class SessionFilter extends OncePerRequestFilter  {
 	private static final String FILETERED_REQUEST="@@session_context_filtered_request";
-	private static final String[] INHERENT_URLS={"/login","/index","/api","/changeLocale","/app", "/album/dInit", "/album/d","/dynamicAlbum"};
+	private static final String[] INHERENT_URLS={"/login","/index","/api","/changeLocale","/app", "/album/dInit", "/album/d","/dynamicAlbum","/kindergarten/photo/dInit", "/kindergarten/photo/d"};
 	
 	
 	private boolean isURILogin(String requestURI){

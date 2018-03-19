@@ -57,4 +57,10 @@ public class KindergartenStudentServiceImpl implements KindergartenStudentServic
 		return kindergartenStudentMapper.queryListWithPotoNum(student);
 	}
 
+	@Override
+	public List<KindergartenStudent> queryListWithHonorNum(KindergartenStudent student) {
+		
+		return kindergartenStudentMapper.queryListWithHonorNum(student);
+	}
+
 }

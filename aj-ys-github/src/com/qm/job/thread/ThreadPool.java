@@ -19,7 +19,7 @@ public class ThreadPool {
                 maximumPoolSize,
                 keepAliveTime,
                 unit,
-                new LinkedBlockingDeque<>(dequeMaxSize),
+                new LinkedBlockingDeque<Runnable>(dequeMaxSize),
                 new ThreadPoolExecutor.CallerRunsPolicy());
     }
 

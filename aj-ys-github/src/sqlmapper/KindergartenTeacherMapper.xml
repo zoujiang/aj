@@ -220,5 +220,26 @@
      	and a.kindergarten_id = #{kindergartenId, jdbcType=INTEGER}
      </if>
   </select>
+  <select id="getNumberByType" parameterType="Integer" resultType="int">
+  	select 
+	  	count(1)
+    from t_kindergarten_teacher a 
+    where
+     1=1 
+      <if test="type != null and type == 3">
+     	and a.type in (1,2)
+     </if>
+       <if test="type != null and type == 4">
+     	and a.type = 3
+     </if>
+       <if test="type != null and type == 2">
+     	and a.type in (4, 5, 6)
+     </if>
+  </select>
+  <select id="selectTeacherByTel" parameterType="com.qm.entities.KindergartenTeacher" resultMap="BaseResultMap">
+ 	 select 
+		  	<include refid="Base_Column_List" />
+	    from t_kindergarten_teacher  where  tel = #{tel,jdbcType=VARCHAR}
+  </select>
   
 </mapper>

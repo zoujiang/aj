@@ -13,10 +13,12 @@
     <result column="student" jdbcType="INTEGER" property="student" />
     <result column="current_grade_name" jdbcType="VARCHAR" property="currentGradeName" />
     <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="download_url" jdbcType="VARCHAR" property="downloadUrl" />
+    <result column="download_secret" jdbcType="VARCHAR" property="downloadSecret" />
   </resultMap>
   <sql id="Base_Column_List">
     id, album_name, album_url, album_desc, create_time, create_user, shcool_id, grade_id, 
-    student, current_grade_name, type
+    student, current_grade_name, type,download_url,download_secret
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -32,11 +34,13 @@
     insert into t_kindergarten_album (id, album_name, album_url, 
       album_desc, create_time, create_user, 
       shcool_id, grade_id, student, 
-      current_grade_name, type)
+      current_grade_name, type,download_url,download_secret)
     values (#{id,jdbcType=INTEGER}, #{albumName,jdbcType=VARCHAR}, #{albumUrl,jdbcType=VARCHAR}, 
       #{albumDesc,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, #{createUser,jdbcType=VARCHAR}, 
       #{shcoolId,jdbcType=INTEGER}, #{gradeId,jdbcType=INTEGER}, #{student,jdbcType=INTEGER}, 
-      #{currentGradeName,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER})
+      #{currentGradeName,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, 
+      #{downloadUrl,jdbcType=VARCHAR}, 
+      #{downloadSecret,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.qm.entities.KindergartenAlbum" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
     insert into t_kindergarten_album
@@ -74,6 +78,12 @@
       <if test="type != null">
         type,
       </if>
+      <if test="downloadUrl != null">
+        download_url,
+      </if>
+      <if test="downloadSecret != null">
+        download_secret,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -108,6 +118,12 @@
       </if>
       <if test="type != null">
         #{type,jdbcType=INTEGER},
+      </if>
+      <if test="downloadUrl != null">
+        #{downloadUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="downloadSecret != null">
+        #{downloadSecret,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -144,6 +160,12 @@
       <if test="type != null">
         type = #{type,jdbcType=INTEGER},
       </if>
+      <if test="downloadUrl != null">
+        download_url = #{downloadUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="downloadSecret != null">
+        download_secret = #{downloadSecret,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -158,7 +180,9 @@
       grade_id = #{gradeId,jdbcType=INTEGER},
       student = #{student,jdbcType=INTEGER},
       current_grade_name = #{currentGradeName,jdbcType=VARCHAR},
-      type = #{type,jdbcType=INTEGER}
+      type = #{type,jdbcType=INTEGER},
+      download_url = #{downloadUrl,jdbcType=VARCHAR},
+      download_secret = #{downloadSecret,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
   

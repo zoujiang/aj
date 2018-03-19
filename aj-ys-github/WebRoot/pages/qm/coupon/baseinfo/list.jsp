@@ -221,7 +221,7 @@
             <div class="ibox-content"  style="height: 100%;">
             	<div class="btn-group hidden-xs" id="toolbar" role="group" style="margin-top: 10px;">
                     <div class="form-inline" style="width: 480px;float: left;">
-                    	 幼儿园名称：<input type="text" placeholder="幼儿园名称" class="form-control input-inline"  id="name" name="name" width="280px">
+                    	 商家名称：<input type="text" placeholder="商家名称" class="form-control input-inline"  id="name" name="name" width="280px">
                            <button  id="btn_search" type="button" class="btn btn-inline btn-default" style="margin-top: 4px;"> 搜索</button> 
 	                    <button id="btn_new" type="button" style="margin-left: 10px;margin-top: 4px;" class="btn btn-inline btn-default"  title="添加">
 	                        <i class="glyphicon glyphicon-plus" aria-hidden="true" ></i>

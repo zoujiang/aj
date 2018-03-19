@@ -29,7 +29,7 @@ String type = request.getParameter("type");
             language:'zh',
             uploadUrl: '<%=path %>/admin/fileUploadCommon/files/fileUpload', // you must set a valid URL here else you will get an error
             overwriteInitial: false,
-            uploadExtraData:{"ownerId": '<%=ownerId %>', "type":'<%=type %>'},
+            uploadExtraData:{"ownerId": '<%=ownerId %>', "type":'<%=type %>', "cate":'1'},
             showRemove:false,
             maxFileSize: 1000000,
             maxFilesNum: 100,

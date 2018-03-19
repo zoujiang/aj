@@ -19,6 +19,8 @@ public interface KindergartenStudentService {
 	int update(KindergartenStudent student);
 
 	List<KindergartenStudent> queryListWithPotoNum(KindergartenStudent student);
+
+	List<KindergartenStudent> queryListWithHonorNum(KindergartenStudent student);
 	
 }
 

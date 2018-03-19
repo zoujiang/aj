@@ -16,4 +16,6 @@ public interface KindergartenPhotoService {
 
 	int getTotal(KindergartenPhoto photo);
 
+	List<KindergartenPhoto> selectByCondition(KindergartenPhoto p);
+
 }

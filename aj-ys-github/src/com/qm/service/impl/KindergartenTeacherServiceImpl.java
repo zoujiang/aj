@@ -66,5 +66,17 @@ public class KindergartenTeacherServiceImpl implements KindergartenTeacherServic
 		return kindergartenTeacherMapper.deleteByPrimaryKey(id);
 	}
 
+	@Override
+	public int getNumberByType(int type) {
+		
+		return kindergartenTeacherMapper.getNumberByType(type);
+	}
+
+	@Override
+	public KindergartenTeacher queryTeacherByTel(KindergartenTeacher validate) {
+		
+		return kindergartenTeacherMapper.selectTeacherByTel(validate);
+	}
+
 
 }

@@ -15,6 +15,7 @@
     <result column="create_time" jdbcType="VARCHAR" property="createTime" />
     <result column="kindergartenName" jdbcType="VARCHAR" property="kindergartenName" />
     <result column="photoNum" jdbcType="INTEGER" property="photoNum" />
+    <result column="honorNum" jdbcType="INTEGER" property="honorNum" />
   </resultMap>
   <sql id="Base_Column_List">
     id, kindergarten_id, name, age, sex, parents_name, parents_tel, grade_id, photo, 
@@ -200,6 +201,24 @@
   	select 
      s.id, s.kindergarten_id, s.name, s.age, s.sex, s.parents_name, s.parents_tel, s.grade_id, s.photo, 
     s.create_user, s.create_time,  i.name kindergartenName, (select count(1) from t_kindergarten_photo where type=2 and owner_id = s.id) photoNum
+    from t_kindergarten_student s, t_kindergarten_info i 
+    where s.kindergarten_id = i.id
+    <if test="kindergartenId != null and kindergartenId != ''">
+    	and s.kindergarten_id = #{kindergartenId,jdbcType=INTEGER}
+    </if>
+    <if test="gradeId != null and gradeId != ''">
+    	and s.grade_id = #{gradeId,jdbcType=INTEGER}
+    </if>
+    <if test="name != null and name != ''">
+    	and s.name like concat('%', #{name,jdbcType=VARCHAR} ,'%') 
+    </if>
+    order by s.create_time
+    limit #{offset}, #{pageSize}
+  </select>
+  <select id="queryListWithHonorNum" parameterType="com.qm.entities.KindergartenStudent" resultMap="BaseResultMap">
+  	select 
+     s.id, s.kindergarten_id, s.name, s.age, s.sex, s.parents_name, s.parents_tel, s.grade_id, s.photo, 
+    s.create_user, s.create_time,  i.name kindergartenName, (select count(1) from t_kindergarten_honor where type=2 and owner_id = s.id) honorNum
     from t_kindergarten_student s, t_kindergarten_info i 
     where s.kindergarten_id = i.id
     <if test="kindergartenId != null and kindergartenId != ''">

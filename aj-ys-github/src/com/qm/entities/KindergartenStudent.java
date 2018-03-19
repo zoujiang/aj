@@ -33,6 +33,8 @@ public class KindergartenStudent extends LimitKey{
     
     private Integer photoNum;
     
+    private Integer honorNum;
+    
 
     public Integer getId() {
         return id;
@@ -152,6 +154,14 @@ public class KindergartenStudent extends LimitKey{
 
 	public void setPhotoNum(Integer photoNum) {
 		this.photoNum = photoNum;
+	}
+
+	public Integer getHonorNum() {
+		return honorNum;
+	}
+
+	public void setHonorNum(Integer honorNum) {
+		this.honorNum = honorNum;
 	}
     
 }

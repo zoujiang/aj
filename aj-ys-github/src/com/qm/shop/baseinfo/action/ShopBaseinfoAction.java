@@ -36,6 +36,7 @@ import com.frame.core.util.ExportExcelUtils;
 import com.frame.core.util.FtpUtil;
 import com.frame.core.util.GUID;
 import com.frame.core.vo.DataModel;
+import com.qm.mapper.WorksShowMapper;
 import com.qm.shop.Constant;
 import com.qm.shop.baseinfo.service.ShopBaseinfoService;
 import com.qm.shop.baseinfo.vo.ShopInfoVO;
@@ -48,8 +49,6 @@ import com.qm.shop.baseinfo.vo.TShopInfo;
 public class ShopBaseinfoAction extends FtpImgDownUploadAction {
 	@Autowired
 	private ShopBaseinfoService shopBaseinfoService;
-	@Autowired
-	
 	
 	private Logger logger = Logger.getLogger(this.getClass());
 	
@@ -396,4 +395,6 @@ public class ShopBaseinfoAction extends FtpImgDownUploadAction {
 		url = url.replace("WEB-INF/classes", "temp");
 		return url;
 	}
+	
+	
 }

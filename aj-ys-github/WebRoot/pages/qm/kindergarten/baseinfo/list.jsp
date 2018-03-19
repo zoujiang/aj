@@ -44,6 +44,10 @@
 		AppMgr.edit = function(id,valid,e){
 			layer_show("编辑商户", getProjectName() +"/pages/qm/kindergarten/baseinfo/edit.jsp?id="+id,"800","520");
 		}
+		//管理作品
+		AppMgr.show = function(id,valid,e){
+			layer_show("校园风采", getProjectName() +"/pages/qm/show/manage.jsp?type=2&id="+id,"930","500");
+		}
 		AppMgr.exp = function(id,valid,e){
 			
 			 var shopName = {
@@ -169,7 +173,9 @@
                             oper += "<span  height = '23px'  width = '30px'><a style='color:blue;' href='#' onclick=\"AppMgr.edit('" + row.id + "','0',event)\" style='cursor: pointer' > 编辑</a></span>";
    		        		}
                         var freeze="<span  height = '23px'  width = '30px'><a style='color:blue;' href='#' onclick=\"AppMgr.edit('" + row.id + "','0',event)\" style='cursor: pointer' > 查看园区信息</a></span>";
-    		        	return oper+ freeze;
+                        freeze += "<span  height = '23px'  width = '30px'><a style='color:blue;' href='#' onclick=\"AppMgr.show('" + row.id + "','0',event)\" style='cursor: pointer' > 校园风采</a></span>";
+   		        		
+                        return oper+ freeze;
     		        },
     		        width: 200
     		    }]

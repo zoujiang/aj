@@ -44,6 +44,10 @@
 		AppMgr.edit = function(id,valid,e){
 			layer_show("编辑商户", getProjectName() +"/pages/qm/shop/baseinfo/editshop.jsp?id="+id,"800","520");
 		}
+		//管理作品
+		AppMgr.show = function(id,valid,e){
+			layer_show("管理作品", getProjectName() +"/pages/qm/show/manage.jsp?type=1&id="+id,"930","500");
+		}
 		AppMgr.exp = function(id,valid,e){
 			
 			 var shopName = {
@@ -206,10 +210,11 @@
 	   							freeze = "<span  height = '23px'  width = '30px'><a style='color:blue;' href='#' onclick=\"AppMgr.freeze('" + row.id + "','0',event)\" style='cursor: pointer' >启用 </a></span>";
 	   		        		}
 	   		        		del = "<span  height = '23px'  width = '30px'><a style='color:blue;' href='#' onclick=\"AppMgr.edit('" + row.id + "','0',event)\" style='cursor: pointer' > 编辑</a></span>";
+	   		        		del += "<span  height = '23px'  width = '30px'><a style='color:blue;' href='#' onclick=\"AppMgr.show('" + row.id + "','0',event)\" style='cursor: pointer' > 作品管理</a></span>";
    		        		}
     		        	return freeze +del;
     		        },
-    		        width: 200
+    		        width: 250
     		    }]
     		});
     		

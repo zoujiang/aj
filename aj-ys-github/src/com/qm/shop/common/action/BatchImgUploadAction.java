@@ -4,16 +4,12 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageOutputStream;
-
-import net.coobird.thumbnailator.Thumbnails;
-import net.sf.json.JSONObject;
 
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.lang.StringUtils;
@@ -33,9 +29,9 @@ import com.frame.core.action.FtpImgDownUploadAction;
 import com.frame.core.constant.FtpConstant;
 import com.frame.core.util.FtpUtil;
 import com.frame.core.util.SystemConfig;
-import com.sun.image.codec.jpeg.JPEGCodec;
-import com.sun.image.codec.jpeg.JPEGEncodeParam;
-import com.sun.image.codec.jpeg.JPEGImageEncoder;
+
+import net.coobird.thumbnailator.Thumbnails;
+import net.sf.json.JSONObject;
 
 @Controller
 @RequestMapping("/fileUploadCommon")
@@ -287,20 +283,4 @@ public class BatchImgUploadAction extends FtpImgDownUploadAction{
 	  
 	    }  
 	      
-	     public static boolean writeHighQuality(BufferedImage im, String fileFullPath) {  
-	            try {  
-	                /*输出到文件流*/  
-	                FileOutputStream newimage = new FileOutputStream(fileFullPath);  
-	                JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(newimage);  
-	                JPEGEncodeParam jep = JPEGCodec.getDefaultJPEGEncodeParam(im);  
-	                /* 压缩质量 */  
-	                jep.setQuality(0.9f, true);  
-	                encoder.encode(im, jep);  
-	               /*近JPEG编码*/  
-	                newimage.close();  
-	                return true;  
-	            } catch (Exception e) {  
-	                return false;  
-	            }  
-	        } 
 }
