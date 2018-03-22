@@ -26,6 +26,8 @@ public class KindergartenHonor {
     private Integer gradeId;
     
     private Integer albumId;
+    
+    private Integer kindergartenId;
 
     public Integer getId() {
         return id;
@@ -129,6 +131,14 @@ public class KindergartenHonor {
 
 	public void setAlbumId(Integer albumId) {
 		this.albumId = albumId;
+	}
+
+	public Integer getKindergartenId() {
+		return kindergartenId;
+	}
+
+	public void setKindergartenId(Integer kindergartenId) {
+		this.kindergartenId = kindergartenId;
 	}
     
 }

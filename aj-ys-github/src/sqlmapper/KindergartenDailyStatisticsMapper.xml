@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qm.mapper.KindergartenDailyStatisticsMapper">
+  <resultMap id="BaseResultMap" type="com.qm.entities.KindergartenDailyStatistics">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="kindergarten_id" jdbcType="INTEGER" property="kindergartenId" />
+    <result column="photo_num" jdbcType="INTEGER" property="photoNum" />
+    <result column="video_num" jdbcType="INTEGER" property="videoNum" />
+    <result column="honor_num" jdbcType="INTEGER" property="honorNum" />
+    <result column="daily" jdbcType="VARCHAR" property="daily" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, kindergarten_id, photo_num, video_num, honor_num, daily
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_kindergarten_daily_statistics
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_kindergarten_daily_statistics
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.qm.entities.KindergartenDailyStatistics">
+    insert into t_kindergarten_daily_statistics (id, kindergarten_id, photo_num, 
+      video_num, honor_num, daily
+      )
+    values (#{id,jdbcType=INTEGER}, #{kindergartenId,jdbcType=INTEGER}, #{photoNum,jdbcType=INTEGER}, 
+      #{videoNum,jdbcType=INTEGER}, #{honorNum,jdbcType=INTEGER}, #{daily,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.qm.entities.KindergartenDailyStatistics">
+    insert into t_kindergarten_daily_statistics
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="kindergartenId != null">
+        kindergarten_id,
+      </if>
+      <if test="photoNum != null">
+        photo_num,
+      </if>
+      <if test="videoNum != null">
+        video_num,
+      </if>
+      <if test="honorNum != null">
+        honor_num,
+      </if>
+      <if test="daily != null">
+        daily,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="kindergartenId != null">
+        #{kindergartenId,jdbcType=INTEGER},
+      </if>
+      <if test="photoNum != null">
+        #{photoNum,jdbcType=INTEGER},
+      </if>
+      <if test="videoNum != null">
+        #{videoNum,jdbcType=INTEGER},
+      </if>
+      <if test="honorNum != null">
+        #{honorNum,jdbcType=INTEGER},
+      </if>
+      <if test="daily != null">
+        #{daily,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.qm.entities.KindergartenDailyStatistics">
+    update t_kindergarten_daily_statistics
+    <set>
+      <if test="kindergartenId != null">
+        kindergarten_id = #{kindergartenId,jdbcType=INTEGER},
+      </if>
+      <if test="photoNum != null">
+        photo_num = #{photoNum,jdbcType=INTEGER},
+      </if>
+      <if test="videoNum != null">
+        video_num = #{videoNum,jdbcType=INTEGER},
+      </if>
+      <if test="honorNum != null">
+        honor_num = #{honorNum,jdbcType=INTEGER},
+      </if>
+      <if test="daily != null">
+        daily = #{daily,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qm.entities.KindergartenDailyStatistics">
+    update t_kindergarten_daily_statistics
+    set kindergarten_id = #{kindergartenId,jdbcType=INTEGER},
+      photo_num = #{photoNum,jdbcType=INTEGER},
+      video_num = #{videoNum,jdbcType=INTEGER},
+      honor_num = #{honorNum,jdbcType=INTEGER},
+      daily = #{daily,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByCondition" parameterType="java.util.HashMap" resultMap="BaseResultMap" >
+  	 select 
+    <include refid="Base_Column_List" />
+    from t_kindergarten_daily_statistics
+  		where 1=1 
+  		<if test="kindergartenId != null">
+	    	and    kindergarten_id = #{kindergartenId,jdbcType=INTEGER}
+	      </if>
+  		<if test="startDate != null and startDate != ''">
+	    	and    daily >= #{startDate,jdbcType=VARCHAR}
+	      </if>
+  		<if test="endDate != null and endDate != ''">
+	    	and    daily &lt; #{endDate,jdbcType=VARCHAR}
+	      </if>
+	      order by daily
+  </select>
+</mapper>

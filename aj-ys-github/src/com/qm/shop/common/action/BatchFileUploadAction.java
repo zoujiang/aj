@@ -119,6 +119,7 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 						KindergartenAlbum album = new KindergartenAlbum();
 						String currentClass = null;
 						Integer gradeId  = null;
+						Integer kindergartenId  = null;
 						if(type == 1){
 							gradeId =Integer.parseInt(ownerId);
 							//班级
@@ -126,7 +127,7 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 							album.setShcoolId(grade.getKindergartenId());
 							album.setGradeId(Integer.parseInt(ownerId));
 							currentClass = getCurrentClass(grade);
-							
+							kindergartenId = grade.getKindergartenId();
 							
 						}else if(type == 2){
 							//学生
@@ -138,6 +139,7 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 							currentClass = getCurrentClass(grade);
 							
 							gradeId = student.getGradeId();
+							kindergartenId = grade.getKindergartenId();
 						}
 						
 						//查询是否已经有相册生成
@@ -166,6 +168,7 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 							photo.setAlbumId(album.getId());
 							photo.setType(type);
 							photo.setGradeId(gradeId);
+							photo.setKindergartenId(kindergartenId);
 							if(category == 1){
 								photo.setPhotoUrl(DBPath);
 							}else{
@@ -189,6 +192,7 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 							honor.setType(type);
 							honor.setGradeId(gradeId);
 							honor.setPhotoUrl(DBPath);
+							honor.setKindergartenId(kindergartenId);
 							kindergartenHonorMapper.insertSelective(honor);
 						}
 						

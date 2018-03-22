@@ -22,4 +22,6 @@ public interface KindergartenGradeService {
 
 	String selectGradeNamesByIds(String gradeNum);
 
+	int getSeriesNum(KindergartenGrade grade);
+
 }

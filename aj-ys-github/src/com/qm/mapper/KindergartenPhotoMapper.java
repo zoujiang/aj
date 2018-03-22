@@ -1,6 +1,7 @@
 package com.qm.mapper;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -24,4 +25,15 @@ public interface KindergartenPhotoMapper {
 	List<KindergartenPhoto> selectByCondition(KindergartenPhoto photo);
 
 	int getTotal(KindergartenPhoto photo);
+
+	/**
+	 * @param  queryDay : 2018-02-02
+	 * @param  kindergartenId 
+	 * */
+	int queryPhotoNumber(Map<String, Object> param);
+	/**
+	 * @param  queryDay : 2018-02-02
+	 * @param  kindergartenId 
+	 * */
+	int queryVideoNumber(Map<String, Object> param);
 }

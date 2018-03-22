@@ -2,6 +2,7 @@
 <beans>
 	<bean id="messageSend" class="com.qm.job.MessageSendJob"></bean>
 	<bean id="teacherTaskStatistics" class="com.qm.job.KindergartenTeacherTaskStatistics"></bean>
+	<bean id="kindergartenDailyStatistics" class="com.qm.job.KindergartenDailyStatisticsJob"></bean>
 	
 	<bean id="messageSendJob"
 		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
@@ -13,6 +14,13 @@
 		<property name="targetObject" ref="teacherTaskStatistics" />
 		<property name="targetMethod" value="process" />
 	</bean>
+	<bean id="kindergartenDailyStatisticsJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="kindergartenDailyStatistics" />
+		<property name="targetMethod" value="process" />
+	</bean>
+	
+	
 	<bean id="messageSendTrigger"
 		class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
 		<property name="jobDetail" ref="messageSendJob" />
@@ -25,12 +33,19 @@
 		 <property name="cronExpression" value="0 0 0 26 * ?" />  <!--每月26号--> 
             
 	</bean>
+	<bean id="kindergartenDailyStatisticsTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="kindergartenDailyStatisticsJob" />
+		 <property name="cronExpression" value="0 55 21 * * ?" />  <!--每天凌晨12点半--> 
+            
+	</bean>
 	
 	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="triggers">
 			<list>
-				<!-- <ref bean="messageSendTrigger"/> -->
+				 <ref bean="messageSendTrigger"/>
 				 <ref bean="teacherTaskStatisticsTrigger"/>
+				 <ref bean="kindergartenDailyStatisticsTrigger"/>
 			</list>
 		</property>
 	</bean>

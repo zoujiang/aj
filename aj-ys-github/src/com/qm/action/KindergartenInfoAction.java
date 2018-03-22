@@ -1,7 +1,12 @@
 package com.qm.action;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -20,8 +25,16 @@ import com.alibaba.fastjson.JSONObject;
 import com.frame.core.action.FtpImgDownUploadAction;
 import com.frame.core.util.DateUtil;
 import com.frame.system.vo.UserExtForm;
+import com.qm.entities.KindergartenDailyStatistics;
+import com.qm.entities.KindergartenGrade;
 import com.qm.entities.KindergartenInfo;
+import com.qm.entities.KindergartenStudent;
+import com.qm.entities.KindergartenTeacher;
+import com.qm.mapper.KindergartenDailyStatisticsMapper;
+import com.qm.service.KindergartenGradeService;
 import com.qm.service.KindergartenService;
+import com.qm.service.KindergartenStudentService;
+import com.qm.service.KindergartenTeacherService;
 import com.qm.shop.Constant;
 
 @Controller
@@ -32,6 +45,14 @@ public class KindergartenInfoAction extends FtpImgDownUploadAction {
   private Logger logger = LoggerFactory.getLogger(KindergartenInfoAction.class);
     @Autowired
     private KindergartenService kindergartenService;
+    @Autowired
+    private KindergartenGradeService kindergartenGradeService;
+    @Autowired
+    private KindergartenTeacherService kindergartenTeacherService;
+    @Autowired
+    private KindergartenStudentService kindergartenStudentService;
+    @Autowired
+    private KindergartenDailyStatisticsMapper kindergartenDailyStatisticsMapper;
 
     @RequestMapping("/kindergarten/list")
     @ResponseBody
@@ -254,5 +275,65 @@ public class KindergartenInfoAction extends FtpImgDownUploadAction {
         }
 
         return json.toJSONString();
+    }
+    @RequestMapping("kindergarten/statistics")
+    @ResponseBody
+    public String statistics(Integer id){
+    	
+    	JSONObject json = new JSONObject();
+    	try {
+    		KindergartenGrade grade = new KindergartenGrade();
+    		grade.setKindergartenId(id);
+    		int seriesNum = kindergartenGradeService.getSeriesNum(grade);
+    		int gradeNum = kindergartenGradeService.getTotal(grade);
+    		KindergartenTeacher teacher = new KindergartenTeacher();
+    		teacher.setKindergartenId(id);
+    		int teacherNum = kindergartenTeacherService.getTotal(teacher);
+    		KindergartenStudent student = new KindergartenStudent();
+    		student.setKindergartenId(id);
+    		int studentNum = kindergartenStudentService.getTotal(student);
+    		//取一个月内的照片数统计数量、视频数量、荣誉数量
+    		
+    		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+    		Calendar cal = Calendar.getInstance();
+    		cal.add(Calendar.MONTH, -1);
+    		String preMonth = format.format(cal.getTimeInMillis());
+    		String currentDay = format.format(new Date());
+    		Map<String, Object> param = new HashMap<String, Object>();
+    		param.put("kindergartenId", id);
+    		param.put("startDate", preMonth);
+    		param.put("endDate", currentDay);
+    		List<KindergartenDailyStatistics> statisticsList = kindergartenDailyStatisticsMapper.selectByCondition(param);
+    		JSONObject data = new JSONObject();
+    		data.put("seriesNum", seriesNum);
+    		data.put("gradeNum", gradeNum);
+    		data.put("teacherNum", teacherNum);
+    		data.put("studentNum", studentNum);
+    		data.put("statisticsList", statisticsList);
+    		List<String> dayList = new ArrayList<String>();
+    		List<Integer> photoDailyList = new ArrayList<Integer>();
+    		List<Integer> videoDailyList = new ArrayList<Integer>();
+    		List<Integer> honorDailyList = new ArrayList<Integer>();
+    		for(KindergartenDailyStatistics kds : statisticsList){
+    			dayList.add(kds.getDaily());
+    			photoDailyList.add(kds.getPhotoNum());
+    			videoDailyList.add(kds.getVideoNum());
+    			honorDailyList.add(kds.getHonorNum());
+    		}
+    		data.put("dayList", dayList);
+    		data.put("photoDailyList", photoDailyList);
+    		data.put("videoDailyList", videoDailyList);
+    		data.put("honorDailyList", honorDailyList);
+    		
+    		json.put("data", data);
+    		json.put("success", true);
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    		logger.info("查询幼儿园日统计信息异常："+ e);
+    		json.put("success",false );
+    		json.put("message", "查询幼儿园日统计信息异常："+e.getMessage());
+    	}
+    	
+    	return json.toJSONString();
     }
 }

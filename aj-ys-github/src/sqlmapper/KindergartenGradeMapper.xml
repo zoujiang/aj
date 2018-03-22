@@ -255,4 +255,14 @@
   <select id="selectGradeAndTeacherInfo" parameterType="java.util.HashMap" resultType="java.util.HashMap">
   	select t.gradeId, t.category, t.total, g.rule, g.series, g.class_no classNo, g.kindergarten_id kindergartenId from t_kindergarten_grade g, (select grade_id gradeId,category, count(category) total from t_kindergarten_photo where create_user = ? and left(create_time, 7) = ? group by grade_id, category ) t where g.id = t.gradeId
   </select>
+  
+  <select id="getSeriesNum" parameterType="com.qm.entities.KindergartenGrade" resultType="int">
+  	select 
+  		count(distinct series)
+  	from t_kindergarten_grade
+  		where 1=1
+  		<if test="kindergartenId != null and kindergartenId !=''">
+  			and kindergarten_id = #{kindergartenId,jdbcType=INTEGER}
+  		</if>
+  </select>
 </mapper>

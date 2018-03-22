@@ -138,4 +138,11 @@ public class KindergartenGradeServiceImpl implements KindergartenGradeService {
 		
 		return names;
 	}
+
+	@Override
+	public int getSeriesNum(KindergartenGrade grade) {
+		
+		return kindergartenGradeMapper.getSeriesNum(grade);
+	}
+	
 }

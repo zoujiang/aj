@@ -29,4 +29,6 @@ public interface KindergartenGradeMapper {
 	List<KindergartenGrade> selectGradeNamesByIds(@Param("gradeNum") List<String> gradeNum);
 
 	List<Map<String, Object>> selectGradeAndTeacherInfo(Map<String, Object> param);
+
+	int getSeriesNum(KindergartenGrade grade);
 }

@@ -30,6 +30,8 @@ public class KindergartenPhoto extends LimitKey{
     private Integer albumId;
     
     private Integer gradeId;
+    
+    private Integer kindergartenId;
 
     public Integer getId() {
         return id;
@@ -141,6 +143,14 @@ public class KindergartenPhoto extends LimitKey{
 
 	public void setGradeId(Integer gradeId) {
 		this.gradeId = gradeId;
+	}
+
+	public Integer getKindergartenId() {
+		return kindergartenId;
+	}
+
+	public void setKindergartenId(Integer kindergartenId) {
+		this.kindergartenId = kindergartenId;
 	}
 	
     
