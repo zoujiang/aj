@@ -21,6 +21,12 @@ String type = request.getParameter("type");
     <script type="text/javascript" src="<c:url value='/resources/bootstrap-fileinput/js/fileinput.js'></c:url>" ></script>
     <script type="text/javascript" src="<c:url value='/resources/bootstrap-fileinput/js/locales/zh.js'></c:url>"  ></script>
     
+    <style type="text/css">
+    	 video {
+		    width: 100% !important;
+		    height: 90% !important;
+		}
+    </style>
     <script type="text/javascript">
     
     $(document).ready(function () {
@@ -49,12 +55,9 @@ String type = request.getParameter("type");
     });
 	function returnToListPage(){
 		
-		layer.msg("上传成功，请重新刷新列表", {title:'提示', btn: ['确定'],icon: 6}, function(index){
-			var index = parent.layer.getFrameIndex(window.name);
-			//parent.$('#apv_table').bootstrapTable('refresh');
-			parent.$("button[name='refresh']").click();
-			parent.layer.close(index);
-  		});
+		var index = parent.layer.getFrameIndex(window.name);
+		parent.$("button[name='refresh']").click();
+		parent.layer.close(index);
 		
 	}
 

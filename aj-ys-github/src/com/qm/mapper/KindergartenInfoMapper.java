@@ -3,6 +3,7 @@ package com.qm.mapper;
 import com.qm.entities.KindergartenInfo;
 
 import java.util.List;
+import java.util.Map;
 
 public interface KindergartenInfoMapper {
    
@@ -24,4 +25,6 @@ public interface KindergartenInfoMapper {
     List<KindergartenInfo> selectByCondition(KindergartenInfo record);
 
     int getTotal(KindergartenInfo limitKey);
+
+	List<Map<String, Object>> selectByCondition2(KindergartenInfo info);
 }

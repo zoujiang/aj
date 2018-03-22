@@ -84,11 +84,11 @@
 			});
 			/* //导出数据
 			$('#btn_search').click(function() {
-			}); */
+			});
 			//新增订单
 			$('#btn_new').click(function(e){
 				AppMgr.add(e);
-			});
+			}); */
 		};
 			
 		
@@ -112,9 +112,6 @@
                     <div class="form-inline" style="width: 880px;float: left;">
                     	姓名：<input type="text" placeholder="姓名" class="form-control input-inline"  id="name" name="name" width="280px"> 
                            <button  id="btn_search" type="button" class="btn btn-inline btn-default" style="margin-top: 4px;"> 搜索</button> 
-	                    <button id="btn_new" type="button" style="margin-left: 10px;margin-top: 4px;" class="btn btn-inline btn-default"  title="添加">
-	                        <i class="glyphicon glyphicon-plus" aria-hidden="true" ></i>
-	                    </button>
                     </div>
                 </div>
                 <table id="user_table"></table>

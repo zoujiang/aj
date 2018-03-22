@@ -41,7 +41,12 @@ String id = request.getParameter("id");
 	                	  }else{
 	                		  $("#ra1").attr("checked","checked");
 	                	  }
-	                	  $("#file").val(data.message.icon);
+	                	  //$("#icon").val(data.message.icon);
+	                	  console.info("data.message.icon:"+data.message.icon)
+		                	  if(data.message.icon != null && data.message.icon != ""){
+		                		  $("#preView").show();
+		                		  $("#preView").attr("href", data.message.icon);
+		                	  }
 	                  }else{
 	                	  layer.msg(data.message, {title:'提示', btn: ['确定'],icon: 6}, function(index){
 							});
@@ -64,7 +69,13 @@ String id = request.getParameter("id");
 				$("#btn_save").attr("disabled", false);
 				return false;
 			}
-		
+			var sort = $("#sort").val();
+			if(sort.length > 5){
+				layer.msg("排序不能超过5位数", {title:'提示', btn: ['确定'],icon: 6}, function(index){
+				});
+				$("#btn_save").attr("disabled", false);
+				return false;
+			}
 			$("#userForm").ajaxSubmit({
 			     type: "post",
 			     url: "<%=path %>/admin/shop/category/update",
@@ -127,7 +138,7 @@ String id = request.getParameter("id");
 							<div class="form-group col-sm-6">
 								<label class="col-sm-4 control-label">分类图标：</label>
 								<div class="col-sm-8">
-									<input type="file" class="form-control" name="file" id="icon">
+									<input type="file" class="form-control" name="file" id="icon"><a id="preView" href="" target="blank" style="display:none;">预览</a>
 								</div>
 							</div>
 

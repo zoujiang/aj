@@ -81,7 +81,7 @@ public class KindergartenPhotoAction extends FtpImgDownUploadAction{
 			}
 			if(photo.getVideoUrl() != null && !"".equals(photo.getVideoUrl())){
 				
-				photo.setVideoUrl(Constant.resPath + photo.getVideoUrl());
+				photo.setVideoUrl(Constant.resPrefix + photo.getVideoUrl());
 			}
 		}
 		JSONObject json = new JSONObject();

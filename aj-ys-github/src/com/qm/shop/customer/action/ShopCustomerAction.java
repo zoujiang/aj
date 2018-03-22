@@ -51,7 +51,7 @@ public class ShopCustomerAction extends FtpImgDownUploadAction {
 	@RequestMapping("/customer/list")
 	@ResponseBody
 	public DataModel<Map<String, Object>> list(ShopCustomerVO limitKey) {
-		
+		/*
 		if(limitKey != null && limitKey.getShopName() != null && !"".equals(limitKey.getShopName())){
 			try {
 				limitKey.setShopName(new String( limitKey.getShopName().getBytes("ISO-8859-1"),"utf-8"));
@@ -65,7 +65,7 @@ public class ShopCustomerAction extends FtpImgDownUploadAction {
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}
-		}
+		} */
 		DataModel<Map<String, Object>> dataModel = shopCustomerService.getList(limitKey);
 		List<Map<String, Object>> data = dataModel.getRows();
 		if(data != null && data.size() > 0){

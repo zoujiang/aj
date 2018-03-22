@@ -40,14 +40,14 @@ public class ShopAccountAction extends FtpImgDownUploadAction {
 	@RequestMapping("/account/list")
 	@ResponseBody
 	public DataModel<Map<String, Object>> list(ShopAccountVO limitKey) {
-		
+		/*
 		if(limitKey != null && limitKey.getShopName() != null && !"".equals(limitKey.getShopName())){
 			try {
 				limitKey.setShopName(new String( limitKey.getShopName().getBytes("ISO-8859-1"),"utf-8"));
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}
-		}
+		}*/
 		DataModel<Map<String, Object>> dataModel = shopAccountService.getList(limitKey);
 		return dataModel;
 	}

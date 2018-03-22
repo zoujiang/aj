@@ -1,10 +1,21 @@
 package com.qm.action;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +29,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import com.alibaba.fastjson.JSONObject;
 import com.frame.core.action.FtpImgDownUploadAction;
 import com.frame.core.util.DateUtil;
+import com.frame.core.util.ExportExcelUtils;
 import com.frame.core.util.GUID;
 import com.qm.entities.CouponShopInfo;
 import com.qm.service.CouponShopService;
@@ -250,4 +262,63 @@ public class CouponShopAction extends FtpImgDownUploadAction {
 
         return json.toJSONString();
     }
+    @RequestMapping("/export")
+	@ResponseBody
+	public String export(String name, HttpServletRequest request,HttpServletResponse response) {
+		
+		
+		Date date = new Date();
+		SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
+		String fileName = "couponshop_"+ format.format(date) + ".xls";
+
+	
+		/** 获得输出流 **/
+		ByteArrayOutputStream byteOutPut = new ByteArrayOutputStream();
+		JSONObject result = new JSONObject();
+		try {
+			String headerColumn = "[{\"shopName\":\"店铺名称\"},"
+								+ "{\"address\":\"店铺地址\"},"
+								+ "{\"registName\":\"注册人姓名\"},"
+								+ "{\"serviceTel\":\"联系电话\"},"
+								+ "{\"serviceStartTime\":\"服务开始时间\"},"
+								+ "{\"serviceEndTime\":\"服务结束时间\"},"
+								+ "{\"status\":\"店铺状态\"}]";
+			
+			CouponShopInfo info = new CouponShopInfo();
+			info.setShopName(name);
+			List<Map<String,Object>> dataList = couponShopService.queryList2(info);
+			
+			HSSFWorkbook workbook = new ExportExcelUtils().exportExcel2(dataList, headerColumn, fileName);
+			workbook.write(byteOutPut);
+			
+			String url = getRealGePath();
+			OutputStream out=new FileOutputStream(url + fileName);//文件本地存储地址
+			workbook.write(out);
+			out.close();
+			File tempFile = new File(url + fileName);
+			byteOutPut.close();
+			GZIPOutputStream gizout = new GZIPOutputStream(new FileOutputStream(url + fileName+".gz"));
+			byte[] buff = new byte[1024]; //设定读入缓冲区尺寸   
+			FileInputStream in = new FileInputStream(tempFile); //把生成的csv文件
+			
+			int len;
+			while ((len = in.read(buff)) != -1) {
+				gizout.write(buff,0,len);
+			}
+			in.close();
+			gizout.finish();
+			gizout.close();
+			tempFile.delete();//删除临时文件
+			
+			result.put("success", true);
+			result.put("url", "/temp/"+ fileName+".gz");
+		} catch (IOException e) {
+			result.put("success", false);
+			e.printStackTrace();
+		} catch (Exception e) {
+			result.put("success", false);
+			e.printStackTrace();
+		}
+		return result.toString();
+	}
 }

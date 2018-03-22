@@ -77,7 +77,7 @@ public class ShopAlbumAction extends FtpImgDownUploadAction {
 	@RequestMapping("/album/list")
 	@ResponseBody
 	public DataModel<Map<String, Object>> list(ShopAlbumVO limitKey) {
-		
+		/*
 		if(limitKey != null && limitKey.getShopName() != null && !"".equals(limitKey.getShopName())){
 			try {
 				limitKey.setShopName(new String( limitKey.getShopName().getBytes("ISO-8859-1"),"utf-8"));
@@ -91,7 +91,7 @@ public class ShopAlbumAction extends FtpImgDownUploadAction {
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}
-		}
+		} */
 		DataModel<Map<String, Object>> dataModel = shopAlbumService.getList(limitKey);
 		List<Map<String, Object>> list = dataModel.getRows();
 		if(list != null && list.size() > 0){
@@ -632,7 +632,7 @@ public class ShopAlbumAction extends FtpImgDownUploadAction {
 	@RequestMapping("/dynamicAlbum/list")
 	@ResponseBody
 	public DataModel<Map<String, Object>> dynamicAlbumList(ShopDynamicAlbumVO limitKey) {
-		
+		/*
 		if(limitKey != null && limitKey.getShopName() != null && !"".equals(limitKey.getShopName())){
 			try {
 				limitKey.setShopName(new String( limitKey.getShopName().getBytes("ISO-8859-1"),"utf-8"));
@@ -646,7 +646,7 @@ public class ShopAlbumAction extends FtpImgDownUploadAction {
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}
-		}
+		} */
 		DataModel<Map<String, Object>> dataModel = shopDynamicAlbumService.getList(limitKey);
 		List<Map<String, Object>> list = dataModel.getRows();
 		for(Map<String, Object> map : list){

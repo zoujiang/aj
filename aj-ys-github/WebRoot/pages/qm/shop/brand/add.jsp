@@ -34,7 +34,14 @@ if(roleId == null || "".equals(roleId)){
 				$("#btn_save").attr("disabled", false);
 				return false;
 			}
-		
+		    var sortIndex = $("#sortIndex").val();
+		    if(sortIndex.length > 5){
+				layer.msg("排序长度不能超过5位数", {title:'提示', btn: ['确定'],icon: 6}, function(index){
+				});
+				$("#btn_save").attr("disabled", false);
+				return false;
+			}
+			
 			$("#userForm").ajaxSubmit({
 			     type: "post",
 			     url: "<%=path %>/admin/shop/brand/add",

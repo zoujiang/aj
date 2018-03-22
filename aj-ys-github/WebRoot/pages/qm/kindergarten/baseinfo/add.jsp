@@ -74,6 +74,7 @@ if(roleId == null || "".equals(roleId)){
 						 
 					    ['font', ['bold', 'underline', 'clear']],
 					    ['fontname', ['fontname']],
+					    ['fontsize', ['fontsize']],
 					    ['style', ['style']],
 					    ['color', ['color']],
 					    ['para', ['ul', 'ol', 'paragraph']],
@@ -112,7 +113,7 @@ if(roleId == null || "".equals(roleId)){
                     console.info("----00000----"+data.returnCode)
 					if(data.returnCode == '000000'){
 						 console.info("----data.result.picPath----"+data.result.picPath)
-	                    $('#user-work-content').summernote('insertImage', data.result.picPath);
+	                    $('#summernote').summernote('insertImage', data.result.picPath);
 						// $(".note-alarm").html("上传成功,请等待加载");
 						// setTimeout(function(){$(".note-alarm").remove();},3000);
 					}
@@ -169,6 +170,17 @@ if(roleId == null || "".equals(roleId)){
 				$("#btn_save").attr("disabled", false);
 				return false;
 			}
+			
+			var sortIndex = $("#sortIndex").val();
+			if(sortIndex.length > 5){
+				if(tel == ""){
+					layer.msg("排序长度不能超过5位数字", {title:'提示', btn: ['确定'],icon: 6}, function(index){
+					});
+					$("#btn_save").attr("disabled", false);
+					return false;
+				}
+			}
+			
 			var tel = $("#serviceTel").val();
 			if(tel == ""){
 				layer.msg("客服电话不能为空", {title:'提示', btn: ['确定'],icon: 6}, function(index){

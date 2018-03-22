@@ -22,4 +22,6 @@ public interface ShopCategoryService {
 
 	List<Map<String, Object>> selectAll(Integer type);
 
+	Map<String, Object> selectByNameAndType(String name, Integer type);
+
 }

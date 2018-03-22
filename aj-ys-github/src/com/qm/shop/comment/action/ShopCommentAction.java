@@ -32,7 +32,7 @@ public class ShopCommentAction extends FtpImgDownUploadAction {
 	@RequestMapping("/cmt/list")
 	@ResponseBody
 	public DataModel<Map<String, Object>> list(ShopCommentVO limitKey) {
-		
+		/*
 		if(limitKey != null && limitKey.getShopName() != null && !"".equals(limitKey.getShopName())){
 			try {
 				limitKey.setShopName(new String( limitKey.getShopName().getBytes("ISO-8859-1"),"utf-8"));
@@ -46,7 +46,7 @@ public class ShopCommentAction extends FtpImgDownUploadAction {
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}
-		}
+		} */
 		DataModel<Map<String, Object>> dataModel = shopCommentService.getList(limitKey);
 		List<Map<String, Object>> data = dataModel.getRows();
 		if(data != null && data.size() > 0){

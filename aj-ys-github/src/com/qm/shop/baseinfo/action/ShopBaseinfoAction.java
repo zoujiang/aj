@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -15,8 +14,6 @@ import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import net.sf.json.JSONObject;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -36,11 +33,12 @@ import com.frame.core.util.ExportExcelUtils;
 import com.frame.core.util.FtpUtil;
 import com.frame.core.util.GUID;
 import com.frame.core.vo.DataModel;
-import com.qm.mapper.WorksShowMapper;
 import com.qm.shop.Constant;
 import com.qm.shop.baseinfo.service.ShopBaseinfoService;
 import com.qm.shop.baseinfo.vo.ShopInfoVO;
 import com.qm.shop.baseinfo.vo.TShopInfo;
+
+import net.sf.json.JSONObject;
 
 
 @Controller
@@ -57,14 +55,14 @@ public class ShopBaseinfoAction extends FtpImgDownUploadAction {
 	@RequestMapping("/baseinfo/list")
 	@ResponseBody
 	public DataModel<Map<String, Object>> list(ShopInfoVO limitKey) {
-		
+		/*
 		if(limitKey != null && limitKey.getShopName() != null && !"".equals(limitKey.getShopName())){
 			try {
 				limitKey.setShopName(new String( limitKey.getShopName().getBytes("ISO-8859-1"),"utf-8"));
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}
-		}
+		} */
 		DataModel<Map<String, Object>> dataModel = shopBaseinfoService.getList(limitKey);
 		return dataModel;
 	}
@@ -311,7 +309,7 @@ public class ShopBaseinfoAction extends FtpImgDownUploadAction {
 		
 		Date date = new Date();
 		SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
-		String fileName =  format.format(date) + ".xls";
+		String fileName = "shop_"+ format.format(date) + ".xls";
 
 	
 		/** 获得输出流 **/

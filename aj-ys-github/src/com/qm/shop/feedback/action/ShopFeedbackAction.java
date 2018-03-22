@@ -37,14 +37,14 @@ public class ShopFeedbackAction extends FtpImgDownUploadAction {
 	@ResponseBody
 	public DataModel<Map<String, Object>> list(ShopFeedbackVO limitKey) {
 		
-		if(limitKey != null && limitKey.getShopName() != null && !"".equals(limitKey.getShopName())){
+	/*	if(limitKey != null && limitKey.getShopName() != null && !"".equals(limitKey.getShopName())){
 			try {
 				limitKey.setShopName(new String( limitKey.getShopName().getBytes("ISO-8859-1"),"utf-8"));
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}
 		}
-		
+		*/
 		DataModel<Map<String, Object>> dataModel = shopFeedbackService.getList(limitKey);
 		return dataModel;
 	}

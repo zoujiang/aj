@@ -95,6 +95,7 @@ String id = request.getParameter("id");
 						 
 					    ['font', ['bold', 'underline', 'clear']],
 					    ['fontname', ['fontname']],
+					    ['fontsize', ['fontsize']],
 					    ['style', ['style']],
 					    ['color', ['color']],
 					    ['para', ['ul', 'ol', 'paragraph']],
@@ -176,7 +177,8 @@ String id = request.getParameter("id");
 	                    console.info("----00000----"+data.returnCode)
 						if(data.returnCode == '000000'){
 							 console.info("----data.result.picPath----"+data.result.picPath)
-		                    $('#user-work-content').summernote('insertImage', data.result.picPath);
+		                   // $('#user-work-content').summernote('insertImage', data.result.picPath);
+							 $("#summernote").summernote('insertImage', data.result.picPath, 'image name');
 						}
 	                },
 	                error:function(){
@@ -227,14 +229,13 @@ String id = request.getParameter("id");
                 $("#btn_save").attr("disabled", false);
                 return false;
             }
-            var logo = $("#logo").val();
-            var oldLogo = $("#oldLogo").val();
-            if(logo == "" && oldLogo ==""){
+           /* var logo = $("#logo").val();
+            if(logo == ""){
                 layer.msg("店铺logo不能为空", {title:'提示', btn: ['确定'],icon: 6}, function(index){
                 });
                 $("#btn_save").attr("disabled", false);
                 return false;
-            }
+            } */
             var gps = $("#gps").val();
             if(gps == ""){
                 layer.msg("店铺坐标地址不能为空", {title:'提示', btn: ['确定'],icon: 6}, function(index){
@@ -257,6 +258,13 @@ String id = request.getParameter("id");
                 $("#btn_save").attr("disabled", false);
                 return false;
             }
+            var recommendIx = $("#recommendIx").val();
+			if(recommendIx.length > 5){
+				layer.msg("排序长度不能超过5位数", {title:'提示', btn: ['确定'],icon: 6}, function(index){
+				});
+				$("#btn_save").attr("disabled", false);
+				return false;
+			}
             var tel = $("#tel").val();
             if(tel == ""){
                 layer.msg("客服电话不能为空", {title:'提示', btn: ['确定'],icon: 6}, function(index){

@@ -28,11 +28,20 @@ String type = request.getParameter("type");
     <link rel="stylesheet" type="text/css" href="<c:url value='/resources/hplus4.1/css/demo/webuploader-demo.min.css'></c:url>">
     <link href="<c:url value='/resources/hplus4.1/css/style.min.css?v=4.1.0'></c:url>" rel="stylesheet">
     
+    
+    <link href="<c:url value='/resources/bootstrap-fileinput/css/fileinput.css'></c:url>" rel="stylesheet">
+    <script type="text/javascript" src="<c:url value='/resources/bootstrap-fileinput/js/fileinput.js'></c:url>" ></script>
+    <script type="text/javascript" src="<c:url value='/resources/bootstrap-fileinput/js/locales/zh.js'></c:url>"  ></script>
+    
 	<style>
         .lightBoxGallery img {
             margin: 20px 10px;
             width: 260px;
         }
+        video {
+		    width: 100% !important;
+		    height: 90% !important;
+		}
     </style>
 	
 	<script type="text/javascript">
@@ -41,7 +50,7 @@ String type = request.getParameter("type");
 	 function AppMgr(){
 		 
 		 AppMgr.add = function(e,ownerId){
-				layer_show("上传图片/视频", getProjectName() +"/pages/qm/kindergarten/photo/add.jsp?type=<%=type%>&ownerId=<%=id %>","850","400");
+				// layer_show("上传图片/视频", getProjectName() +"/pages/qm/kindergarten/photo/add.jsp?type=<%=type%>&ownerId=<%=id %>","850","400");
 			};
 		 
 		 
@@ -65,10 +74,18 @@ String type = request.getParameter("type");
 	                	  var jsonarray = eval('('+jsonstr+')');
 	                	  
 	                	  data.forEach(function( p, index ) {
-	                		  		html += "<div style='position:relative;float: left;width:275px;height:325px'> ";
-	                		  		html += "<a  href='"+ p.photoUrl+ "' title='' data-gallery='' >";
-	                                html += "<img style='max-width:275px;max-height:325px' src='"+ p.photoUrl +"'> </a>";
-	                                html += "<button onclick=deleteFile('"+p.id+"') type='button' class='kv-file-remove btn btn-sm btn-kv btn-default btn-outline-secondary' style='position:absolute;z-indent:2;left:120px;top:120px;width:40px;height:40px' title='删除文件'><i class='glyphicon glyphicon-trash'></i></button>";
+	                		  		console.info("p.category:"+p.category)
+	                		  		html += "<div style='position:relative;float: left;width:275px;height:325px;border:1px solid gray;margin:5px;text-align: center;'> ";
+	                		  		if(p.category == 1){
+	                		  			//照片
+		                		  		html += "<a  href='"+ p.photoUrl+ "' title='' data-gallery=''  >";
+		                                html += "<img style='max-width:275px;max-height:300px;' src='"+ p.photoUrl +"'> </a>";
+	                		  		}else if(p.category == 2){
+	                		  			//视频
+	                		  			html += "<a  href='"+ p.videoUrl+ "' title='' data-gallery=''  >";
+		                                html += "<video style='max-width:275px;max-height:300px;' src='"+ p.videoUrl +"'  controls='controls'>您的浏览器不支持 video 标签。</video> </a>";
+	                		  		}
+	                                html += "<button onclick=deleteFile('"+p.id+"') type='button' class='kv-file-remove btn btn-sm btn-kv btn-default btn-outline-secondary' style='position:absolute;z-indent:2;left:233px;top:0px;width:40px;height:40px' title='删除文件'><i class='glyphicon glyphicon-trash'></i></button>";
 	                                var pName = p.name;
 	                                if(pName == null || pName == ''){
 	                                	pName = "添加名称";
@@ -150,12 +167,45 @@ String type = request.getParameter("type");
 	 $(document).ready(function() {
 	  		new AppMgr().initDatas();
 	  		 
+	  		$("#f_upload").fileinput({
+	            theme: 'fa',
+	            language:'zh',
+	            uploadUrl: '<%=path %>/admin/fileUploadCommon/files/fileUpload', // you must set a valid URL here else you will get an error
+	            overwriteInitial: false,
+	            uploadExtraData:{"ownerId": '<%=id %>', "type":'<%=type %>', "cate":'1'},
+	            showRemove:false,
+	            maxFileSize: 1000000,
+	            maxFilesNum: 100,
+	            allowedFileTypes: ['image', 'video', 'flash'],
+	            slugCallback: function (filename) {
+	            	return filename.replace('(', '_');
+	            }
+	        }).on("fileuploaded", function (event, data, previewId, index) {
+	        	var form = data.form, files = data.files, extra = data.extra,
+	            response = data.response, reader = data.reader;
+	            console.log("index:"+index);//打印出返回的json
+	            console.log(response.success);//打印出返回的json
+	            console.log(response.url);//打印出返回的json
+	            console.log(response.type);//打印出路径
+	        });
 	 });
 	 function uploadFiles(){
 		 
 		 $("#modal-form-2").click();
 		 
 	 }
+	 function returnToListPage(){
+			
+		var index = parent.layer.getFrameIndex(window.name);
+		parent.$("button[name='refresh']").click();
+		parent.layer.close(index);
+			
+		}
+	 function closePage(){
+			
+		$("#fileupload-modal-form").click();
+			
+		}
 	</script>
   </head>
   
@@ -167,7 +217,7 @@ String type = request.getParameter("type");
 
                 <div class="ibox-content">
                     <p>
-                       <button  id="btn_search" type="button" onclick="AppMgr.add(event)"  class="btn btn-inline btn-default" style="margin-top: 4px;">上传照片/视频</button> 
+                       <button  id="btn_search" type="button" onclick="AppMgr.add(event)" data-toggle='modal'  href='form_basic.html#fileupload-modal-form'  class="btn btn-inline btn-default" style="margin-top: 4px;">上传照片/视频</button> 
                     </p>
                 </div>
                 <div class="lightBoxGallery" id="img_content">
@@ -194,6 +244,28 @@ String type = request.getParameter("type");
                             </div>
                         </form>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="fileupload-modal-form" class="modal fade" aria-hidden="true">
+    <div class="modal-dialog" style="width: 680px;">
+        <div class="modal-content">
+            <div class="modal-body" >
+                <div class="wrapper wrapper-content animated fadeIn">
+			     	<div class="ibox float-e-margins" style="margin-bottom: 0px;">
+			             <div class="ibox-content row">
+			    			<form class="form-horizontal" id="userForm" method="post" enctype="multipart/form-data">
+							   <input id="f_upload" type="file" name="file" multiple="multiple" />
+			    		</form>
+					    <div class="hr-line-dashed"></div>
+						<div class="text-center">
+						 	<button id = "btn_save" onclick="returnToListPage()" type="button" class="btn btn-secondary radius">确定</button>
+						 	<button id = "btn_save" onclick="closePage()" type="button" class="btn btn-secondary radius">关闭</button>
+						      </div>
+					    </div>
+			   		 </div>
+			    </div>
             </div>
         </div>
     </div>

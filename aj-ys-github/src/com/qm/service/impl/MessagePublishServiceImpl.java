@@ -40,7 +40,7 @@ public class MessagePublishServiceImpl implements MessagePublishService {
 		List<MessagePublishInfo> list = messagePublishInfoMapper.selectByCondition(info);
 		for(MessagePublishInfo mi : list){
 			int st = mi.getSendTime();
-			mi.setSendTimeStr(DateUtil.dateFromat(st * 1000, DateUtil.DATE_TIME_PATTERN2));
+			mi.setSendTimeStr(DateUtil.dateFromat(st * 1000L, DateUtil.DATE_TIME_PATTERN2));
 		}
 		return list;
 	}

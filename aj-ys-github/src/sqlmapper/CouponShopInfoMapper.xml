@@ -261,6 +261,16 @@
 		    limit #{offset}, #{pageSize}
 	    </if>
     </select>
+  <select  id="queryByCondition2" parameterType="com.qm.entities.CouponShopInfo" resultType="java.util.HashMap">
+	    select 
+	  	shop_name shopName, regist_name registName, address, regist_tel serviceTel, service_begin_time serviceStartTime, 
+    service_end_time serviceEndTime, case when status = 0 then '正常' else '冻结' end status
+	    from t_coupon_shop_info
+	    where 1=1
+	    <if test="shopName != null and shopName != ''">
+	    	and shop_name like concat('%',#{shopName,jdbcType=VARCHAR},'%')
+	    </if>
+    </select>
     <select id="getTotal" parameterType="com.qm.entities.CouponShopInfo" resultType="int">
     	select 
 	    	count(1)

@@ -226,9 +226,9 @@
 	                    <button id="btn_new" type="button" style="margin-left: 10px;margin-top: 4px;" class="btn btn-inline btn-default"  title="添加">
 	                        <i class="glyphicon glyphicon-plus" aria-hidden="true" ></i>
 	                    </button>
-	                     <button id="btn_exp" type="button" style="margin-left: 10px;margin-top: 4px;" class="btn btn-inline btn-default" title="导出">
+	                 <!--   <button id="btn_exp" type="button" style="margin-left: 10px;margin-top: 4px;" class="btn btn-inline btn-default" title="导出">
 		                        <i class="glyphicon glyphicon-export" aria-hidden="true" ></i>
-		                    </button>
+		                    </button> -->  
                     </div>
                 </div>
                 <table id="user_table"></table>

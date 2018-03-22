@@ -137,9 +137,9 @@
                     <div class="form-inline" style="width: 480px;float: left;">
                     	 商户名称：<input type="text" placeholder="商户名称" class="form-control input-inline"  id="shopName" name="shopName" width="280px">
                            <button  id="btn_search" type="button" class="btn btn-inline btn-default" style="margin-top: 4px;"> 搜索</button> 
-	                     <button id="btn_exp" type="button" style="margin-left: 10px;margin-top: 4px;" class="btn btn-inline btn-default" title="导出">
+	                  <!--    <button id="btn_exp" type="button" style="margin-left: 10px;margin-top: 4px;" class="btn btn-inline btn-default" title="导出">
 		                        <i class="glyphicon glyphicon-export" aria-hidden="true" ></i>
-		                    </button>
+		                    </button> -->
                     </div>
                 </div>
                 <table id="user_table"></table>

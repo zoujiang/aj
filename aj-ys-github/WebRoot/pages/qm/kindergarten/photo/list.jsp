@@ -79,7 +79,7 @@ String id = request.getParameter("id");
                // exportDataType:"selected",
     			pagination:true,//是否显示分页栏
     			sidePagination:'server',//怎么分也？server or client
-    			showRefresh:false,//是否显示刷新按钮
+    			showRefresh:true,//是否显示刷新按钮
     			showColumns:false,//是否显示隐藏列按钮
                 iconSize: "outline",//工具栏是否显示边框
                 showFooter:false,//显示表底部

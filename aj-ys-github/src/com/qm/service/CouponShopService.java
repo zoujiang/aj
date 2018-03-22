@@ -1,6 +1,7 @@
 package com.qm.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.qm.entities.CouponShopInfo;
 
@@ -15,5 +16,7 @@ public interface CouponShopService {
 	int updateByPrimaryKeySelective(CouponShopInfo info);
 
 	CouponShopInfo selectByPrimaryKey(String id);
+
+	List<Map<String, Object>> queryList2(CouponShopInfo info);
 
 }

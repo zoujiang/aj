@@ -112,7 +112,7 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 						flag = ftp.upload(file.getInputStream(), path + DBPath);
 						int category = 1;
 						//判断文件是否为视频
-						if(isVedioFile(fileName)){
+						if(isVedioFile(imageSuffix)){
 							category = 2;
 						}
 						
@@ -240,9 +240,9 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 				List<String> urlList = new ArrayList<String>();
 				for(KindergartenPhoto p : photoList){
 					if(p.getCategory() == 1){
-						urlList.add(p.getPhotoUrl());
+						urlList.add(Constant.path + p.getPhotoUrl());
 					}else if(p.getCategory() == 2){
-						urlList.add(p.getVideoUrl());
+						urlList.add(Constant.path +p.getVideoUrl());
 					}
 				}
 				String to ="/kindergarten/Album/"+ albumId +".zip" ;
@@ -299,32 +299,20 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 		return ruleString.split(";")[index];
 	}
 	
-	
-	private final static String PREFIX_VIDEO="video/";
-
-    /**
-     * Get the Mime Type from a File
-     * @param fileName 文件名
-     * @return 返回MIME类型
-     * thx https://www.oschina.net/question/571282_223549
-     * add by fengwenhua 2017年5月3日09:55:01
-     */
-    private static String getMimeType(String fileName) {
-        FileNameMap fileNameMap = URLConnection.getFileNameMap();
-        String type = fileNameMap.getContentTypeFor(fileName);
-        return type;
-    }
-
     /**
      * 根据文件后缀名判断 文件是否是视频文件
      * @param fileName 文件名
      * @return 是否是视频文件
      */
-    public static boolean isVedioFile(String fileName){
-        String mimeType = getMimeType(fileName);
-        if (!TextUtils.isEmpty(fileName) && mimeType != null &&mimeType.contains(PREFIX_VIDEO)){
-            return true;
-        }
+    public static boolean isVedioFile(String imageSuff){
+    	
+    	String video[] = { "mp4", "avi", "mov", "wmv", "asf", "navi", "3gp", "mkv", "f4v", "rmvb", "webm" };
+		for (int i = 0; i < video.length; i++) {
+			if (video[i].equalsIgnoreCase(imageSuff)) {
+				return true;
+			}
+		}
+    	
         return false;
     }
 

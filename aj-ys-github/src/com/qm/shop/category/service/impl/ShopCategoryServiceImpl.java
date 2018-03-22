@@ -102,6 +102,17 @@ public class ShopCategoryServiceImpl  implements ShopCategoryService{
 		String sql = "select id, name, description, sort, status, create_time, icon, type from t_shop_category where status=0 and type =? order by sort ";
 		return baseDAO.getGenericBySQL(sql, new Object[]{type});
 	}
+
+	@Override
+	public Map<String, Object> selectByNameAndType(String name, Integer type) {
+		
+		String sql = "select id, name, description, sort, status, create_time, icon, type from t_shop_category where  type =? and name = ? ";
+		List<Map<String, Object>> list = baseDAO.getGenericBySQL(sql, new Object[]{type, name});
+		if(list != null && !list.isEmpty()){
+			return list.get(0);
+		}
+		return null;
+	}
 	
 	
 	

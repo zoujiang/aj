@@ -31,7 +31,7 @@ public class SendMsgThread extends Thread{
 		log.setMsgpublishId(this.publishInfo.getId());
 		log.setReciveUser(userTel);
 		log.setSendTime(DateUtil.dateFromatYYYYMMddHHmmss(new Date()));
-		
+		log.setStatus(1);
 		if(userTel.trim().length() == 11){
 			
 			JSONObject jo = new JSONObject();
@@ -51,8 +51,6 @@ public class SendMsgThread extends Thread{
 				}
 			}
 		}
-		
-		log.setStatus(1);
 		
 		messagePublishSendLogService.save(log);
 	}

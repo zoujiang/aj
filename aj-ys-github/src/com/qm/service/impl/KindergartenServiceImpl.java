@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class KindergartenServiceImpl implements KindergartenService {
@@ -38,4 +39,10 @@ public class KindergartenServiceImpl implements KindergartenService {
     public KindergartenInfo selectByPrimaryKey(Integer id) {
         return kindergartenInfoMapper.selectByPrimaryKey(id);
     }
+
+	@Override
+	public List<Map<String, Object>> queryList2(KindergartenInfo info) {
+		
+		 return kindergartenInfoMapper.selectByCondition2(info);
+	}
 }

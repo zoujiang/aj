@@ -20,6 +20,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import com.frame.core.action.FtpImgDownUploadAction;
 import com.frame.core.util.GUID;
 import com.frame.core.vo.DataModel;
+import com.qm.shop.Constant;
 import com.qm.shop.category.service.ShopCategoryService;
 import com.qm.shop.category.vo.ShopCategoryVO;
 
@@ -52,6 +53,14 @@ public class ShopCategoryAction extends FtpImgDownUploadAction {
 	public String add(@RequestParam(value = "file") MultipartFile file,String name, String description, Integer status, Integer sort, Integer type, HttpServletResponse response) {
 		String icon = "";
 		JSONObject modelMap = new JSONObject();  
+		//判断同类型分类名称是否存在
+		Map<String, Object> cate = shopCategoryService.selectByNameAndType(name, type);
+		if(cate != null && !cate.isEmpty()){
+			modelMap.put("success", false);
+			modelMap.put("message", "相同类型下已存在名称相同的分类");
+			return modelMap.toString();
+		}
+		
 		if(file != null && !file.isEmpty()){
 			
 			try {
@@ -107,6 +116,9 @@ public class ShopCategoryAction extends FtpImgDownUploadAction {
 			
 			Map<String, Object> category = shopCategoryService.findCategoryById(id);
 			if(category != null && !category.isEmpty()){
+				if(category.get("icon") != null && !"".equals(category.get("icon"))){
+					category.put("icon", Constant.imgPrefix + category.get("icon"));
+				}
 				modelMap.put("success", true);
 				modelMap.put("message", category);
 			}else{
@@ -124,6 +136,14 @@ public class ShopCategoryAction extends FtpImgDownUploadAction {
 	public String update(@RequestParam(value = "file") MultipartFile file,String id, String name, String description, Integer status, Integer sort, Integer type, HttpServletResponse response) {
 		String icon = "";
 		JSONObject modelMap = new JSONObject();  
+		//判断同类型分类名称是否存在
+		Map<String, Object> cate = shopCategoryService.selectByNameAndType(name, type);
+		if(cate != null && !cate.isEmpty() && !id.equals(cate.get("id"))){
+			modelMap.put("success", false);
+			modelMap.put("message", "相同类型下已存在名称相同的分类");
+			return modelMap.toString();
+		}
+		
 		if(file != null && !file.isEmpty()){
 			
 			try {

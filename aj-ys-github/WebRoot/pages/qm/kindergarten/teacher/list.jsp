@@ -49,6 +49,10 @@ String id = request.getParameter("id");
 		AppMgr.edit = function(id,valid,e){
 			layer_show("编辑幼儿园教师", getProjectName() +"/pages/qm/kindergarten/teacher/edit.jsp?id="+id,"800","452");
 		}
+		//查看
+		AppMgr.view = function(id,valid,e){
+			layer_show("查看幼儿园教师", getProjectName() +"/pages/qm/kindergarten/teacher/view.jsp?id="+id,"800","452");
+		}
 		AppMgr.add = function(e){
     		layer_show("添加幼儿园教师", getProjectName() +"/pages/qm/kindergarten/teacher/add.jsp","800","452");
 		};

@@ -19,6 +19,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import com.frame.core.action.FtpImgDownUploadAction;
 import com.frame.core.util.GUID;
 import com.frame.core.vo.DataModel;
+import com.qm.shop.Constant;
 import com.qm.shop.brand.service.ShopBrandService;
 import com.qm.shop.brand.vo.ShopBrandVO;
 
@@ -111,6 +112,10 @@ public class ShopBrandAction extends FtpImgDownUploadAction {
 			
 			Map<String, Object> category = shopBrandService.findBrandById(id);
 			if(category != null && !category.isEmpty()){
+				if(category.get("brand_icon") != null && !"".equals(category.get("brand_icon").toString())){
+					category.put("brand_icon", Constant.imgPrefix + category.get("brand_icon"));
+				}
+				
 				modelMap.put("success", true);
 				modelMap.put("message", category);
 			}else{
@@ -128,12 +133,21 @@ public class ShopBrandAction extends FtpImgDownUploadAction {
 	public String update(@RequestParam(value = "file") MultipartFile file,String id, String brandName,  Integer status, Integer sortIndex, Integer type, Integer isRecommend, HttpServletResponse response) {
 		String icon = "";
 		JSONObject modelMap = new JSONObject();  
+		
+		//判断是否有相同名称的品牌存在
+		List<Map<String, Object>> brandList = shopBrandService.findByBrandName(brandName, type);
+		if(brandList != null && brandList.size() > 0 && !id.equals(brandList.get(0).get("id").toString())){
+			modelMap.put("success", false);
+			modelMap.put("message", "已存在相同名称的品牌");
+			return modelMap.toString();
+		}
+		
 		if(file != null && !file.isEmpty()){
 			
 			try {
 				icon = fileUpload("shopBrandIcon", (CommonsMultipartFile)file);
 			} catch (Exception e) {
-				logger.info("新增商户品牌时，上传图标文件出错："+e);
+				logger.info("编辑商户品牌时，上传图标文件出错："+e);
 				modelMap.put("success", false);
 				modelMap.put("message", "上传图片失败");
 				return modelMap.toString();

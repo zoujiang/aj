@@ -1,6 +1,7 @@
 package com.qm.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,12 @@ public class CouponShopServiceImpl implements CouponShopService {
 	public CouponShopInfo selectByPrimaryKey(String id) {
 		
 		return couponShopInfoMapper.selectByPrimaryKey(id);
+	}
+
+	@Override
+	public List<Map<String, Object>> queryList2(CouponShopInfo info) {
+		
+		return couponShopInfoMapper.queryByCondition2(info);
 	}
 
 }

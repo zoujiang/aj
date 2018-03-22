@@ -90,8 +90,57 @@ if(roleId == null || "".equals(roleId)){
 		 }
 		 $(document).ready(function() {
 		  		new AppMgr().initDatas();
+		  		$('#summernote').summernote({
+					 toolbar:[
+						 
+					    ['font', ['bold', 'underline', 'clear']],
+					    ['fontname', ['fontname']],
+					    ['fontsize', ['fontsize']],
+					    ['style', ['style']],
+					    ['color', ['color']],
+					    ['para', ['ul', 'ol', 'paragraph']],
+					    ['table', ['table']],
+					    ['insert', ['link', 'picture', 'video']],
+					    ['view', ['fullscreen', 'codeview']]
+				        ],
+					 height: 300,                 // set editor height
+					 minHeight: 200,             // set minimum height of editor
+					 maxHeight: 400,
+					 maxWidth : 400,
+					 lang : 'zh-CN',
+                    callbacks : {
+                        onImageUpload : function(files, editor, $editable){
+                            sendFile(files);
+						 }
+                    }
+				 });
 			});
-	
+		 function sendFile(files) {
+	            var formdata = new FormData();
+	            formdata.append("file", $('.note-image-input')[0].files[0]);
+	            $.ajax({
+	                data : formdata,
+	                type : "POST",
+	                //url : "/ys/admin/fileUploadCommon/f/fileUpload", //图片上传出来的url，返回的是图片上传后的路径，http格式
+	                url : "<%=path %>/service/fileUpload", //图片上传出来的url，返回的是图片上传后的路径，http格式
+	                cache : false,
+	                contentType : false,
+	                processData : false,
+	                dataType : "json",
+	                success: function(data) {
+	                    //data是返回的hash,key之类的值，key是定义的文件名
+	                    //{"errorMsg":"","result":{"picPath":"http://localhost:8080/ys/service/img?img=/clt/1515171484518.png","shortPicPath":"/clt/1515171484518.png","succMsg":""},"returnCode":"000000","serviceName":"tis_file_upload_resp"}
+	                    console.info("----00000----"+data.returnCode)
+						if(data.returnCode == '000000'){
+							 console.info("----data.result.picPath----"+data.result.picPath)
+		                    $('#summernote').summernote('insertImage', data.result.picPath);
+						}
+	                },
+	                error:function(){
+	                    alert("上传失败");
+	                }
+	            });
+	        }
 	    function setBankVal(v, n){
 	    	
 	    	$("#bankId").val(v);
@@ -178,7 +227,10 @@ if(roleId == null || "".equals(roleId)){
 				$("#btn_save").attr("disabled", false);
 				return false;
 			}
-		
+			var content = $('#summernote').summernote('code');
+			console.info(content);
+			$("#description").val(content);
+			
 			$("#userForm").ajaxSubmit({
 			     type: "post",
 			     url: "<%=path %>/admin/shop/baseinfo/add",
@@ -411,14 +463,17 @@ if(roleId == null || "".equals(roleId)){
 						    </div>
                         </div>
                         <div class="row">
-	               			<div class="form-group col-sm-6"> 
-	               				<label class="col-sm-4 control-label">商户介绍：</label> 
-	               				<div class="col-sm-8">
-	               					<textarea rows="5" cols="50" name="description"></textarea>
-	               				</div>
-						    </div>
-						   
-                        </div>
+                            <div class="form-group col-sm-6">
+	                            <label class="col-sm-4 control-label">商户介绍：</label>
+	                            <div class="col-sm-8"></div>
+	                            <label class="col-sm-4 control-label"></label>
+	                            <div class="col-sm-8"></div>
+                            </div>
+                          </div>
+						<div class="row">
+                         	<input type="hidden" name="description" id="description">
+							<div  id="summernote"></div>
+						</div>
                         <div class="row">
 	               			<div class="form-group col-sm-6"> 
 	               				<label class="col-sm-4 control-label">空间使用：</label> 
@@ -442,4 +497,14 @@ if(roleId == null || "".equals(roleId)){
             </div>
       </div>
   </body>
+  <style >
+	.modal-backdrop{
+		display :none;
+		
+	}
+	.modal-dialog{
+		z-index: 2 !important
+	}
+
+</style>
 </html>

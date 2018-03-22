@@ -45,7 +45,12 @@ String id = request.getParameter("id");
 	                	  }else{
 	                		  $("#recommend_1").attr("checked","checked");
 	                	  }
-	                	  $("#icon").val(data.message.brand_icon);
+	                	  console.info("data.message.brand_icon:"+data.message.brand_icon)
+	                	//  $("#icon").val(data.message.brand_icon);
+	                	  if(data.message.brand_icon != null && data.message.brand_icon != ""){
+	                		  $("#preView").show();
+	                		  $("#preView").attr("href", data.message.brand_icon );
+	                	  }
 
 	                  }else{
 	                	  layer.msg(data.message, {title:'提示', btn: ['确定'],icon: 6}, function(index){
@@ -69,7 +74,13 @@ String id = request.getParameter("id");
 				$("#btn_save").attr("disabled", false);
 				return false;
 			}
-		
+			var sortIndex = $("#sortIndex").val();
+		    if(sortIndex.length > 5){
+				layer.msg("排序长度不能超过5位数", {title:'提示', btn: ['确定'],icon: 6}, function(index){
+				});
+				$("#btn_save").attr("disabled", false);
+				return false;
+			}
 			$("#userForm").ajaxSubmit({
 			     type: "post",
 			     url: "<%=path %>/admin/shop/brand/update",
@@ -142,7 +153,7 @@ String id = request.getParameter("id");
 							<div class="form-group col-sm-6">
 								<label class="col-sm-4 control-label">品牌图标：</label>
 								<div class="col-sm-8">
-									<input type="file" class="form-control" name="file" id="icon">
+									<input type="file" class="form-control" name="file" id="icon"><a id="preView" href="" target="blank" style="display:none;">预览</a>
 								</div>
 								<div class="form-group col-sm-6">
 									<div class="col-sm-13" style="">

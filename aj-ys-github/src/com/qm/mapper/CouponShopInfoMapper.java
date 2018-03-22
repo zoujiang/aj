@@ -1,6 +1,7 @@
 package com.qm.mapper;
 
 import java.util.List;
+import java.util.Map;
 
 import com.qm.entities.CouponShopInfo;
 
@@ -20,4 +21,6 @@ public interface CouponShopInfoMapper {
 	List<CouponShopInfo> queryByCondition(CouponShopInfo info);
 
 	int getTotal(CouponShopInfo info);
+
+	List<Map<String, Object>> queryByCondition2(CouponShopInfo info);
 }

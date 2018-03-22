@@ -44,17 +44,30 @@ String type = request.getParameter("type");
             console.log(response.success);//打印出返回的json
             console.log(response.url);//打印出返回的json
             console.log(response.type);//打印出路径
+        }).on('fileloaded', function(event, data, previewId, index, reader) { 
+        	console.info(data);
+        }).on('fileerror', function(event, data, msg) {
+        	console.info("!!!"+data);
+        	if(data == null || data == ""){
+        		console.info("文件格式错误");
+        	}
+        }).on("filebatchselected", function(event, files) {
+        	console.info("files!!!"+files);
+        	if(files == null || files == ""){
+        		console.info("文件格式错误");
+        	}
+        }).on('filebatchuploaderror', function(event, data, msg) {
+        	console.info("filebatchuploaderror:"+msg);
+        	 $(".kv-fileinput-error.file-error-message").html("");
         });
             	
     });
 	function returnToListPage(){
 		
-		layer.msg("上传成功，请重新刷新列表", {title:'提示', btn: ['确定'],icon: 6}, function(index){
-			var index = parent.layer.getFrameIndex(window.name);
-			//parent.$('#apv_table').bootstrapTable('refresh');
-			parent.$("button[name='refresh']").click();
-			parent.layer.close(index);
-  		});
+		var index = parent.layer.getFrameIndex(window.name);
+		//parent.$('#apv_table').bootstrapTable('refresh');
+		parent.$("button[name='refresh']").click();
+		parent.layer.close(index);
 		
 	}
 
