@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qm.mapper.MessagePublishInfoMapper">
+  <resultMap id="BaseResultMap" type="com.qm.entities.MessagePublishInfo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="send_time" jdbcType="INTEGER" property="sendTime" />
+    <result column="create_time" jdbcType="VARCHAR" property="createTime" />
+    <result column="msg_content" jdbcType="VARCHAR" property="msgContent" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.qm.entities.MessagePublishInfo">
+    <result column="recive_user_tel" jdbcType="LONGVARCHAR" property="reciveUserTel" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, send_time, create_time, msg_content, status
+  </sql>
+  <sql id="Blob_Column_List">
+    recive_user_tel
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from t_msgpublish_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_msgpublish_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.qm.entities.MessagePublishInfo">
+    insert into t_msgpublish_info (id, send_time, create_time, 
+      msg_content, status, recive_user_tel
+      )
+    values (#{id,jdbcType=INTEGER}, #{sendTime,jdbcType=INTEGER}, #{createTime,jdbcType=VARCHAR}, 
+      #{msgContent,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{reciveUserTel,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.qm.entities.MessagePublishInfo">
+    insert into t_msgpublish_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="sendTime != null">
+        send_time,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="msgContent != null">
+        msg_content,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="reciveUserTel != null">
+        recive_user_tel,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="sendTime != null">
+        #{sendTime,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=VARCHAR},
+      </if>
+      <if test="msgContent != null">
+        #{msgContent,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="reciveUserTel != null">
+        #{reciveUserTel,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.qm.entities.MessagePublishInfo">
+    update t_msgpublish_info
+    <set>
+      <if test="sendTime != null">
+        send_time = #{sendTime,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=VARCHAR},
+      </if>
+      <if test="msgContent != null">
+        msg_content = #{msgContent,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="reciveUserTel != null">
+        recive_user_tel = #{reciveUserTel,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.qm.entities.MessagePublishInfo">
+    update t_msgpublish_info
+    set send_time = #{sendTime,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=VARCHAR},
+      msg_content = #{msgContent,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      recive_user_tel = #{reciveUserTel,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qm.entities.MessagePublishInfo">
+    update t_msgpublish_info
+    set send_time = #{sendTime,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=VARCHAR},
+      msg_content = #{msgContent,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectNoSendTask" resultMap="ResultMapWithBLOBs">
+	  select 
+	    <include refid="Base_Column_List" />
+	    ,
+	    <include refid="Blob_Column_List" />
+	    from t_msgpublish_info
+	    where send_time &lt; #{currentInt} and status = 0 order by create_time
+  	
+  </select>
+  <select id="selectByCondition" parameterType="com.qm.entities.MessagePublishInfo" resultMap="ResultMapWithBLOBs">
+  	select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from t_msgpublish_info
+    order by send_time DESC
+    limit #{offset}, #{pageSize}
+  		
+  </select>
+  <select id="getTotal" parameterType="com.qm.entities.MessagePublishInfo"  resultType="int">
+  	select count(1) from t_msgpublish_info
+  </select>
+</mapper>

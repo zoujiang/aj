@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qm.mapper.KindergartenTaskInfoMapper">
+  <resultMap id="BaseResultMap" type="com.qm.entities.KindergartenTaskInfo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="task_date" jdbcType="VARCHAR" property="taskDate" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="teacher_id" jdbcType="INTEGER" property="teacherId" />
+    <result column="teacher_name" jdbcType="VARCHAR" property="teacherName" />
+    <result column="visit_grade_num" jdbcType="INTEGER" property="visitGradeNum" />
+    <result column="user_type" jdbcType="INTEGER" property="userType" />
+    <result column="photo_num" jdbcType="INTEGER" property="photoNum" />
+    <result column="video_num" jdbcType="INTEGER" property="videoNum" />
+    <result column="is_get_reward" jdbcType="INTEGER" property="isGetReward" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="renew_phone" jdbcType="VARCHAR" property="renewPhone" />
+    <result column="is_send" jdbcType="INTEGER" property="isSend" />
+    <result column="send_time" jdbcType="VARCHAR" property="sendTime" />
+    <result column="update_time" jdbcType="VARCHAR" property="updateTime" />
+    <result column="total_reward" jdbcType="VARCHAR" property="totalReward" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, task_date, user_id, teacher_id, teacher_name, visit_grade_num, user_type, photo_num, 
+    video_num, is_get_reward, remark, renew_phone, is_send, send_time, update_time,total_reward
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_kindergarten_task_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_kindergarten_task_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.qm.entities.KindergartenTaskInfo">
+    insert into t_kindergarten_task_info (id, task_date, user_id, 
+      teacher_id, teacher_name, visit_grade_num, 
+      user_type, photo_num, video_num, 
+      is_get_reward, remark, renew_phone, 
+      is_send, send_time, update_time, total_reward
+      )
+    values (#{id,jdbcType=INTEGER}, #{taskDate,jdbcType=VARCHAR}, #{userId,jdbcType=INTEGER}, 
+      #{teacherId,jdbcType=INTEGER}, #{teacherName,jdbcType=VARCHAR}, #{visitGradeNum,jdbcType=INTEGER}, 
+      #{userType,jdbcType=INTEGER}, #{photoNum,jdbcType=INTEGER}, #{videoNum,jdbcType=INTEGER}, 
+      #{isGetReward,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR}, #{renewPhone,jdbcType=VARCHAR}, 
+      #{isSend,jdbcType=INTEGER}, #{sendTime,jdbcType=VARCHAR}, #{updateTime,jdbcType=VARCHAR}, #{totalReward,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.qm.entities.KindergartenTaskInfo">
+    insert into t_kindergarten_task_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="taskDate != null">
+        task_date,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="teacherId != null">
+        teacher_id,
+      </if>
+      <if test="teacherName != null">
+        teacher_name,
+      </if>
+      <if test="visitGradeNum != null">
+        visit_grade_num,
+      </if>
+      <if test="userType != null">
+        user_type,
+      </if>
+      <if test="photoNum != null">
+        photo_num,
+      </if>
+      <if test="videoNum != null">
+        video_num,
+      </if>
+      <if test="isGetReward != null">
+        is_get_reward,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+      <if test="renewPhone != null">
+        renew_phone,
+      </if>
+      <if test="isSend != null">
+        is_send,
+      </if>
+      <if test="sendTime != null">
+        send_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="totalReward != null">
+        total_reward,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="taskDate != null">
+        #{taskDate,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="teacherId != null">
+        #{teacherId,jdbcType=INTEGER},
+      </if>
+      <if test="teacherName != null">
+        #{teacherName,jdbcType=VARCHAR},
+      </if>
+      <if test="visitGradeNum != null">
+        #{visitGradeNum,jdbcType=INTEGER},
+      </if>
+      <if test="userType != null">
+        #{userType,jdbcType=INTEGER},
+      </if>
+      <if test="photoNum != null">
+        #{photoNum,jdbcType=INTEGER},
+      </if>
+      <if test="videoNum != null">
+        #{videoNum,jdbcType=INTEGER},
+      </if>
+      <if test="isGetReward != null">
+        #{isGetReward,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="renewPhone != null">
+        #{renewPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="isSend != null">
+        #{isSend,jdbcType=INTEGER},
+      </if>
+      <if test="sendTime != null">
+        #{sendTime,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="totalReward != null">
+        #{totalReward,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.qm.entities.KindergartenTaskInfo">
+    update t_kindergarten_task_info
+    <set>
+      <if test="taskDate != null">
+        task_date = #{taskDate,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="teacherId != null">
+        teacher_id = #{teacherId,jdbcType=INTEGER},
+      </if>
+      <if test="teacherName != null">
+        teacher_name = #{teacherName,jdbcType=VARCHAR},
+      </if>
+      <if test="visitGradeNum != null">
+        visit_grade_num = #{visitGradeNum,jdbcType=INTEGER},
+      </if>
+      <if test="userType != null">
+        user_type = #{userType,jdbcType=INTEGER},
+      </if>
+      <if test="photoNum != null">
+        photo_num = #{photoNum,jdbcType=INTEGER},
+      </if>
+      <if test="videoNum != null">
+        video_num = #{videoNum,jdbcType=INTEGER},
+      </if>
+      <if test="isGetReward != null">
+        is_get_reward = #{isGetReward,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="renewPhone != null">
+        renew_phone = #{renewPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="isSend != null">
+        is_send = #{isSend,jdbcType=INTEGER},
+      </if>
+      <if test="sendTime != null">
+        send_time = #{sendTime,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="totalReward != null">
+        total_reward = #{totalReward,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qm.entities.KindergartenTaskInfo">
+    update t_kindergarten_task_info
+    set task_date = #{taskDate,jdbcType=VARCHAR},
+      user_id = #{userId,jdbcType=INTEGER},
+      teacher_id = #{teacherId,jdbcType=INTEGER},
+      teacher_name = #{teacherName,jdbcType=VARCHAR},
+      visit_grade_num = #{visitGradeNum,jdbcType=INTEGER},
+      user_type = #{userType,jdbcType=INTEGER},
+      photo_num = #{photoNum,jdbcType=INTEGER},
+      video_num = #{videoNum,jdbcType=INTEGER},
+      is_get_reward = #{isGetReward,jdbcType=INTEGER},
+      remark = #{remark,jdbcType=VARCHAR},
+      renew_phone = #{renewPhone,jdbcType=VARCHAR},
+      is_send = #{isSend,jdbcType=INTEGER},
+      send_time = #{sendTime,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=VARCHAR},
+      total_reward = #{totalReward,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByCondition" parameterType="com.qm.entities.KindergartenTaskInfo" resultMap="BaseResultMap">
+  
+  	select <include refid="Base_Column_List" /> from t_kindergarten_task_info t
+  	
+  	where 1=1  
+  	 <if test="teacherId != null">
+        and teacher_id = #{teacherId,jdbcType=INTEGER}
+      </if>
+    <if test="taskDate != null">
+       and  task_date = #{taskDate,jdbcType=VARCHAR}
+      </if>
+    <if test="teacherName != null and teacherName != ''">
+       and  teacher_name = #{teacherName,jdbcType=VARCHAR}
+      </if>
+    <if test="kindergartenId != null">
+       and  ( select kindergarten_id from t_kindergarten_teacher a where a.id = t.teacher_id  ) = #{kindergartenId,jdbcType=VARCHAR}
+      </if>
+      <if test="isSend != null">
+       and  is_send = #{isSend,jdbcType=INTEGER}
+      </if>
+      <if test="userType != null">
+       and  user_type = #{userType,jdbcType=INTEGER}
+      </if>
+      <if test="userTypes != null and userTypes.size() > 0">
+      	and user_type in 
+      	<foreach collection="userTypes" index="index" item="item" open="(" separator="," close=")">
+			#{item}       
+		</foreach> 
+      </if>
+      order by t.update_time desc
+  </select>
+  <select id="getTotal" parameterType="com.qm.entities.KindergartenTaskInfo" resultType="java.lang.Integer">
+  
+  	select count(1) from t_kindergarten_task_info t
+  	
+  	where 1=1  
+  	 <if test="teacherId != null">
+        and teacher_id = #{teacherId,jdbcType=INTEGER}
+      </if>
+    <if test="taskDate != null">
+       and  task_date = #{taskDate,jdbcType=VARCHAR}
+      </if>
+    <if test="teacherName != null and teacherName != ''">
+       and  teacher_name = #{teacherName,jdbcType=VARCHAR}
+      </if>
+    <if test="kindergartenId != null">
+       and  ( select kindergarten_id from t_kindergarten_teacher a where a.id = t.teacher_id  ) = #{kindergartenId,jdbcType=VARCHAR}
+      </if>
+      <if test="isSend != null">
+       and  is_send = #{isSend,jdbcType=INTEGER}
+      </if>
+       <if test="userType != null">
+       and  user_type = #{userType,jdbcType=INTEGER}
+      </if>
+       <if test="userTypes != null and userTypes.size() > 0">
+      	and user_type in 
+      	<foreach collection="userTypes" index="index" item="item" open="(" separator="," close=")">
+			#{item}       
+		</foreach> 
+      </if>
+  </select>
+</mapper>

@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qm.mapper.CouponInfoMapper">
+  <resultMap id="BaseResultMap" type="com.qm.entities.CouponInfo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="get_condition" jdbcType="INTEGER" property="getCondition" />
+    <result column="start_time" jdbcType="VARCHAR" property="startTime" />
+    <result column="end_time" jdbcType="VARCHAR" property="endTime" />
+    <result column="total_num" jdbcType="INTEGER" property="totalNum" />
+    <result column="left_num" jdbcType="INTEGER" property="leftNum" />
+    <result column="is_recommend" jdbcType="INTEGER" property="isRecommend" />
+    <result column="recommend_idx" jdbcType="INTEGER" property="recommendIdx" />
+    <result column="first_page_pic" jdbcType="VARCHAR" property="firstPagePic" />
+    <result column="tag" jdbcType="VARCHAR" property="tag" />
+    <result column="show_img" jdbcType="VARCHAR" property="showImg" />
+    <result column="is_link" jdbcType="INTEGER" property="isLink" />
+    <result column="link_address" jdbcType="VARCHAR" property="linkAddress" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="shop_id" jdbcType="VARCHAR" property="shopId" />
+    <result column="is_validate" jdbcType="INTEGER" property="isValidate" />
+    <result column="create_user" jdbcType="VARCHAR" property="createUser" />
+    <result column="create_time" jdbcType="VARCHAR" property="createTime" />
+    <result column="limit_num" jdbcType="INTEGER" property="limitNum" />
+    <result column="couponShopName" jdbcType="VARCHAR" property="couponShopName" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, name, get_condition, start_time, end_time, total_num, left_num, is_recommend, 
+    recommend_idx, first_page_pic, tag, show_img, is_link, link_address, description, 
+    shop_id, is_validate, create_user, create_time, limit_num
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_coupon_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_coupon_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.qm.entities.CouponInfo">
+    insert into t_coupon_info (id, name, get_condition, 
+      start_time, end_time, total_num, 
+      left_num, is_recommend, recommend_idx, 
+      first_page_pic, tag, show_img, 
+      is_link, link_address, description, 
+      shop_id, is_validate, create_user, 
+      create_time, limit_num)
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{getCondition,jdbcType=INTEGER}, 
+      #{startTime,jdbcType=VARCHAR}, #{endTime,jdbcType=VARCHAR}, #{totalNum,jdbcType=INTEGER}, 
+      #{leftNum,jdbcType=INTEGER}, #{isRecommend,jdbcType=INTEGER}, #{recommendIdx,jdbcType=INTEGER}, 
+      #{firstPagePic,jdbcType=VARCHAR}, #{tag,jdbcType=VARCHAR}, #{showImg,jdbcType=VARCHAR}, 
+      #{isLink,jdbcType=INTEGER}, #{linkAddress,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
+      #{shopId,jdbcType=VARCHAR}, #{isValidate,jdbcType=INTEGER}, #{createUser,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=VARCHAR}, #{limitNum,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.qm.entities.CouponInfo">
+    insert into t_coupon_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="getCondition != null">
+        get_condition,
+      </if>
+      <if test="startTime != null">
+        start_time,
+      </if>
+      <if test="endTime != null">
+        end_time,
+      </if>
+      <if test="totalNum != null">
+        total_num,
+      </if>
+      <if test="leftNum != null">
+        left_num,
+      </if>
+      <if test="isRecommend != null">
+        is_recommend,
+      </if>
+      <if test="recommendIdx != null">
+        recommend_idx,
+      </if>
+      <if test="firstPagePic != null">
+        first_page_pic,
+      </if>
+      <if test="tag != null">
+        tag,
+      </if>
+      <if test="showImg != null">
+        show_img,
+      </if>
+      <if test="isLink != null">
+        is_link,
+      </if>
+      <if test="linkAddress != null">
+        link_address,
+      </if>
+      <if test="description != null">
+        description,
+      </if>
+      <if test="shopId != null">
+        shop_id,
+      </if>
+      <if test="isValidate != null">
+        is_validate,
+      </if>
+      <if test="createUser != null">
+        create_user,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="limitNum != null">
+        limit_num,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="getCondition != null">
+        #{getCondition,jdbcType=INTEGER},
+      </if>
+      <if test="startTime != null">
+        #{startTime,jdbcType=VARCHAR},
+      </if>
+      <if test="endTime != null">
+        #{endTime,jdbcType=VARCHAR},
+      </if>
+      <if test="totalNum != null">
+        #{totalNum,jdbcType=INTEGER},
+      </if>
+      <if test="leftNum != null">
+        #{leftNum,jdbcType=INTEGER},
+      </if>
+      <if test="isRecommend != null">
+        #{isRecommend,jdbcType=INTEGER},
+      </if>
+      <if test="recommendIdx != null">
+        #{recommendIdx,jdbcType=INTEGER},
+      </if>
+      <if test="firstPagePic != null">
+        #{firstPagePic,jdbcType=VARCHAR},
+      </if>
+      <if test="tag != null">
+        #{tag,jdbcType=VARCHAR},
+      </if>
+      <if test="showImg != null">
+        #{showImg,jdbcType=VARCHAR},
+      </if>
+      <if test="isLink != null">
+        #{isLink,jdbcType=INTEGER},
+      </if>
+      <if test="linkAddress != null">
+        #{linkAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="shopId != null">
+        #{shopId,jdbcType=VARCHAR},
+      </if>
+      <if test="isValidate != null">
+        #{isValidate,jdbcType=INTEGER},
+      </if>
+      <if test="createUser != null">
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=VARCHAR},
+      </if>
+      <if test="limitNum != null">
+        #{limitNum,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.qm.entities.CouponInfo">
+    update t_coupon_info
+    <set>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="getCondition != null">
+        get_condition = #{getCondition,jdbcType=INTEGER},
+      </if>
+      <if test="startTime != null">
+        start_time = #{startTime,jdbcType=VARCHAR},
+      </if>
+      <if test="endTime != null">
+        end_time = #{endTime,jdbcType=VARCHAR},
+      </if>
+      <if test="totalNum != null">
+        total_num = #{totalNum,jdbcType=INTEGER},
+      </if>
+      <if test="leftNum != null">
+        left_num = #{leftNum,jdbcType=INTEGER},
+      </if>
+      <if test="isRecommend != null">
+        is_recommend = #{isRecommend,jdbcType=INTEGER},
+      </if>
+      <if test="recommendIdx != null">
+        recommend_idx = #{recommendIdx,jdbcType=INTEGER},
+      </if>
+      <if test="firstPagePic != null">
+        first_page_pic = #{firstPagePic,jdbcType=VARCHAR},
+      </if>
+      <if test="tag != null">
+        tag = #{tag,jdbcType=VARCHAR},
+      </if>
+      <if test="showImg != null">
+        show_img = #{showImg,jdbcType=VARCHAR},
+      </if>
+      <if test="isLink != null">
+        is_link = #{isLink,jdbcType=INTEGER},
+      </if>
+      <if test="linkAddress != null">
+        link_address = #{linkAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="shopId != null">
+        shop_id = #{shopId,jdbcType=VARCHAR},
+      </if>
+      <if test="isValidate != null">
+        is_validate = #{isValidate,jdbcType=INTEGER},
+      </if>
+      <if test="createUser != null">
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=VARCHAR},
+      </if>
+      <if test="limitNum != null">
+        limit_num = #{limitNum,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qm.entities.CouponInfo">
+    update t_coupon_info
+    set name = #{name,jdbcType=VARCHAR},
+      get_condition = #{getCondition,jdbcType=INTEGER},
+      start_time = #{startTime,jdbcType=VARCHAR},
+      end_time = #{endTime,jdbcType=VARCHAR},
+      total_num = #{totalNum,jdbcType=INTEGER},
+      left_num = #{leftNum,jdbcType=INTEGER},
+      is_recommend = #{isRecommend,jdbcType=INTEGER},
+      recommend_idx = #{recommendIdx,jdbcType=INTEGER},
+      first_page_pic = #{firstPagePic,jdbcType=VARCHAR},
+      tag = #{tag,jdbcType=VARCHAR},
+      show_img = #{showImg,jdbcType=VARCHAR},
+      is_link = #{isLink,jdbcType=INTEGER},
+      link_address = #{linkAddress,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR},
+      shop_id = #{shopId,jdbcType=VARCHAR},
+      is_validate = #{isValidate,jdbcType=INTEGER},
+      create_user = #{createUser,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=VARCHAR},
+      limit_num = #{limitNum,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByCondition" parameterType="com.qm.entities.CouponInfo" resultMap="BaseResultMap">
+  	select 
+  		i.id, i.name, i.get_condition, i.start_time, i.end_time, i.total_num, i.left_num, i.is_recommend, 
+	    i.recommend_idx, i.first_page_pic, i.tag, i.show_img, i.is_link, i.link_address, i.description, 
+	    i.shop_id, i.is_validate, i.create_user, i.create_time, i.limit_num, s.shop_name couponShopName
+    from t_coupon_info i, t_coupon_shop_info s where i.shop_id = s.id
+    	<if test="shopId != null">
+    		and i.shop_id = #{shopId,jdbcType=VARCHAR}
+    	</if>
+  		<if test="name != null and name != ''" >
+  			and i.name like concat('%', #{name,jdbcType=VARCHAR} ,'%')
+  		</if>
+  		order by i.recommend_idx asc, i.create_time desc
+  		limit #{offset}, #{pageSize}
+  </select>
+  <select id="getTotal" parameterType="com.qm.entities.CouponInfo"  resultType="int">
+  	select 
+  		count(i.id)
+    from t_coupon_info i, t_coupon_shop_info s where i.shop_id = s.id
+    	<if test="shopId != null">
+    		and i.shop_id = #{shopId,jdbcType=VARCHAR}
+    	</if>
+  		<if test="name != null and name != ''" >
+  			and i.name like concat('%', #{name,jdbcType=VARCHAR} ,'%')
+  		</if>
+  </select>
+</mapper>

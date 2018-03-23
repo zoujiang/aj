@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qm.mapper.PrizeGrantInfoMapper">
+  <resultMap id="BaseResultMap" type="com.qm.entities.PrizeGrantInfo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="kindergarten_id" jdbcType="INTEGER" property="kindergartenId" />
+    <result column="teacher_id" jdbcType="INTEGER" property="teacherId" />
+    <result column="prize_date" jdbcType="VARCHAR" property="prizeDate" />
+    <result column="user_tel" jdbcType="VARCHAR" property="userTel" />
+    <result column="create_time" jdbcType="VARCHAR" property="createTime" />
+    <result column="teacherName" jdbcType="VARCHAR" property="teacherName" />
+    <result column="kindergartenName" jdbcType="VARCHAR" property="kindergartenName" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, kindergarten_id, teacher_id, prize_date, user_tel, create_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_prize_grant_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_prize_grant_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.qm.entities.PrizeGrantInfo">
+    insert into t_prize_grant_info (id, kindergarten_id, teacher_id, 
+      prize_date, user_tel, create_time
+      )
+    values (#{id,jdbcType=INTEGER}, #{kindergartenId,jdbcType=INTEGER}, #{teacherId,jdbcType=INTEGER}, 
+      #{prizeDate,jdbcType=VARCHAR}, #{userTel,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.qm.entities.PrizeGrantInfo">
+    insert into t_prize_grant_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="kindergartenId != null">
+        kindergarten_id,
+      </if>
+      <if test="teacherId != null">
+        teacher_id,
+      </if>
+      <if test="prizeDate != null">
+        prize_date,
+      </if>
+      <if test="userTel != null">
+        user_tel,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="kindergartenId != null">
+        #{kindergartenId,jdbcType=INTEGER},
+      </if>
+      <if test="teacherId != null">
+        #{teacherId,jdbcType=INTEGER},
+      </if>
+      <if test="prizeDate != null">
+        #{prizeDate,jdbcType=VARCHAR},
+      </if>
+      <if test="userTel != null">
+        #{userTel,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.qm.entities.PrizeGrantInfo">
+    update t_prize_grant_info
+    <set>
+      <if test="kindergartenId != null">
+        kindergarten_id = #{kindergartenId,jdbcType=INTEGER},
+      </if>
+      <if test="teacherId != null">
+        teacher_id = #{teacherId,jdbcType=INTEGER},
+      </if>
+      <if test="prizeDate != null">
+        prize_date = #{prizeDate,jdbcType=VARCHAR},
+      </if>
+      <if test="userTel != null">
+        user_tel = #{userTel,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qm.entities.PrizeGrantInfo">
+    update t_prize_grant_info
+    set kindergarten_id = #{kindergartenId,jdbcType=INTEGER},
+      teacher_id = #{teacherId,jdbcType=INTEGER},
+      prize_date = #{prizeDate,jdbcType=VARCHAR},
+      user_tel = #{userTel,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByCondtion" parameterType="com.qm.entities.PrizeGrantInfo" resultMap="BaseResultMap">
+  	select 
+  		i.id, i.kindergarten_id, i.teacher_id, i.prize_date, i.user_tel, i.create_time, t.name teacherName, k.name kindergartenName
+  	from t_prize_grant_info i, t_kindergarten_teacher t, t_kindergarten_info k where i.teacher_id = t.id and i.kindergarten_id = k.id
+  	<if test="teacherName != null and teacherName != ''">
+  		and t.name = #{teacherName,jdbcType=VARCHAR}
+  	</if>
+  	order by i.create_time
+  	limit #{offset}, #{pageSize}
+  </select>
+  <select id="getTotal" parameterType="com.qm.entities.PrizeGrantInfo" resultType="int">
+  	select 
+  		count(i.id)
+  	from t_prize_grant_info i, t_kindergarten_teacher t where i.teacher_id = t.id
+  	<if test="teacherName != null and teacherName != ''">
+  		and t.name = #{teacherName,jdbcType=VARCHAR}
+  	</if>
+  </select>
+</mapper>

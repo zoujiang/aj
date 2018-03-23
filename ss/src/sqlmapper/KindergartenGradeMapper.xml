@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qm.mapper.KindergartenGradeMapper">
+  <resultMap id="BaseResultMap" type="com.qm.entities.KindergartenGrade">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="kindergarten_id" jdbcType="INTEGER" property="kindergartenId" />
+    <result column="series" jdbcType="VARCHAR" property="series" />
+    <result column="class_no" jdbcType="VARCHAR" property="classNo" />
+    <result column="first_teacher" jdbcType="INTEGER" property="firstTeacher" />
+    <result column="second_teacher" jdbcType="INTEGER" property="secondTeacher" />
+    <result column="nurse" jdbcType="INTEGER" property="nurse" />
+    <result column="logo" jdbcType="VARCHAR" property="logo" />
+    <result column="declaration" jdbcType="VARCHAR" property="declaration" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="rule" jdbcType="VARCHAR" property="rule" />
+    <result column="create_time" jdbcType="VARCHAR" property="createTime" />
+    <result column="create_user" jdbcType="VARCHAR" property="createUser" />
+    <result column="class_name" jdbcType="VARCHAR" property="className" />
+    <result column="kindergartenName" jdbcType="VARCHAR" property="kindergartenName" />
+    <result column="firstTeacherName" jdbcType="VARCHAR" property="firstTeacherName" />
+    <result column="secondTeacherName" jdbcType="VARCHAR" property="secondTeacherName" />
+    <result column="nurseName" jdbcType="VARCHAR" property="nurseName" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, kindergarten_id, series, class_no, first_teacher, second_teacher, nurse, logo, 
+    declaration, name, rule, create_time, create_user, class_name
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_kindergarten_grade
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_kindergarten_grade
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.qm.entities.KindergartenGrade">
+    insert into t_kindergarten_grade (id, kindergarten_id, series, 
+      class_no, first_teacher, second_teacher, 
+      nurse, logo, declaration, 
+      name, rule, create_time, 
+      create_user, class_name)
+    values (#{id,jdbcType=INTEGER}, #{kindergartenId,jdbcType=INTEGER}, #{series,jdbcType=VARCHAR}, 
+      #{classNo,jdbcType=VARCHAR}, #{firstTeacher,jdbcType=INTEGER}, #{secondTeacher,jdbcType=INTEGER}, 
+      #{nurse,jdbcType=INTEGER}, #{logo,jdbcType=VARCHAR}, #{declaration,jdbcType=VARCHAR}, 
+      #{name,jdbcType=VARCHAR}, #{rule,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, 
+      #{createUser,jdbcType=VARCHAR}, #{className,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.qm.entities.KindergartenGrade">
+    insert into t_kindergarten_grade
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="kindergartenId != null">
+        kindergarten_id,
+      </if>
+      <if test="series != null">
+        series,
+      </if>
+      <if test="classNo != null">
+        class_no,
+      </if>
+      <if test="firstTeacher != null">
+        first_teacher,
+      </if>
+      <if test="secondTeacher != null">
+        second_teacher,
+      </if>
+      <if test="nurse != null">
+        nurse,
+      </if>
+      <if test="logo != null">
+        logo,
+      </if>
+      <if test="declaration != null">
+        declaration,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="rule != null">
+        rule,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="createUser != null">
+        create_user,
+      </if>
+      <if test="className != null">
+        class_name,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="kindergartenId != null">
+        #{kindergartenId,jdbcType=INTEGER},
+      </if>
+      <if test="series != null">
+        #{series,jdbcType=VARCHAR},
+      </if>
+      <if test="classNo != null">
+        #{classNo,jdbcType=VARCHAR},
+      </if>
+      <if test="firstTeacher != null">
+        #{firstTeacher,jdbcType=INTEGER},
+      </if>
+      <if test="secondTeacher != null">
+        #{secondTeacher,jdbcType=INTEGER},
+      </if>
+      <if test="nurse != null">
+        #{nurse,jdbcType=INTEGER},
+      </if>
+      <if test="logo != null">
+        #{logo,jdbcType=VARCHAR},
+      </if>
+      <if test="declaration != null">
+        #{declaration,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="rule != null">
+        #{rule,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null">
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="className != null">
+        #{className,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.qm.entities.KindergartenGrade">
+    update t_kindergarten_grade
+    <set>
+      <if test="kindergartenId != null">
+        kindergarten_id = #{kindergartenId,jdbcType=INTEGER},
+      </if>
+      <if test="series != null">
+        series = #{series,jdbcType=VARCHAR},
+      </if>
+      <if test="classNo != null">
+        class_no = #{classNo,jdbcType=VARCHAR},
+      </if>
+      <if test="firstTeacher != null">
+        first_teacher = #{firstTeacher,jdbcType=INTEGER},
+      </if>
+      <if test="secondTeacher != null">
+        second_teacher = #{secondTeacher,jdbcType=INTEGER},
+      </if>
+      <if test="nurse != null">
+        nurse = #{nurse,jdbcType=INTEGER},
+      </if>
+      <if test="logo != null">
+        logo = #{logo,jdbcType=VARCHAR},
+      </if>
+      <if test="declaration != null">
+        declaration = #{declaration,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="rule != null">
+        rule = #{rule,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null">
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="className != null">
+        class_name = #{className,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qm.entities.KindergartenGrade">
+    update t_kindergarten_grade
+    set kindergarten_id = #{kindergartenId,jdbcType=INTEGER},
+      series = #{series,jdbcType=VARCHAR},
+      class_no = #{classNo,jdbcType=VARCHAR},
+      first_teacher = #{firstTeacher,jdbcType=INTEGER},
+      second_teacher = #{secondTeacher,jdbcType=INTEGER},
+      nurse = #{nurse,jdbcType=INTEGER},
+      logo = #{logo,jdbcType=VARCHAR},
+      declaration = #{declaration,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      rule = #{rule,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=VARCHAR},
+      create_user = #{createUser,jdbcType=VARCHAR},
+      class_name = #{className,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByCondition" parameterType="com.qm.entities.KindergartenGrade" resultMap="BaseResultMap">
+  
+  	select 
+  		g.id, g.kindergarten_id, g.series, g.class_no, g.first_teacher, g.second_teacher, g.nurse, g.logo, 
+    g.declaration, g.name, g.rule, g.create_time, g.create_user, g.class_name, i.name kindergartenName,
+     (select name from t_kindergarten_teacher t where g.first_teacher = t.id) firstTeacherName,
+     (select name from t_kindergarten_teacher t where g.second_teacher = t.id) secondTeacherName,
+     (select name from t_kindergarten_teacher t where g.nurse = t.id) nurseName
+  	from t_kindergarten_grade g left join t_kindergarten_info i on g.kindergarten_id = i.id
+  		where 1=1
+  		<if test="kindergartenId != null and kindergartenId !=''">
+  			and kindergarten_id = #{kindergartenId,jdbcType=INTEGER}
+  		</if>
+  		<if test="series != null and series != ''">
+  			and series = #{series,jdbcType=VARCHAR}
+  		</if>
+  		order by create_time desc
+  		limit #{offset}, #{pageSize}
+  </select>
+  <select id="getTotal" parameterType="com.qm.entities.KindergartenGrade" resultType="int">
+  	select 
+  		count(1)
+  	from t_kindergarten_grade
+  		where 1=1
+  		<if test="kindergartenId != null and kindergartenId !=''">
+  			and kindergarten_id = #{kindergartenId,jdbcType=INTEGER}
+  		</if>
+  		<if test="series != null and series != ''">
+  			and series = #{series,jdbcType=VARCHAR}
+  		</if>
+  </select>
+  <select id="selectGradeAndTeacherByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+  
+  	select 
+  		g.id, g.kindergarten_id, g.series, g.class_no, g.first_teacher, g.second_teacher, g.nurse, g.logo, 
+    g.declaration, g.name, g.rule, g.create_time, g.create_user, g.class_name, 
+     (select name from t_kindergarten_teacher t where g.first_teacher = t.id) firstTeacherName,
+     (select name from t_kindergarten_teacher t where g.second_teacher = t.id) secondTeacherName,
+     (select name from t_kindergarten_teacher t where g.nurse = t.id) nurseName
+  	from t_kindergarten_grade g 
+  		where g.id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectGradeNamesByIds" parameterType="java.util.ArrayList" resultMap="BaseResultMap">
+   select 
+    <include refid="Base_Column_List" />
+    from t_kindergarten_grade
+    where id in 
+     <foreach collection="gradeNum" item="pId" index="index"  open="(" close=")" separator=",">
+                ${pId}
+            </foreach>
+    
+  </select>
+  <select id="selectGradeAndTeacherInfo" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+  	select t.gradeId, t.category, t.total, g.rule, g.series, g.class_no classNo, g.kindergarten_id kindergartenId from t_kindergarten_grade g, (select grade_id gradeId,category, count(category) total from t_kindergarten_photo where create_user = ? and left(create_time, 7) = ? group by grade_id, category ) t where g.id = t.gradeId
+  </select>
+  
+  <select id="getSeriesNum" parameterType="com.qm.entities.KindergartenGrade" resultType="int">
+  	select 
+  		count(distinct series)
+  	from t_kindergarten_grade
+  		where 1=1
+  		<if test="kindergartenId != null and kindergartenId !=''">
+  			and kindergarten_id = #{kindergartenId,jdbcType=INTEGER}
+  		</if>
+  </select>
+</mapper>

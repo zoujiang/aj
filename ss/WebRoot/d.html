@@ -1,0 +1,125 @@
+<!DOCTYPE html pageEncoding="UTF-8" contentType="text/html; charset=UTF-8">
+<html>
+  <head>
+    <title>片源下载</title>
+	
+    <meta name="keywords" content="keyword1,keyword2,keyword3">
+    <meta name="description" content="this is my page">
+    <meta charset="UTF-8">
+    <meta name="content-type" content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="/ys/resources/hplus4.1/js/jquery.min.js"></script>
+	  <link href="/ys/resources/d.css" rel="stylesheet">
+  </head>
+  
+  <body>
+	  <input type="hidden" id="albumId" name="aId">
+	<div class="docs init-docs" id="doc">
+		<div class="acss-header" id="header">
+			<div class="acss_banner"></div>
+			<div class="verify-form">
+				<form action="" class="clearfix" name="accessForm"
+					onsubmit="return false">
+					<div class="title" >
+						<div class="avatar">
+							<div class="photo-frame">
+								<img id="slogo" width="44"></span>
+							</div>
+						</div>
+						<span class="verify-property" id="showTitle"><strong id="sname"></strong>的相册<<b><span id="aname"></span></b>>片源下载</span>
+						<div class="cb"></div>
+					</div>
+					<div class="verify-input ac-close clearfix" id="showMsg">
+						<span style="color: gary;">提示：请在文件下载完成后更改文件后缀为zip。</span>
+						<dl class="pickpw clearfix">
+							<dt>请输入提取密码：</dt>
+							<dd class="clearfix">
+								<input class="access-code access-fld" id="accessCode" name="accessCode" tabindex="1" type="text" style="height: 38px;">
+								<div id="submitBtn">
+									<a class="g-button g-button-blue-large" data-button-id="b1"
+										data-button-index="" href="javascript:void(0);" onclick="getFile();"><span
+										class="g-button-right"><span class="text" style="width: auto;">提取文件</span></span></a>
+								</div>
+							</dd>
+							<dd id="showmsg" style="display: none;color: red;"></dd>
+						</dl>
+						<dl class="pickcode clearfix">
+						</dl>
+					</div>
+				</form>
+				<div id="tip" style="display: block;"></div>
+			</div>
+		</div>
+		<div class="cloud-bg">
+			<div class="bg1"></div>
+			<div class="bg2"></div>
+			<div class="bg3"></div>
+		</div>
+		<div class="init-footer">
+			<div class="footer" id="footer" style="height: 40px;">
+				<div class="footer-txt">
+					<div xmlns="http://www.w3.org/1999/xhtml">
+						©2017 亲脉
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	</form>
+  <script type="text/javascript">             
+  var url = document.location.toString();
+	var queryString = url.substring(url.lastIndexOf("?") + 1, url.length); // 判断URL是否带参数传递  
+			$(document).ready(
+					
+					function() {
+						
+						if (url.lastIndexOf("?") != -1) {
+							
+							if (queryString != "") {
+								$("#albumId").val(queryString);
+								$.ajax({
+									type : "GET",
+									url : "/ys/admin/shop/album/dInit?id="+ queryString,
+									dataType : "json",
+									success : function(data) {
+										if (data.success) {
+											var d = data.data;
+											$("#slogo").attr("src", d.logo);
+											$("#sname").text(d.shopName);
+											$("#aname").text(d.albumName);
+										} else {
+											$("#showTitle").html("");
+											$("#showMsg").html(data.message);
+										}
+									}
+								});
+							}
+						} else {
+							queryString = "";
+						}
+					});
+			 function getFile(){
+				
+				 var accessCode = $("#accessCode").val();
+				 if(accessCode == ""){
+					 $("#showmsg").show();
+					 $("#showmsg").text("请输入提取密码");
+				 }else{
+					 $("#showmsg").hide();
+					 $.ajax({
+							type : "GET",
+							url : "/ys/admin/shop/album/d?id="+ queryString+"&accessCode="+accessCode,
+							dataType : "json",
+							success : function(data) {
+								if (data.success) {
+									 window.location.href = data.url;
+								} else {
+									$("#showmsg").show();
+									$("#showmsg").text("提取密码错误");
+								}
+							}
+						});
+				 }
+			 }
+		</script>  
+  </body>
+</html>
