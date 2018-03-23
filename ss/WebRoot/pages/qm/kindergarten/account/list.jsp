@@ -108,9 +108,9 @@
     		    	field:'status',
     		    	title:'状态',
     		    	formatter:function(value, row, index){
-    		    		if(value == 0){
+    		    		if(value == 1){
     		        		return "正常";
-    		        	}else if(value == 1){
+    		        	}else if(value == 2){
     		        		return "冻结";
     		        	} else{
     		        		return "删除"
@@ -123,8 +123,8 @@
    		        		var freeze="";
    		        		var del="";
    		        		var setRole="";
-   		        		if(row.status == "0" || row.status == "1"){
-	   		        		if(row.status == "0"){
+   		        		if(row.status == "1" || row.status == "2"){
+	   		        		if(row.status == "1"){
 	   							freeze = "<span  height = '23px'  width = '23px'><a style='color:blue;' href='#' onclick=\"AppMgr.freeze('" + row.id + "','1',event)\" style='cursor: pointer' >冻结&nbsp;</a></span>";
 	   		        		} else {
 	   							freeze = "<span  height = '23px'  width = '23px'><a style='color:blue;' href='#' onclick=\"AppMgr.freeze('" + row.id + "','0',event)\" style='cursor: pointer' >启用&nbsp;</a></span>";

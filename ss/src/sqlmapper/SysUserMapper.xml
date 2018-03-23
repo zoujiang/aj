@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qm.mapper.SysUserMapper">
+  <resultMap id="BaseResultMap" type="com.qm.entities.SysUser">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="NAME" jdbcType="VARCHAR" property="name" />
+    <result column="ACCOUNT" jdbcType="VARCHAR" property="account" />
+    <result column="MOBILE" jdbcType="VARCHAR" property="mobile" />
+    <result column="TELE" jdbcType="VARCHAR" property="tele" />
+    <result column="EMAIL" jdbcType="VARCHAR" property="email" />
+    <result column="PWD" jdbcType="VARCHAR" property="pwd" />
+    <result column="ISENABLED" jdbcType="VARCHAR" property="isenabled" />
+    <result column="ACCOUNT_TYPE" jdbcType="VARCHAR" property="accountType" />
+    <result column="CITIZEN_ID" jdbcType="VARCHAR" property="citizenId" />
+    <result column="CREATE_USER" jdbcType="VARCHAR" property="createUser" />
+    <result column="CREATE_DT" jdbcType="TIMESTAMP" property="createDt" />
+    <result column="MODIFY_USER" jdbcType="VARCHAR" property="modifyUser" />
+    <result column="MODIFY_DT" jdbcType="DATE" property="modifyDt" />
+    <result column="OTHER_CODE" jdbcType="CHAR" property="otherCode" />
+    <result column="MSG_FLAG" jdbcType="CHAR" property="msgFlag" />
+    <result column="IS_PUSH" jdbcType="CHAR" property="isPush" />
+    <result column="photo" jdbcType="VARCHAR" property="photo" />
+    <result column="tripartite" jdbcType="VARCHAR" property="tripartite" />
+    <result column="SHOP_ID" jdbcType="VARCHAR" property="shopId" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ID, NAME, ACCOUNT, MOBILE, TELE, EMAIL, PWD, ISENABLED, ACCOUNT_TYPE, CITIZEN_ID, 
+    CREATE_USER, CREATE_DT, MODIFY_USER, MODIFY_DT, OTHER_CODE, MSG_FLAG, IS_PUSH, photo, 
+    tripartite, SHOP_ID
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_sys_user
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from t_sys_user
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.qm.entities.SysUser">
+    insert into t_sys_user (ID, NAME, ACCOUNT, 
+      MOBILE, TELE, EMAIL, 
+      PWD, ISENABLED, ACCOUNT_TYPE, 
+      CITIZEN_ID, CREATE_USER, CREATE_DT, 
+      MODIFY_USER, MODIFY_DT, OTHER_CODE, 
+      MSG_FLAG, IS_PUSH, photo, tripartite, 
+      SHOP_ID)
+    values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{account,jdbcType=VARCHAR}, 
+      #{mobile,jdbcType=VARCHAR}, #{tele,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, 
+      #{pwd,jdbcType=VARCHAR}, #{isenabled,jdbcType=VARCHAR}, #{accountType,jdbcType=VARCHAR}, 
+      #{citizenId,jdbcType=VARCHAR}, #{createUser,jdbcType=VARCHAR}, #{createDt,jdbcType=TIMESTAMP}, 
+      #{modifyUser,jdbcType=VARCHAR}, #{modifyDt,jdbcType=DATE}, #{otherCode,jdbcType=CHAR}, 
+      #{msgFlag,jdbcType=CHAR}, #{isPush,jdbcType=CHAR}, #{photo,jdbcType=VARCHAR}, #{tripartite,jdbcType=VARCHAR}, 
+      #{shopId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.qm.entities.SysUser">
+    insert into t_sys_user
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+      <if test="name != null">
+        NAME,
+      </if>
+      <if test="account != null">
+        ACCOUNT,
+      </if>
+      <if test="mobile != null">
+        MOBILE,
+      </if>
+      <if test="tele != null">
+        TELE,
+      </if>
+      <if test="email != null">
+        EMAIL,
+      </if>
+      <if test="pwd != null">
+        PWD,
+      </if>
+      <if test="isenabled != null">
+        ISENABLED,
+      </if>
+      <if test="accountType != null">
+        ACCOUNT_TYPE,
+      </if>
+      <if test="citizenId != null">
+        CITIZEN_ID,
+      </if>
+      <if test="createUser != null">
+        CREATE_USER,
+      </if>
+      <if test="createDt != null">
+        CREATE_DT,
+      </if>
+      <if test="modifyUser != null">
+        MODIFY_USER,
+      </if>
+      <if test="modifyDt != null">
+        MODIFY_DT,
+      </if>
+      <if test="otherCode != null">
+        OTHER_CODE,
+      </if>
+      <if test="msgFlag != null">
+        MSG_FLAG,
+      </if>
+      <if test="isPush != null">
+        IS_PUSH,
+      </if>
+      <if test="photo != null">
+        photo,
+      </if>
+      <if test="tripartite != null">
+        tripartite,
+      </if>
+      <if test="shopId != null">
+        SHOP_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="account != null">
+        #{account,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null">
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="tele != null">
+        #{tele,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null">
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="pwd != null">
+        #{pwd,jdbcType=VARCHAR},
+      </if>
+      <if test="isenabled != null">
+        #{isenabled,jdbcType=VARCHAR},
+      </if>
+      <if test="accountType != null">
+        #{accountType,jdbcType=VARCHAR},
+      </if>
+      <if test="citizenId != null">
+        #{citizenId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null">
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createDt != null">
+        #{createDt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyUser != null">
+        #{modifyUser,jdbcType=VARCHAR},
+      </if>
+      <if test="modifyDt != null">
+        #{modifyDt,jdbcType=DATE},
+      </if>
+      <if test="otherCode != null">
+        #{otherCode,jdbcType=CHAR},
+      </if>
+      <if test="msgFlag != null">
+        #{msgFlag,jdbcType=CHAR},
+      </if>
+      <if test="isPush != null">
+        #{isPush,jdbcType=CHAR},
+      </if>
+      <if test="photo != null">
+        #{photo,jdbcType=VARCHAR},
+      </if>
+      <if test="tripartite != null">
+        #{tripartite,jdbcType=VARCHAR},
+      </if>
+      <if test="shopId != null">
+        #{shopId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.qm.entities.SysUser">
+    update t_sys_user
+    <set>
+      <if test="name != null">
+        NAME = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="account != null">
+        ACCOUNT = #{account,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null">
+        MOBILE = #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="tele != null">
+        TELE = #{tele,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null">
+        EMAIL = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="pwd != null">
+        PWD = #{pwd,jdbcType=VARCHAR},
+      </if>
+      <if test="isenabled != null">
+        ISENABLED = #{isenabled,jdbcType=VARCHAR},
+      </if>
+      <if test="accountType != null">
+        ACCOUNT_TYPE = #{accountType,jdbcType=VARCHAR},
+      </if>
+      <if test="citizenId != null">
+        CITIZEN_ID = #{citizenId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null">
+        CREATE_USER = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createDt != null">
+        CREATE_DT = #{createDt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyUser != null">
+        MODIFY_USER = #{modifyUser,jdbcType=VARCHAR},
+      </if>
+      <if test="modifyDt != null">
+        MODIFY_DT = #{modifyDt,jdbcType=DATE},
+      </if>
+      <if test="otherCode != null">
+        OTHER_CODE = #{otherCode,jdbcType=CHAR},
+      </if>
+      <if test="msgFlag != null">
+        MSG_FLAG = #{msgFlag,jdbcType=CHAR},
+      </if>
+      <if test="isPush != null">
+        IS_PUSH = #{isPush,jdbcType=CHAR},
+      </if>
+      <if test="photo != null">
+        photo = #{photo,jdbcType=VARCHAR},
+      </if>
+      <if test="tripartite != null">
+        tripartite = #{tripartite,jdbcType=VARCHAR},
+      </if>
+      <if test="shopId != null">
+        SHOP_ID = #{shopId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qm.entities.SysUser">
+    update t_sys_user
+    set NAME = #{name,jdbcType=VARCHAR},
+      ACCOUNT = #{account,jdbcType=VARCHAR},
+      MOBILE = #{mobile,jdbcType=VARCHAR},
+      TELE = #{tele,jdbcType=VARCHAR},
+      EMAIL = #{email,jdbcType=VARCHAR},
+      PWD = #{pwd,jdbcType=VARCHAR},
+      ISENABLED = #{isenabled,jdbcType=VARCHAR},
+      ACCOUNT_TYPE = #{accountType,jdbcType=VARCHAR},
+      CITIZEN_ID = #{citizenId,jdbcType=VARCHAR},
+      CREATE_USER = #{createUser,jdbcType=VARCHAR},
+      CREATE_DT = #{createDt,jdbcType=TIMESTAMP},
+      MODIFY_USER = #{modifyUser,jdbcType=VARCHAR},
+      MODIFY_DT = #{modifyDt,jdbcType=DATE},
+      OTHER_CODE = #{otherCode,jdbcType=CHAR},
+      MSG_FLAG = #{msgFlag,jdbcType=CHAR},
+      IS_PUSH = #{isPush,jdbcType=CHAR},
+      photo = #{photo,jdbcType=VARCHAR},
+      tripartite = #{tripartite,jdbcType=VARCHAR},
+      SHOP_ID = #{shopId,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <select id="queryList" parameterType="com.qm.entities.KindergartenAccount" resultType="java.util.HashMap">
+  		select  a.id, i.name kindergartenName, a.account username, a.tele tel, a.name nickname, DATE_FORMAT(a.create_dt,'%Y-%m-%d %H:%i:%s') createTime, a.ISENABLED status from t_sys_user a, t_kindergarten_info i WHERE a.shop_id = i.id and a.ACCOUNT_TYPE = '7'
+  		<if test="username != null and username != ''">
+  			and	a.account like concat('%', #{username} ,'%')
+  		</if>
+  		<if test="kindergartenName != null and kindergartenName != ''">
+  			and i.name like concat('%', #{kindergartenName} ,'%')
+  		</if>
+  		<if test="offset != null and pageSize != null">
+  			limit #{offset}, #{pageSize}
+  		</if>
+  </select>
+  <select id="getTotal" parameterType="com.qm.entities.KindergartenAccount" resultType="java.lang.Integer">
+  		select  count(1) from t_sys_user a, t_kindergarten_info i WHERE a.shop_id = i.id and a.ACCOUNT_TYPE = '7'
+  		<if test="username != null and username != ''">
+  			and	a.account like concat('%', #{username} ,'%')
+  		</if>
+  		<if test="kindergartenName != null and kindergartenName != ''">
+  			and i.name like concat('%', #{kindergartenName} ,'%')
+  		</if>
+  </select>
+  <select id="selectMapByPrimaryKey" parameterType="java.lang.String" resultType="java.util.HashMap">
+  
+  	select id, a.account username,a.shop_id kindergartenId, a.name nickname, a.tele tel, a.EMAIL email, PWD password,a.ISENABLED status   from t_sys_user a WHERE  a.id = #{id}
+  </select>
+  <select id="findByCondition" parameterType="com.qm.entities.SysUser" resultMap="BaseResultMap">
+  	 select 
+    <include refid="Base_Column_List" />
+    from t_sys_user
+    where account = #{account}
+  </select>
+</mapper>

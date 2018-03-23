@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     
-    <title>亲脉后台管理系统</title>
+    <title>幼教汇后台管理系统</title>
    <%@ include file="/pages/comm/jsp/inc.jsp"%> 
     <link href="${ctx }/resources/hplus4.1/css/login.min.css" rel="stylesheet">
     <link href="${ctx }/resources/opentip/opentip.css" rel="stylesheet">
@@ -113,7 +113,7 @@ background: #18c8f6;
     <div class="middle-box text-center loginscreen  animated fadeInDown">
         <div>
             <div>
-                <span class="logo-name2">亲脉</span>
+                <span class="logo-name2">幼教汇</span>
 
             </div>
              <span class="sys-name">后台管理系统</span>

@@ -43,9 +43,9 @@
 	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="triggers">
 			<list>
-				 <ref bean="messageSendTrigger"/>
+				<!--  <ref bean="messageSendTrigger"/>
 				 <ref bean="teacherTaskStatisticsTrigger"/>
-				 <ref bean="kindergartenDailyStatisticsTrigger"/>
+				 <ref bean="kindergartenDailyStatisticsTrigger"/> -->
 			</list>
 		</property>
 	</bean>
