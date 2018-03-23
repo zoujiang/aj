@@ -41,7 +41,7 @@ String id = request.getParameter("id");
 	                	  $("#tel").val(data.message.tel);
 	                	  $("#email").val(data.message.email);
 	                	  $("#password").val(data.message.password);
-	                	  if(data.message.status == 0){
+	                	  if(data.message.status == 1){
 	                		  $("#ra0").attr("checked","checked");
 	                	  }else{
 	                		  $("#ra1").attr("checked","checked");
@@ -219,7 +219,7 @@ String id = request.getParameter("id");
 						    <div class="form-group col-sm-6">
 	                            <label class="col-sm-4 control-label">邮箱：</label>
 	                            <div class="col-sm-8">
-	               					<input type="text" class="form-control" name="email" id="email"> 
+	               					<input type="text" class="form-control" name="email" id="email" autocomplete="off"> 
 	               				</div>
 	                        </div>
                         </div>
@@ -227,7 +227,7 @@ String id = request.getParameter("id");
 	               			<div class="form-group col-sm-6"> 
 	               				<label class="col-sm-4 control-label"><span style="color: red;">*</span>登录密码：</label> 
 	               				<div class="col-sm-8">
-	               					<input type="password" class="form-control" name="password" id="password">  
+	               					<input type="password" class="form-control" name="password" id="password" autocomplete="new-password">  
 	               				</div>
 						    </div>
                         </div>
