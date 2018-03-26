@@ -27,20 +27,6 @@ if(roleId == null || "".equals(roleId)){
 	<script type="text/javascript">
 	function AppMgr(){
 		 this.initDatas = function(){
-			 $.ajax({
-	             type: "GET",
-	             url: "<%=path %>/admin/kindergarten/kindergarten/all",
-	             dataType: "json",
-	             success: function(data){
-	            	 var arr = data.data;
-	            	 var html = "";
-	            	  $.each( arr, function(index, content)
-	            	  { 
-	            		  html += "<option value='"+content.id+"'>"+content.name+"</option>";
-	            	  });
-	            	  $("#kindergartenId").html(html);
-	         	 }
-	    	});
 			 
 	  	 }
 	 }
@@ -50,13 +36,6 @@ if(roleId == null || "".equals(roleId)){
 		function saveUser(){
 			
 			$("#btn_save").attr("disabled", true);
-			var kindergartenId = $("#kindergartenId").val();
-			if(kindergartenId == ""){
-				layer.msg("所属幼儿园不能为空", {title:'提示', btn: ['确定'],icon: 6}, function(index){
-				});
-				$("#btn_save").attr("disabled", false);
-				return false;
-			}
 			var username = $("#name").val();
 			if(username == ""){
 				layer.msg("教师姓名不能为空", {title:'提示', btn: ['确定'],icon: 6}, function(index){
@@ -71,6 +50,16 @@ if(roleId == null || "".equals(roleId)){
 				$("#btn_save").attr("disabled", false);
 				return false;
 			}
+			
+			 var reg=/^[1]{1}[0-9]{10}$/; 
+	         var result= reg.test(tel); 
+	         if(tel!==""&&!result){
+	        	 layer.msg("请输入正确的联系电话", {title:'提示', btn: ['确定'],icon: 6}, function(index){
+					});
+					$("#btn_save").attr("disabled", false);
+					return false;
+	         }
+			
 			var rechargeTelNo = $("#rechargeTelNo").val();
 			if(rechargeTelNo == ""){
 				layer.msg("充值话费号码不能为空", {title:'提示', btn: ['确定'],icon: 6}, function(index){
@@ -117,17 +106,7 @@ if(roleId == null || "".equals(roleId)){
             <div class="ibox float-e-margins" style="margin-bottom: 0px;">
                 <div class="ibox-content row">
                	 	<form class="form-horizontal" id="userForm" action="<%=path %>/admin/shop/account/add" method="post">
-               	 		<div class="row">
-	               			<div class="form-group col-sm-6"> 
-	               				<label class="col-sm-4 control-label"><span style="color: red;">*</span>所属幼儿园：</label> 
-	               				<div class="col-sm-8">
-	               					<select class="form-control" name="kindergartenId" id="kindergartenId">
-								    </select>
-	               				</div>
-						    </div>
-						    <div class="form-group col-sm-6">
-	                        </div>
-                        </div>
+                        <input type="hidden" name="kindergartenId" value="<%=request.getSession().getAttribute("Login_User_Shop_Id") %>">
                         <div class="row">
                         <div class="form-group col-sm-6">
 	                            <label class="col-sm-4 control-label"><span style="color: red;">*</span>教师姓名：</label>

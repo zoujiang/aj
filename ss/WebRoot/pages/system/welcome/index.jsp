@@ -67,7 +67,7 @@
                                 	 -->
                                     <div class="carousel-caption" style="top:10%">
                                         <span class="lead slide-cat inv"  data-animation="animated zoomIn"><a href="#" rel="category">登录成功</a></span>
-                                        <h2 class="slide-title inv"  data-animation="animated fadeInUp" data-duration="2s" data-delay="1s">亲脉后台管理系</h2>
+                                        <h2 class="slide-title inv"  data-animation="animated fadeInUp" data-duration="2s" data-delay="1s">幼教汇后台管理系</h2>
                                         <div class="slide-excerpt inv" data-animation="animated fadeInUp" data-duration="3s" data-delay="2s">
                                             <ul class="row">
                                                 <%--

@@ -36,13 +36,13 @@ public class KindergartenAccountAction {
 	
 	
 	@RequestMapping("/list")
-    public String list(String name, String kindergartenName, int limit, int offset) {
+    public String list(String name, int limit, int offset, HttpServletRequest request) {
 
         KindergartenAccount info = new KindergartenAccount();
         info.setUsername(name);
         info.setOffset(offset);
         info.setPageSize(limit);
-        info.setKindergartenName(kindergartenName);
+        info.setKindergartenId(Integer.parseInt(request.getSession().getAttribute(Constant.LOGIN_SHOP_ID).toString()));
         List<Map<String, Object>> kindergartenAccountList = sysUserMapper.queryList(info);
         int total = sysUserMapper.getTotal(info);
         JSONObject json = new JSONObject();
@@ -71,7 +71,7 @@ public class KindergartenAccountAction {
 		uv.setTele(account.getTel());
 		uv.setCreateDt(new Date());
 		uv.setAccountType("7");
-		uv.setShopId(account.getKindergartenId()+"");
+		uv.setShopId(request.getSession().getAttribute(Constant.LOGIN_SHOP_ID)+"");
 		
 		int i = sysUserMapper.insertSelective(uv);
 		

@@ -31,7 +31,7 @@ public class KindergartenGradeAction extends FtpImgDownUploadAction{
 	private KindergartenGradeService kindergartenGradeService;
 
 	@RequestMapping("/add")
-	public String add(int kindergartenId, String series, String classNo, Integer firstTeacher, Integer secondTeacher, Integer nurse, 
+	public String add(String series, String classNo, Integer firstTeacher, Integer secondTeacher, Integer nurse, 
 			@RequestParam(value = "logoImg") MultipartFile logo, String declaration, String rule, HttpServletRequest request ){
 		
         UserExtForm userExtForm = (UserExtForm) request.getSession().getAttribute(com.frame.core.constant.Constant.LoginAdminUser);
@@ -58,7 +58,7 @@ public class KindergartenGradeAction extends FtpImgDownUploadAction{
 			grade.setCreateUser(userExtForm.getId());
 			grade.setDeclaration(declaration);
 			grade.setFirstTeacher(firstTeacher);
-			grade.setKindergartenId(kindergartenId);
+			grade.setKindergartenId(Integer.parseInt(request.getSession().getAttribute(com.frame.core.constant.Constant.LOGIN_SHOP_ID).toString()));
 			grade.setNurse(nurse);
 			grade.setSeries(series);
 			grade.setSecondTeacher(secondTeacher);
@@ -99,11 +99,11 @@ public class KindergartenGradeAction extends FtpImgDownUploadAction{
 		return json.toString();
 	}
 	@RequestMapping("/list")
-	public String list(Integer kindergartenId, String series, Integer limit, Integer offset){
+	public String list(String series, Integer limit, Integer offset, HttpServletRequest request){
 		JSONObject json = new JSONObject();
 		try {
 			KindergartenGrade grade = new KindergartenGrade();
-			grade.setKindergartenId(kindergartenId);
+			grade.setKindergartenId(Integer.parseInt(request.getSession().getAttribute(com.frame.core.constant.Constant.LOGIN_SHOP_ID).toString()));
 			grade.setSeries(series);
 			grade.setPageSize(limit);
 			grade.setOffset(offset);
@@ -173,7 +173,7 @@ public class KindergartenGradeAction extends FtpImgDownUploadAction{
 		
 	}
 	@RequestMapping("/update")
-	public String update(Integer id, int kindergartenId, String series, String classNo, Integer firstTeacher, Integer secondTeacher, Integer nurse, 
+	public String update(Integer id, String series, String classNo, Integer firstTeacher, Integer secondTeacher, Integer nurse, 
 			@RequestParam(value = "logoImg") MultipartFile logo, String declaration, String rule, HttpServletRequest request ){
 		
 
@@ -197,7 +197,7 @@ public class KindergartenGradeAction extends FtpImgDownUploadAction{
 			grade.setClassNo(classNo);
 			grade.setDeclaration(declaration);
 			grade.setFirstTeacher(firstTeacher);
-			grade.setKindergartenId(kindergartenId);
+			grade.setKindergartenId(Integer.parseInt(request.getSession().getAttribute(com.frame.core.constant.Constant.LOGIN_SHOP_ID).toString()));
 			grade.setNurse(nurse);
 			grade.setSeries(series);
 			grade.setSecondTeacher(secondTeacher);

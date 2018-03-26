@@ -47,7 +47,7 @@ String id = request.getParameter("id");
 	                		  $("#ra1").attr("checked","checked");
 	                	  }
 	                	  $("#type").find("option[value='"+data.message.type+"']").attr("selected",true);
-	                	  if(data.message.photo !=''){
+	                	  if(data.message.photo != null && data.message.photo !=''){
 	                		  $("#preView").attr("href", data.message.photo);
 	                		  $("#preView").show();
 	                	  }
@@ -55,24 +55,6 @@ String id = request.getParameter("id");
 	                	  layer.msg(data.message, {title:'提示', btn: ['确定'],icon: 6}, function(index){
 							});
 	                  }
-	         	 }
-	    	});
-			 $.ajax({
-	             type: "GET",
-	             url: "<%=path %>/admin/kindergarten/kindergarten/all",
-	             dataType: "json",
-	             success: function(data){
-	            	 var arr = data.data;
-	            	 var html = "";
-	            	  $.each( arr, function(index, content)
-	            	  { 
-	            		  if(content.id == shopId){
-	            		  		html += "<option selected='selected' value='"+content.id+"'>"+content.name+"</option>";
-	            		  }else{
-		            		    html += "<option value='"+content.id+"'>"+content.name+"</option>";
-	            		  }
-	            	  });
-	            	  $("#kindergartenId").html(html);
 	         	 }
 	    	});
 			 
@@ -120,17 +102,6 @@ String id = request.getParameter("id");
                 <div class="ibox-content row">
                	 	<form class="form-horizontal" id="userForm" action="<%=path %>/admin/shop/account/add" method="post">
                	 		<input type="hidden" name="id" id="roleId" value="<%=id %>">
-               	 		<div class="row">
-	               			<div class="form-group col-sm-6"> 
-	               				<label class="col-sm-4 control-label"><span style="color: red;">*</span>所属幼儿园：</label> 
-	               				<div class="col-sm-8">
-	               					<select class="form-control" name="kindergartenId" id="kindergartenId">
-								    </select>
-	               				</div>
-						    </div>
-						    <div class="form-group col-sm-6">
-	                        </div>
-                        </div>
                         <div class="row">
                         <div class="form-group col-sm-6">
 	                            <label class="col-sm-4 control-label"><span style="color: red;">*</span>教师姓名：</label>
@@ -156,7 +127,7 @@ String id = request.getParameter("id");
 						    <div class="form-group col-sm-6">
 	                            <label class="col-sm-4 control-label">教师类别：</label>
 	                            <div class="col-sm-8">
-	               					<select id="type" name="type" class="form-control input-inline"  width="280px">
+	               					<select id="type" name="type" class="form-control input-inline"  width="280px" disabled="disabled">
                     				<option >---请选择---</option>
                     				<option value="1">园长</option>
                     				<option value="2">副园长</option>

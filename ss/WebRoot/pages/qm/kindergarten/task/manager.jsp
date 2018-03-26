@@ -20,6 +20,9 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
     function AppMgr(){
 
     	var $table=$("#user_table");
+    	AppMgr.view = function(teacherId,taskDate,e){
+    		layer_show("查看明细", getProjectName() +"/pages/qm/kindergarten/task/viewdetails.jsp?teacherId="+teacherId+"&taskDate="+taskDate,"930","500");
+		};
     	AppMgr.send = function(id,valid,e){
     		parent.layer.confirm('确定已经发放奖励？', {
     		    btn: ['确定','取消'], //按钮
@@ -45,23 +48,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		};
     	this.initDatas = function(){
     		
-    		$.ajax({
-	             type: "GET",
-	             url: "<%=path %>/admin/kindergarten/kindergarten/all",
-	             dataType: "json",
-	             success: function(data){
-	            	 console.info(data)
-	            	 var arr = data.data;
-	            	 var html = "<option value=''>---请选择---</option>";
-	            	  $.each( arr, function(index, content)
-	            	  { 
-	            		  html += "<option value='"+content.id+"'>"+content.name+"</option>";
-	            	  });
-	            	  $("#kindergartenId").html(html);
-	         	 }
-	    	});
-    		
-    	
 			 $table.bootstrapTable({
     			url: getProjectName() + "/admin/kindergarten/task/managerList",
                 showExport:false,
@@ -76,7 +62,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                 striped:true,//隔行变色
                 queryParams: function(params) {
                 	return{
-                		kindergartenId : $('#kindergartenId').val(),
                 		name : $('#name').val(),
 	                	limit:params.limit,
 	                	offset:params.offset
@@ -143,7 +128,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
     		    	field: 'action',
     		    	title : '操作',
     		        formatter : function(value, row, index){
-   		        		var edit="<span  height = '23px'  width = '23px'><a style='color:blue;' href='#' onclick=\"AppMgr.edit('" + row.id + "','0',event)\" style='cursor: pointer' >查看明细&nbsp;</a></span>";
+   		        		var edit="<span  height = '23px'  width = '23px'><a style='color:blue;' href='#' onclick=\"AppMgr.view('" + row.id + "','0',event)\" style='cursor: pointer' >查看明细&nbsp;</a></span>";
    		        		if(row.isGetReward ==0 && row.isSend == 1){
    		        			edit += "<span  height = '23px'  width = '23px'><a style='color:blue;' href='#' onclick=\"AppMgr.send('" + row.id + "','0',event)\" style='cursor: pointer' >发放</a></span>";
    		        		}
@@ -189,7 +174,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
             <div class="ibox-content"  style="height: 100%;">
             	<div class="btn-group hidden-xs" id="toolbar" role="group" style="margin-top: 10px;">
                     <div class="form-inline" style="width: 880px;float: left;">
-                    幼儿园： <select id="kindergartenId" class="form-control input-inline" name="kindergartenId" width="280px"></select>  
                     	管理员姓名：<input type="text" placeholder="管理员姓名" class="form-control input-inline"  id="name" name="name" width="280px"> 
                            <button  id="btn_search" type="button" class="btn btn-inline btn-default" style="margin-top: 4px;"> 搜索</button> 
 	                    <button id="btn_new" type="button" style="margin-left: 10px;margin-top: 4px;" class="btn btn-inline btn-default"  title="添加">

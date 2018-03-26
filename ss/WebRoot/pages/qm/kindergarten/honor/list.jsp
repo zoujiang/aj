@@ -34,21 +34,7 @@ String id = request.getParameter("id");
 		};
     	this.initDatas = function(){
     		
-    		$.ajax({
-	             type: "GET",
-	             url: "<%=path %>/admin/kindergarten/kindergarten/all",
-	             dataType: "json",
-	             success: function(data){
-	            	 var arr = data.data;
-	            	 var html = "<option value=''>---请选择---</option>";
-	            	  $.each( arr, function(index, content)
-	            	  { 
-	            		  html += "<option value='"+content.id+"'>"+content.name+"</option>";
-	            	  });
-	            	  $("#kindergartenId").html(html);
-	         	 }
-	    	});
-    	
+    		 showGradeInfo();
 			 $table.bootstrapTable({
     			url: getProjectName() + "/admin/kindergarten/honor/list",
                 showExport:false,
@@ -63,7 +49,6 @@ String id = request.getParameter("id");
                 striped:true,//隔行变色
                 queryParams: function(params) {
                 	return{
-                		kindergartenId : $('#kindergartenId').val(),
                 		gradeId : $('#gradeId').val(),
                 		name : $('#name').val(),
 	                	limit:params.limit,
@@ -152,7 +137,7 @@ String id = request.getParameter("id");
     
     function showGradeInfo(){
     	
-    	var kindergartenId = $("#kindergartenId").val();
+    	var kindergartenId = '<%=request.getSession().getAttribute("Login_User_Shop_Id")%>';
     	if(kindergartenId != ''){
     		$.ajax({
 	             type: "GET",
@@ -200,7 +185,6 @@ String id = request.getParameter("id");
             <div class="ibox-content"  style="height: 100%;">
             	<div class="btn-group hidden-xs" id="toolbar" role="group" style="margin-top: 10px;">
                     <div class="form-inline" style="width: 880px;float: left;">
-                    	幼儿园名称： <select id="kindergartenId" class="form-control input-inline" name="kindergartenId" onchange="showGradeInfo()" width="280px"></select>  
                     	班级：<select id="gradeId" name="gradeId" class="form-control input-inline"  width="280px">
                     			</select>
                          学生姓名：<input type="text" placeholder="学生姓名" class="form-control input-inline"  id="name" name="name" width="280px">

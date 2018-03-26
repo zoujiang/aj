@@ -3,6 +3,8 @@ package com.qm.action;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,10 +36,10 @@ public class KindergartenHonorAction extends FtpImgDownUploadAction{
 	
 	
 	@RequestMapping("/list")
-	public String list(Integer kindergartenId, Integer gradeId, String name, Integer offset, Integer limit){
+	public String list(Integer gradeId, String name, Integer offset, Integer limit, HttpServletRequest request){
 		
 		KindergartenStudent student = new KindergartenStudent();
-		student.setKindergartenId(kindergartenId);
+		student.setKindergartenId(Integer.parseInt(request.getSession().getAttribute(com.frame.core.constant.Constant.LOGIN_SHOP_ID).toString()));
 		student.setGradeId(gradeId);
 		student.setName(name);
 		student.setOffset(offset);

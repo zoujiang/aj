@@ -47,7 +47,6 @@ String id = request.getParameter("id");
 	             success: function(data){
 	                  if(data.success){
 	                	  kindergartenId = data.message.kindergartenId;
-	                	  initKindergarten(kindergartenId);
 	                	  firstTeacher = data.message.firstTeacher;
 	                	  secondTeacher = data.message.secondTeacher;
 	                	  nurse = data.message.nurse;
@@ -93,27 +92,6 @@ String id = request.getParameter("id");
 	  	 }
 	 }
 	 
-	 
-	 function initKindergarten(kindergartenId){
-		 $.ajax({
-             type: "GET",
-             url: "<%=path %>/admin/kindergarten/kindergarten/all",
-             dataType: "json",
-             success: function(data){
-            	 var arr = data.data;
-            	 var html = "";
-            	  $.each( arr, function(index, content)
-            	  { 
-            		  if(content.id == kindergartenId){
-            		  		html += "<option selected='selected' value='"+content.id+"'>"+content.name+"</option>";
-            		  }else{
-	            		    html += "<option value='"+content.id+"'>"+content.name+"</option>";
-            		  }
-            	  });
-            	  $("#kindergartenId").html(html);
-         	 }
-    	});
-	 }
 	 function queryTeacherByKinder(kinder, firstTeacher, secondTeacher, nurse){
 		 
 		 if(kinder != ""){
@@ -209,13 +187,6 @@ String id = request.getParameter("id");
 	 function saveUser(){
 			
 		 $("#btn_save").attr("disabled", true);
-			var kindergartenId = $("#kindergartenId").val();
-			if(kindergartenId == null || kindergartenId == ""){
-				layer.msg("所属幼儿园不能为空", {title:'提示', btn: ['确定'],icon: 6}, function(index){
-				});
-				$("#btn_save").attr("disabled", false);
-				return false;
-			}
 			var series = $("#series").val();
 			if(series == null || series == ""){
 				layer.msg("开学级数不能为空", {title:'提示', btn: ['确定'],icon: 6}, function(index){
@@ -262,17 +233,6 @@ String id = request.getParameter("id");
                 <div class="ibox-content row">
                	 	<form class="form-horizontal" id="userForm" action="<%=path %>/admin/shop/account/add" method="post">
                	 		<input type="hidden" name="id" id="roleId" value="<%=id %>">
-               	 		<div class="row">
-	               			<div class="form-group col-sm-6"> 
-	               				<label class="col-sm-4 control-label"><span style="color: red;">*</span>所属幼儿园：</label> 
-	               				<div class="col-sm-8">
-	               					<select class="form-control" name="kindergartenId" id="kindergartenId" onchange="queryTeacherByKinder(this.value)">
-								    </select>
-	               				</div>
-						    </div>
-						    <div class="form-group col-sm-6">
-	                        </div>
-                        </div>
                         <div class="row">
                         <div class="form-group col-sm-6">
 	                            <label class="col-sm-4 control-label"><span style="color: red;">*</span>开学级数：</label>

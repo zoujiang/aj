@@ -62,20 +62,6 @@ String id = request.getParameter("id");
 	   		 }
 	   		 $("#series").html(serHtml);
     		
-    		$.ajax({
-	             type: "GET",
-	             url: "<%=path %>/admin/kindergarten/kindergarten/all",
-	             dataType: "json",
-	             success: function(data){
-	            	 var arr = data.data;
-	            	 var html = "<option value=''>---请选择---</option>";
-	            	  $.each( arr, function(index, content)
-	            	  { 
-	            		  html += "<option value='"+content.id+"'>"+content.name+"</option>";
-	            	  });
-	            	  $("#kindergartenId").html(html);
-	         	 }
-	    	});
     	
 			 $table.bootstrapTable({
     			url: getProjectName() + "/admin/kindergarten/grade/list",
@@ -91,7 +77,6 @@ String id = request.getParameter("id");
                 striped:true,//隔行变色
                 queryParams: function(params) {
                 	return{
-                		kindergartenId : $('#kindergartenId').val(),
                 		series : $('#series').val(),
 	                	limit:params.limit,
 	                	offset:params.offset
@@ -187,7 +172,6 @@ String id = request.getParameter("id");
             <div class="ibox-content"  style="height: 100%;">
             	<div class="btn-group hidden-xs" id="toolbar" role="group" style="margin-top: 10px;">
                     <div class="form-inline" style="width: 880px;float: left;">
-                    	幼儿园名称： <select id="kindergartenId" class="form-control input-inline" name="kindergartenId" width="280px"></select>  
                     	开学级数：<select id="series" name="series" class="form-control input-inline"  width="280px">
                     			</select>
                            <button  id="btn_search" type="button" class="btn btn-inline btn-default" style="margin-top: 4px;"> 搜索</button> 

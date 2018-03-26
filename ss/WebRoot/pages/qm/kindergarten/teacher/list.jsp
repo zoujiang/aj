@@ -58,20 +58,6 @@ String id = request.getParameter("id");
 		};
     	this.initDatas = function(){
     		
-    		$.ajax({
-	             type: "GET",
-	             url: "<%=path %>/admin/kindergarten/kindergarten/all",
-	             dataType: "json",
-	             success: function(data){
-	            	 var arr = data.data;
-	            	 var html = "<option value=''>---请选择---</option>";
-	            	  $.each( arr, function(index, content)
-	            	  { 
-	            		  html += "<option value='"+content.id+"'>"+content.name+"</option>";
-	            	  });
-	            	  $("#kindergartenId").html(html);
-	         	 }
-	    	});
     	
 			 $table.bootstrapTable({
     			url: getProjectName() + "/admin/kindergarten/teacher/list",
@@ -87,7 +73,6 @@ String id = request.getParameter("id");
                 striped:true,//隔行变色
                 queryParams: function(params) {
                 	return{
-                		kindergartenId : $('#kindergartenId').val(),
                 		name : $('#username').val(),
                 		type : $('#type').val(),
 	                	limit:params.limit,
@@ -211,9 +196,8 @@ String id = request.getParameter("id");
             <div class="ibox-content"  style="height: 100%;">
             	<div class="btn-group hidden-xs" id="toolbar" role="group" style="margin-top: 10px;">
                     <div class="form-inline" style="width: 880px;float: left;">
-                    	幼儿园名称： <select id="kindergartenId" class="form-control input-inline" name="kindergartenId" width="280px"></select>  
                     	教师类别：<select id="type" name="type" class="form-control input-inline"  width="280px">
-                    				<option value="">-请选择-</option>
+                    				<option value="">---请选择---</option>
                     				<option value="1">园长</option>
                     				<option value="2">副园长</option>
                     				<option value="3">管理人员</option>

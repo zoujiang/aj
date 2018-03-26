@@ -48,23 +48,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		};
     	this.initDatas = function(){
     		
-    		$.ajax({
-	             type: "GET",
-	             url: "<%=path %>/admin/kindergarten/kindergarten/all",
-	             dataType: "json",
-	             success: function(data){
-	            	 console.info(data)
-	            	 var arr = data.data;
-	            	 var html = "<option value=''>---请选择---</option>";
-	            	  $.each( arr, function(index, content)
-	            	  { 
-	            		  html += "<option value='"+content.id+"'>"+content.name+"</option>";
-	            	  });
-	            	  $("#kindergartenId").html(html);
-	         	 }
-	    	});
-    		
-    	
 			 $table.bootstrapTable({
     			url: getProjectName() + "/admin/kindergarten/task/teacherList",
                 showExport:false,
@@ -79,7 +62,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                 striped:true,//隔行变色
                 queryParams: function(params) {
                 	return{
-                		kindergartenId : $('#kindergartenId').val(),
                 		name : $('#name').val(),
 	                	limit:params.limit,
 	                	offset:params.offset
@@ -199,7 +181,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
             <div class="ibox-content"  style="height: 100%;">
             	<div class="btn-group hidden-xs" id="toolbar" role="group" style="margin-top: 10px;">
                     <div class="form-inline" style="width: 880px;float: left;">
-                    幼儿园： <select id="kindergartenId" class="form-control input-inline" name="kindergartenId" width="280px"></select>  
                     	教师姓名：<input type="text" placeholder="教师姓名" class="form-control input-inline"  id="name" name="name" width="280px"> 
                            <button  id="btn_search" type="button" class="btn btn-inline btn-default" style="margin-top: 4px;"> 搜索</button> 
 	                    <button id="btn_new" type="button" style="margin-left: 10px;margin-top: 4px;" class="btn btn-inline btn-default"  title="添加">

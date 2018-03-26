@@ -38,7 +38,6 @@ String id = request.getParameter("id");
 	             success: function(data){
 	                  if(data.success){
 	                	  kindergartenId = data.message.kindergartenId;
-	                	  initKindergarten(kindergartenId);
 	                	  $("#name").val(data.message.name);
 	                	  $("#age").val(data.message.age);
 	                	  showGradeInfo2(kindergartenId, data.message.gradeId);
@@ -60,26 +59,6 @@ String id = request.getParameter("id");
 	 }
 	 
 	 
-	 function initKindergarten(kindergartenId){
-		 $.ajax({
-             type: "GET",
-             url: "<%=path %>/admin/kindergarten/kindergarten/all",
-             dataType: "json",
-             success: function(data){
-            	 var arr = data.data;
-            	 var html = "";
-            	  $.each( arr, function(index, content)
-            	  { 
-            		  if(content.id == kindergartenId){
-            		  		html += "<option selected='selected' value='"+content.id+"'>"+content.name+"</option>";
-            		  }else{
-	            		    html += "<option value='"+content.id+"'>"+content.name+"</option>";
-            		  }
-            	  });
-            	  $("#kindergartenId").html(html);
-         	 }
-    	});
-	 }
 	 function showGradeInfo2(kindergartenId, gradeId){
 		 
 		 if(kindergartenId != ''){
@@ -106,7 +85,7 @@ String id = request.getParameter("id");
 	 }
 	 function showGradeInfo(){
 	    	
-	    	var kindergartenId = $("#kindergartenId").val();
+			 var kindergartenId = '<%=request.getSession().getAttribute("Login_User_Shop_Id")%>';
 	    	showGradeInfo2(kindergartenId, '');
 	    	
 	    }
@@ -116,20 +95,6 @@ String id = request.getParameter("id");
 	 
 	 function saveUser(){
 			
-			var kindergartenId = $("#kindergartenId").val();
-			if(kindergartenId == null || kindergartenId == ""){
-				layer.msg("所属幼儿园不能为空", {title:'提示', btn: ['确定'],icon: 6}, function(index){
-				});
-				$("#btn_save").attr("disabled", false);
-				return false;
-			}
-			var gradeId = $("#gradeId").val();
-			if(gradeId == null || gradeId == ""){
-				layer.msg("所属班级不能为空", {title:'提示', btn: ['确定'],icon: 6}, function(index){
-				});
-				$("#btn_save").attr("disabled", false);
-				return false;
-			}
 			var name = $("#name").val();
 			if(name == null || name == ''){
 				layer.msg("学生姓名能为空", {title:'提示', btn: ['确定'],icon: 6}, function(index){
@@ -184,19 +149,19 @@ String id = request.getParameter("id");
                	 	<form class="form-horizontal" id="userForm" action="<%=path %>/admin/shop/account/add" method="post">
                	 		<input type="hidden" name="id" id="roleId" value="<%=id %>">
                	 		<div class="row">
-	               			<div class="form-group col-sm-6"> 
-	               				<label class="col-sm-4 control-label"><span style="color: red;">*</span>所属幼儿园：</label> 
-	               				<div class="col-sm-8">
-	               					<select class="form-control" name="kindergartenId" id="kindergartenId" onchange="showGradeInfo('')">
-								    </select>
-	               				</div>
-						    </div>
 						    <div class="form-group col-sm-6">
 	                            <label class="col-sm-4 control-label"><span style="color: red;">*</span>学生姓名：</label>
 	                            <div class="col-sm-8">
 	               					<input type="text" class="form-control" name="name" id="name">
 	               				</div>
 	                        </div>
+	                         <div class="form-group col-sm-6"> 
+	               				<label class="col-sm-4 control-label">所属班级：</label> 
+	               				 <div class="col-sm-8">
+	               					<select id="gradeId" name="gradeId" class="form-control input-inline"  width="280px">
+                    				</select>	
+	               				</div>
+						    </div>
                         </div>
                         <div class="row">
                        
@@ -231,13 +196,7 @@ String id = request.getParameter("id");
                         </div>
                         <div class="row">
 	               			
-						    <div class="form-group col-sm-6"> 
-	               				<label class="col-sm-4 control-label">所属班级：</label> 
-	               				 <div class="col-sm-8">
-	               					<select id="gradeId" name="gradeId" class="form-control input-inline"  width="280px">
-                    				</select>	
-	               				</div>
-						    </div>
+						   
 						    <div class="form-group col-sm-6"> 
 	               				<label class="col-sm-4 control-label">学生头像：</label> 
 	               				 <div class="col-sm-8">

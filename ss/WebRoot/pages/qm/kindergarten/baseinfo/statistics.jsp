@@ -91,7 +91,7 @@ String id = request.getParameter("id");
 				 
 				 $.ajax({
 		             type: "GET",
-		             url: "<%=path %>/admin/kindergarten/kindergarten/statistics?id=<%=id %>",
+		             url: "<%=path %>/admin/kindergarten/kindergarten/statistics?id=<%=request.getSession().getAttribute("Login_User_Shop_Id") %>",
 		             dataType: "json",
 		             success: function(data){
 		            	if(data.success){
@@ -197,11 +197,11 @@ String id = request.getParameter("id");
                	 		<div id="honorDaily" style="width: 750px;height:400px;"></div>
                	 		
                		</form>
-               		<div class="hr-line-dashed"></div>
+               	<!-- 	<div class="hr-line-dashed"></div>
                		<div class="text-center">
                		 	<button id = "btn_save" type="button" class="btn btn-primary">确定</button>
                        </div>
-                </div>
+                </div> -->
             </div>
       </div>
   </body>

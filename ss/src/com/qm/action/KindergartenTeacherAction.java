@@ -47,14 +47,14 @@ public class KindergartenTeacherAction extends FtpImgDownUploadAction {
 	private GenericDAO baseDAO;
 	
 	@RequestMapping("/list")
-    public String list(String name, Integer kindergartenId, Integer type,  int limit, int offset) {
+    public String list(String name, Integer kindergartenId, Integer type,  int limit, int offset,  HttpServletRequest request) {
 
         KindergartenTeacher info = new KindergartenTeacher();
         info.setName(name);
         info.setType(type);
         info.setOffset(offset);
         info.setPageSize(limit);
-        info.setKindergartenId(kindergartenId);
+        info.setKindergartenId(Integer.parseInt(request.getSession().getAttribute(com.frame.core.constant.Constant.LOGIN_SHOP_ID).toString()));
         List<KindergartenTeacher> KindergartenTeacherList = kindergartenTeacherService.queryList(info);
         int total = kindergartenTeacherService.getTotal(info);
         JSONObject json = new JSONObject();
@@ -99,21 +99,21 @@ public class KindergartenTeacherAction extends FtpImgDownUploadAction {
         if("3".equals(userType)){
         	//园长
         	int teacherNum = kindergartenTeacherService.getNumberByType(3);
-        	if(Integer.parseInt(nubs[0]) > teacherNum){
+        	if(Integer.parseInt(nubs[0]) <= teacherNum){
         		json.put("success", false);
                 json.put("message", "每个幼儿园最多只能有"+nubs[0]+"个园长");
                 return json.toString();
         	}
         }else if("4".equals(userType)){
         	int teacherNum = kindergartenTeacherService.getNumberByType(4);
-        	if(Integer.parseInt(nubs[1]) > teacherNum){
+        	if(Integer.parseInt(nubs[1]) <= teacherNum){
         		json.put("success", false);
                 json.put("message", "每个幼儿园最多只能有"+nubs[1]+"个管理人员");
                 return json.toString();
         	}
         }else if("2".equals(userType)){
         	int teacherNum = kindergartenTeacherService.getNumberByType(2);
-        	if(Integer.parseInt(nubs[2]) > teacherNum){
+        	if(Integer.parseInt(nubs[2]) <= teacherNum){
         		json.put("success", false);
                 json.put("message", "每个幼儿园最多只能有"+nubs[2]+"个教师");
                 return json.toString();
@@ -269,21 +269,21 @@ public class KindergartenTeacherAction extends FtpImgDownUploadAction {
         if("3".equals(userType)){
         	//园长
         	int teacherNum = kindergartenTeacherService.getNumberByType(3);
-        	if(Integer.parseInt(nubs[0]) > teacherNum){
+        	if(Integer.parseInt(nubs[0]) <= teacherNum){
         		json.put("success", false);
                 json.put("message", "每个幼儿园最多只能有"+nubs[0]+"个园长");
                 return json.toString();
         	}
         }else if("4".equals(userType)){
         	int teacherNum = kindergartenTeacherService.getNumberByType(4);
-        	if(Integer.parseInt(nubs[1]) > teacherNum){
+        	if(Integer.parseInt(nubs[1]) <= teacherNum){
         		json.put("success", false);
                 json.put("message", "每个幼儿园最多只能有"+nubs[1]+"个管理人员");
                 return json.toString();
         	}
         }else if("2".equals(userType)){
         	int teacherNum = kindergartenTeacherService.getNumberByType(2);
-        	if(Integer.parseInt(nubs[2]) > teacherNum){
+        	if(Integer.parseInt(nubs[2]) <= teacherNum){
         		json.put("success", false);
                 json.put("message", "每个幼儿园最多只能有"+nubs[2]+"个教师");
                 return json.toString();
@@ -302,55 +302,21 @@ public class KindergartenTeacherAction extends FtpImgDownUploadAction {
                 return json.toString();
             }
         }
-        
-        //验证手机号是否已经注册为教师
+        //如果教师手机号已经改变
+        KindergartenTeacher info = kindergartenTeacherService.selectByPrimaryKey(account.getId());
         KindergartenTeacher validate = new KindergartenTeacher();
         validate.setTel(account.getTel());
         validate = kindergartenTeacherService.queryTeacherByTel(validate);
-        if(validate != null && validate.getId() == account.getId()){
-        	 json.put("success", false);
-             json.put("message", "该联系电话已经注册为幼儿园教师，编辑失败");
-             return json.toString();
+        if( !info.getTel().equals(account.getTel())) {
+        	 //验证手机号是否已经注册为教师
+            if(validate != null && validate.getId() == account.getId()){
+            	 json.put("success", false);
+                 json.put("message", "该联系电话已经注册为幼儿园教师，编辑失败");
+                 return json.toString();
+            }
         }
-        //编辑时，由于在添加的时候生成了亲脉账号， 这里不再重复生成
-        //p判断该用户的手机号是否注册过 亲脉 帐号，如果没有吗则创建一个
-       /* 
-        Map<String, Object> userInfo = shopCustomerService.findAppUserByUserTel(account.getTel());
-		String password = 100000 +new Random().nextInt(899999) +"";
-		
-		if(userInfo == null || userInfo.isEmpty()){
-			try {
-				//该手机号没注册， 后台给注册一个
-    			boolean b = registAppUser(account.getTel(), password, userType, this.shopCustomerService);
-    			if(b){
-    				
-    				KindergartenInfo kInfo = kindergartenService.selectByPrimaryKey(account.getKindergartenId());
-    				String content = kInfo.getName()+"幼儿园已经在“亲脉”系统中添加您为［"+role+"］,后台自动为您生成登录帐号：账号"+account.getTel()+"，密码"+password+"，您可以下载亲脉APP进入生活我的生活中查看赠送服务亲脉下载地址：http://qm.dbfish.net/d";
-    				boolean sendState = ShopCustomerAction.sendMsg(account.getTel(), content);
-    				logger.info("亲脉后台系统添加教师成功后，由于该教师还未注册过亲脉，所以自动生成帐号：" +account.getTel() +", 注册结果：" +sendState );
-    				
-    				userInfo = shopCustomerService.findAppUserByUserTel(account.getTel());
-    				account.setUserId(Integer.parseInt(userInfo.get("id")+""));
-    			}else{
-    				logger.info("新增幼儿园教师时，注册亲脉用户失败");
-                    json.put("success", false);
-                    json.put("message", "新增幼儿园教师时，注册亲脉用户失败");
-                    return json.toString();
-    			}
-			} catch (Exception e) {
-				logger.info("亲脉后台系统添加教师成功后，由于该教师还未注册过亲脉，所以自动生成帐号：但是发生异常：" + e);
-			}
-			
-		}else{
-			//已经注册过了， 把用户的类型更改为教师、园长或者管理人员
-			UserInfo user = new UserInfo();
-			user.setType(Integer.parseInt(userType));
-			user.setId(Integer.parseInt(userInfo.get("id")+""));
-			userInfoMapper.updateByPrimaryKeySelective(user);
-			account.setUserId(Integer.parseInt(userInfo.get("id")+""));
-		}
         
-        */
+       
         //判断教师的类型是否改变，如果改变，则更新user表的类型
         if(validate.getType() != account.getType()){
         	UserInfo user = new UserInfo();

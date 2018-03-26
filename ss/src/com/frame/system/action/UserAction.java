@@ -155,8 +155,8 @@ public class UserAction extends BaseAction {
 			messageModel.setMessage("2");
 			logBizOprService.saveLog("用户管理", "4", "用户登陆(用户账号:" + userAccount + ",登陆结果:用户未启用" + ")", null, null,userAccount);
 
-		}else if(userInfo.getShopId() != null && !"".equals(userInfo.getShopId())){
-			//ys系统只能商户管理员登陆
+		}else if(userInfo.getShopId() == null || "".equals(userInfo.getShopId()) || !"7".equals(userInfo.getAccountType())){
+			//ss系统只能幼儿园管理员登陆
 			messageModel.setResult(false);
 			messageModel.setMessage("2");
 			logBizOprService.saveLog("用户管理", "4", "用户登陆(用户账号:" + userAccount + ",登陆结果:用户未启用" + ")", null, null,userAccount);
@@ -170,6 +170,7 @@ public class UserAction extends BaseAction {
 			messageModel.setResult(true);
 			messageModel.setMessage(userInfo.getId());
 			request.getSession().setAttribute(Constant.Login,userInfo.getId());
+			request.getSession().setAttribute(Constant.LOGIN_SHOP_ID,userInfo.getShopId());
 
 		}
 		//request.getSession().removeAttribute("TOKEN_RD");

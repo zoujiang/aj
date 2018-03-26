@@ -52,24 +52,6 @@ String id = request.getParameter("id");
 	                  }
 	         	 }
 	    	});
-			 $.ajax({
-	             type: "GET",
-	             url: "<%=path %>/admin/kindergarten/kindergarten/all",
-	             dataType: "json",
-	             success: function(data){
-	            	 var arr = data.data;
-	            	 var html = "";
-	            	  $.each( arr, function(index, content)
-	            	  { 
-	            		  if(content.id == shopId){
-	            		  		html += "<option selected='selected' value='"+content.id+"'>"+content.name+"</option>";
-	            		  }else{
-		            		    html += "<option value='"+content.id+"'>"+content.name+"</option>";
-	            		  }
-	            	  });
-	            	  $("#shopId").html(html);
-	         	 }
-	    	});
 			 
 	  	 }
 	 }
@@ -80,13 +62,6 @@ String id = request.getParameter("id");
 	 function saveUser(){
 			
 		$("#btn_save").attr("disabled", true);
-		 var shopId = $("#shopId").val();
-			if(shopId == ""){
-				layer.msg("所属幼儿园不能为空", {title:'提示', btn: ['确定'],icon: 6}, function(index){
-				});
-				$("#btn_save").attr("disabled", false);
-				return false;
-			}
 			var username = $("#username").val();
 			if(username == ""){
 				layer.msg("登录帐号不能为空", {title:'提示', btn: ['确定'],icon: 6}, function(index){
@@ -179,22 +154,8 @@ String id = request.getParameter("id");
                 <div class="ibox-content row">
                	 	<form class="form-horizontal" id="userForm"  method="post">
                	 		<input type="hidden" name="id" id="roleId" value="<%=id %>">
-               	 		<div class="row">
-	               			<div class="form-group col-sm-6"> 
-	               				<label class="col-sm-4 control-label"><span style="color: red;">*</span>所属幼儿园：</label> 
-	               				<div class="col-sm-8">
-	               					<select class="form-control" name="kindergartenId" id="shopId">
-								    </select>
-	               				</div>
-						    </div>
-						    <div class="form-group col-sm-6">
-	                            <label class="col-sm-4 control-label">状态：</label>
-	                             <div class="col-sm-8">
-	               					<input type="radio" id="ra0" name="status" value="0" checked="checked">正常&nbsp;&nbsp;&nbsp;&nbsp;
-	               					<input type="radio" id="ra1" name="status" value="1">冻结
-	               				</div>
-	                        </div>
-                        </div>
+               	 		<input type="hidden" name="kindergartenId" id="roleId" value="<%=request.getSession().getAttribute("Login_User_Shop_Id") %>">
+               	 		
                         <div class="row">
                         <div class="form-group col-sm-6">
 	                            <label class="col-sm-4 control-label"><span style="color: red;">*</span>登陆帐号：</label>
@@ -230,6 +191,15 @@ String id = request.getParameter("id");
 	               					<input type="password" class="form-control" name="password" id="password" autocomplete="new-password">  
 	               				</div>
 						    </div>
+                        </div>
+                        <div class="row">
+						    <div class="form-group col-sm-6">
+	                            <label class="col-sm-4 control-label">状态：</label>
+	                             <div class="col-sm-8" style="margin-top: 5px;">
+	               					<input type="radio" id="ra0" name="status" value="0" checked="checked">正常&nbsp;&nbsp;&nbsp;&nbsp;
+	               					<input type="radio" id="ra1" name="status" value="1">冻结
+	               				</div>
+	                        </div>
                         </div>
                		</form>
                		<div class="hr-line-dashed"></div>

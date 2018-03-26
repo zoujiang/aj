@@ -272,8 +272,8 @@
   		<if test="username != null and username != ''">
   			and	a.account like concat('%', #{username} ,'%')
   		</if>
-  		<if test="kindergartenName != null and kindergartenName != ''">
-  			and i.name like concat('%', #{kindergartenName} ,'%')
+  		<if test="kindergartenId != null and kindergartenId != ''">
+  			and i.id = #{kindergartenId,jdbcType=VARCHAR}
   		</if>
   		<if test="offset != null and pageSize != null">
   			limit #{offset}, #{pageSize}
@@ -284,8 +284,8 @@
   		<if test="username != null and username != ''">
   			and	a.account like concat('%', #{username} ,'%')
   		</if>
-  		<if test="kindergartenName != null and kindergartenName != ''">
-  			and i.name like concat('%', #{kindergartenName} ,'%')
+  		<if test="kindergartenId != null and kindergartenId != ''">
+  			and i.id = #{kindergartenId,jdbcType=VARCHAR}
   		</if>
   </select>
   <select id="selectMapByPrimaryKey" parameterType="java.lang.String" resultType="java.util.HashMap">

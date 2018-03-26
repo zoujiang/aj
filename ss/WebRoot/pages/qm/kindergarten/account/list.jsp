@@ -64,7 +64,6 @@
                 striped:true,//隔行变色
                 queryParams: function(params) {
                 	return{
-                		kindergartenName : $('#kindergartenName').val(),
                 		name : $('#username').val(),
 	                	limit:params.limit,
 	                	offset:params.offset
@@ -172,7 +171,6 @@
             <div class="ibox-content"  style="height: 100%;">
             	<div class="btn-group hidden-xs" id="toolbar" role="group" style="margin-top: 10px;">
                     <div class="form-inline" style="width: 880px;float: left;">
-                    	幼儿园名称：<input type="text" placeholder="幼儿园名称" class="form-control input-inline"  id="kindergartenName" name="kindergartenName" width="280px"> 
                     	帐号：<input type="text" placeholder="帐号" class="form-control input-inline"  id="username" name="username" width="280px"> 
                            <button  id="btn_search" type="button" class="btn btn-inline btn-default" style="margin-top: 4px;"> 搜索</button> 
 	                    <button id="btn_new" type="button" style="margin-left: 10px;margin-top: 4px;" class="btn btn-inline btn-default"  title="添加">

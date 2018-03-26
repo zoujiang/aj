@@ -10,6 +10,7 @@ public class UserVo {
 	private String pwd;
 	private String isEnabled;
 	private String shopId;
+	private String accountType;
 	
 	public String getId() {
 		return id;
@@ -64,6 +65,12 @@ public class UserVo {
 	}
 	public void setShopId(String shopId) {
 		this.shopId = shopId;
+	}
+	public String getAccountType() {
+		return accountType;
+	}
+	public void setAccountType(String accountType) {
+		this.accountType = accountType;
 	}
 	
 	

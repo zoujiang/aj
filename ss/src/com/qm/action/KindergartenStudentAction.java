@@ -46,10 +46,10 @@ public class KindergartenStudentAction extends FtpImgDownUploadAction{
 	private GenericDAO baseDAO;
 
 	@RequestMapping("/list")
-	public String list(Integer kindergartenId, Integer gradeId, String name, Integer offset, Integer limit){
+	public String list(Integer gradeId, String name, Integer offset, Integer limit, HttpServletRequest request){
 		
 		KindergartenStudent student = new KindergartenStudent();
-		student.setKindergartenId(kindergartenId);
+		student.setKindergartenId(Integer.parseInt(request.getSession().getAttribute(com.frame.core.constant.Constant.LOGIN_SHOP_ID).toString()));
 		student.setGradeId(gradeId);
 		student.setName(name);
 		student.setOffset(offset);
@@ -93,7 +93,7 @@ public class KindergartenStudentAction extends FtpImgDownUploadAction{
         student.setPhoto(icon);
         student.setCreateTime(DateUtil.dateFromatYYYYMMddHHmmss(new Date()));
         student.setCreateUser(userExtForm.getAccount());
-        
+        student.setKindergartenId(Integer.parseInt(request.getSession().getAttribute(com.frame.core.constant.Constant.LOGIN_SHOP_ID).toString()));
 		try {
 			int i = kindergartenStudentService.save(student);
 			 if(i > 0){
@@ -200,6 +200,7 @@ public class KindergartenStudentAction extends FtpImgDownUploadAction{
         KindergartenStudent oldInfo = kindergartenStudentService.selectByPrimaryKey(student.getId());
         
 		try {
+			student.setKindergartenId(Integer.parseInt(request.getSession().getAttribute(com.frame.core.constant.Constant.LOGIN_SHOP_ID).toString()));
 			int i = kindergartenStudentService.update(student);
 			 if(i > 0){
 		            json.put("success",true );

@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="renderer" content="webkit">
     <meta http-equiv="Cache-Control" content="no-siteapp" />
-    <title>亲脉后台管理系统</title>
+    <title>幼教汇后台管理系统</title>
 
 	<%@ include file="/pages/comm/jsp/inc.jsp"%>
 	<script type="text/javascript" src="${ctx }/resources/hplus4.1/js/bootstrap.min.js"></script>

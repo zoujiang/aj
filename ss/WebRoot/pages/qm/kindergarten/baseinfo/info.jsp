@@ -14,7 +14,7 @@ String id = request.getParameter("id");
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
-    <title>管理平台-编辑幼儿园</title>
+    <title>管理平台-园区基础信息</title>
 
 	<%@ include file="/pages/comm/jsp/inc.jsp"%>
 	
@@ -67,7 +67,7 @@ String id = request.getParameter("id");
 				 //初始化页面数据
 				 $.ajax({
 		             type: "GET",
-		             url: "<%=path %>/admin/kindergarten/kindergarten/find?id=<%=id %>",
+		             url: "<%=path %>/admin/kindergarten/kindergarten/find?id=<%= request.getSession().getAttribute("Login_User_Shop_Id") %>",
 		             dataType: "json",
 		             success: function(data){
 		            	 if(data.success){
@@ -181,7 +181,7 @@ String id = request.getParameter("id");
 	            area: ['750px', '500px'],
 	            btn:['确定','取消'],
 	            closeBtn:false,
-	            content: getProjectName() +"/pages/qm/shop/baseinfo/viewImg.jsp?url="+url,
+	            content: getProjectName() +"/pages/qm/kindergarten/baseinfo/viewImg.jsp?url="+url,
 	            yes: function(index, lay){
 	            	var data = $(lay).find("iframe")[0].contentWindow.formData();
 	            	if(t == 1){
@@ -196,6 +196,9 @@ String id = request.getParameter("id");
 	    
 		function saveUser(){
 
+			$("#category").attr("disabled", false);
+			$("#brandId").attr("disabled", false);
+			$("#properties").attr("disabled", false);
 			$("#btn_save").attr("disabled", true);
             var shopName = $("#name").val();
             if(shopName == ""){
@@ -280,10 +283,7 @@ String id = request.getParameter("id");
 			     success: function(obj){
 			    	 if(obj.success){
 							layer.msg(obj.message, {title:'提示', btn: ['确定'],icon: 6}, function(index){
-								var index = parent.layer.getFrameIndex(window.name);
-								//parent.$('#apv_table').bootstrapTable('refresh');
-								parent.$("button[name='refresh']").click();
-								parent.layer.close(index);
+								location.href=location.href;
 					  		});
 						}
 						else{
@@ -334,7 +334,7 @@ String id = request.getParameter("id");
             <div class="ibox float-e-margins" style="margin-bottom: 0px;">
                 <div class="ibox-content row">
                	 	<form class="form-horizontal" id="userForm" action="<%=path %>/admin/shop/category/add" enctype="multipart/form-data" method="post">
-               	 		<input type="hidden" name="id" id="id" value="<%=id %>">
+               	 		<input type="hidden" name="id" id="id" value="<%=request.getSession().getAttribute("Login_User_Shop_Id") %>">
                	 		<div class="row">
 	               			<div class="form-group col-sm-6"> 
 	               				<label class="col-sm-4 control-label"><b style="color:red;">*</b>幼儿园名称：</label>
@@ -383,7 +383,7 @@ String id = request.getParameter("id");
 							<div class="form-group col-sm-6">
 								<label class="col-sm-4 control-label"><b style="color:red;">*</b>幼儿园级别：</label>
 								<div class="col-sm-8">
-									<select class="form-control" name="category" id="category">
+									<select class="form-control" name="category" id="category" disabled="disabled">
 										<option value="1">一级幼儿园</option>
 										<option value="2">二级幼儿园</option>
 										<option value="3">三级幼儿园</option>
@@ -393,7 +393,7 @@ String id = request.getParameter("id");
 							<div class="form-group col-sm-6">
 								<label class="col-sm-4 control-label"><b style="color:red;">*</b>幼儿园品牌：</label>
 								<div class="col-sm-8">
-									<select class="form-control" name="brandId" id="brandId">
+									<select class="form-control" name="brandId" id="brandId" disabled="disabled">
 									</select>
 								</div>
 							</div>
@@ -403,14 +403,14 @@ String id = request.getParameter("id");
 								<label class="col-sm-4 control-label"><b style="color:red;">*</b>服务开始时间：</label>
 								<div class="col-sm-8">
 									<!-- <input class="form-control" type="text" placeholder="2017-01-01"  name="serviceBeginTime" id="serviceBeginTime"> -->
-									<input id="serviceStartTime" class="laydate-icon form-control layer-date" placeholder="服务开始时间"  style="width: 207px;" name="serviceStartTime" onclick="laydate({istime: true, format: 'YYYY-MM-DD'})">
+									<input readonly="readonly" id="serviceStartTime" class="laydate-icon form-control layer-date" placeholder="服务开始时间"  style="width: 207px;" name="serviceStartTime" >
 								</div>
 							</div>
 							<div class="form-group col-sm-6">
 								<label class="col-sm-4 control-label"><b style="color:red;">*</b>服务结束时间：</label>
 								<div class="col-sm-8">
 									<!--	<input class="form-control" type="text" placeholder="2018-01-01"  name="serviceEndTime" id="serviceEndTime">-->
-									<input id="serviceEndTime" class="laydate-icon form-control layer-date" placeholder="服务结束时间"  style="width: 207px;" name="serviceEndTime" onclick="laydate({istime: true, format: 'YYYY-MM-DD'})">
+									<input readonly="readonly"  id="serviceEndTime" class="laydate-icon form-control layer-date" placeholder="服务结束时间"  style="width: 207px;" name="serviceEndTime" >
 								</div>
 							</div>
                         </div>
@@ -418,7 +418,7 @@ String id = request.getParameter("id");
 							<div class="form-group col-sm-6">
 								<label class="col-sm-4 control-label">幼儿园性质：</label>
 								<div class="col-sm-8">
-									<select name="properties" id="properties"  class="form-control">
+									<select name="properties" id="properties"  class="form-control" disabled="disabled">
 										<option id="properties_1" value="1">公办</option>
 										<option id="properties_2" value="2">普惠民办</option>
 										<option id="properties_3" value="3">民办</option>

@@ -3,6 +3,8 @@ package com.qm.action;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,10 +40,10 @@ public class KindergartenTask extends FtpImgDownUploadAction {
 	private KindergartenTeacherService kindergartenTeacherService;
 	
 	@RequestMapping("/teacherList")
-    public String teacherList(Integer kindergartenId,String name, int limit, int offset) {
+    public String teacherList(Integer kindergartenId,String name, int limit, int offset, HttpServletRequest request) {
 
 		KindergartenTaskInfo info = new KindergartenTaskInfo();
-        info.setKindergartenId(kindergartenId);
+        info.setKindergartenId(Integer.parseInt(request.getSession().getAttribute(com.frame.core.constant.Constant.LOGIN_SHOP_ID).toString()));
         info.setTeacherName(name);
         List<Integer> userTypes = new ArrayList<Integer>();
         userTypes.add(4);
@@ -58,10 +60,10 @@ public class KindergartenTask extends FtpImgDownUploadAction {
         return json.toJSONString();
     }
 	@RequestMapping("/managerList")
-	public String managerList(Integer kindergartenId,String name, int limit, int offset) {
+	public String managerList(Integer kindergartenId,String name, int limit, int offset, HttpServletRequest request) {
 		
 		KindergartenTaskInfo info = new KindergartenTaskInfo();
-		info.setKindergartenId(kindergartenId);
+		info.setKindergartenId(Integer.parseInt(request.getSession().getAttribute(com.frame.core.constant.Constant.LOGIN_SHOP_ID).toString()));
 		info.setTeacherName(name);
 		info.setUserType(3);
 		info.setOffset(offset);
@@ -74,10 +76,10 @@ public class KindergartenTask extends FtpImgDownUploadAction {
 		return json.toJSONString();
 	}
 	@RequestMapping("/leaderList")
-	public String leaderList(Integer kindergartenId,String name, int limit, int offset) {
+	public String leaderList(Integer kindergartenId,String name, int limit, int offset, HttpServletRequest request) {
 		
 		KindergartenTaskInfo info = new KindergartenTaskInfo();
-		info.setKindergartenId(kindergartenId);
+		info.setKindergartenId(Integer.parseInt(request.getSession().getAttribute(com.frame.core.constant.Constant.LOGIN_SHOP_ID).toString()));
 		info.setTeacherName(name);
 		List<Integer> userTypes = new ArrayList<Integer>();
         userTypes.add(1);
