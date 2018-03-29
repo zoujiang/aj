@@ -62,6 +62,7 @@ public class TeacherTaskStatisticsThread extends Thread{
 			taskInfo.setTeacherName(teacher.getName());
 			taskInfo.setUserType(teacher.getType());
 			taskInfo.setUpdateTime(DateUtil.getNowDate());
+			taskInfo.setRenewPhone(teacher.getRechargeTelNo());
 			if(teacher.getType() == 1 || teacher.getType() == 2 || teacher.getType() == 3){
 				//园长 副园长 管理人员
 				KindergartenGradeVisitInfo visitInfo = new KindergartenGradeVisitInfo();
@@ -74,8 +75,6 @@ public class TeacherTaskStatisticsThread extends Thread{
 				}else{
 					taskInfo.setIsGetReward(0);
 					taskInfo.setRemark("当月任务完成获得");
-					taskInfo.setRenewPhone(teacher.getRechargeTelNo());
-					
 				}
 				taskInfo.setIsSend(1);
 				

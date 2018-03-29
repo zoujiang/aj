@@ -47,7 +47,7 @@ String id = request.getParameter("id");
 	                		  $("#ra1").attr("checked","checked");
 	                	  }
 	                	  $("#type").find("option[value='"+data.message.type+"']").attr("selected",true);
-	                	  if(data.message.photo !=''){
+	                	  if(data.message.photo !=null && data.message.photo !=''){
 	                		  $("#preView").attr("href", data.message.photo);
 	                		  $("#preView").show();
 	                	  }

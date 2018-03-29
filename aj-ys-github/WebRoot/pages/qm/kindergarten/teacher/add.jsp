@@ -71,6 +71,14 @@ if(roleId == null || "".equals(roleId)){
 				$("#btn_save").attr("disabled", false);
 				return false;
 			}
+			 var reg=/^[1]{1}[0-9]{10}$/; 
+	         var result= reg.test(tel); 
+	         if(tel!==""&&!result){
+	        	 layer.msg("请输入正确的联系电话", {title:'提示', btn: ['确定'],icon: 6}, function(index){
+					});
+					$("#btn_save").attr("disabled", false);
+					return false;
+	         }
 			var rechargeTelNo = $("#rechargeTelNo").val();
 			if(rechargeTelNo == ""){
 				layer.msg("充值话费号码不能为空", {title:'提示', btn: ['确定'],icon: 6}, function(index){
