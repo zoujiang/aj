@@ -39,7 +39,7 @@ public class CouponExchangeService implements PublishService{
 	private GenericDAO baseDAO;
 	
 	@Override
-	public Object publishService(Object obj) throws PublicException {
+	public synchronized Object publishService(Object obj) throws PublicException {
 
 
 
@@ -63,7 +63,7 @@ public class CouponExchangeService implements PublishService{
 		TCouponInfoEntity couponInfo = baseDAO.get(TCouponInfoEntity.class, couponId);
 		TCouponShopInfoEntity couponShop = baseDAO.get(TCouponShopInfoEntity.class, couponInfo.getShopId());
 		List<TCouponExchange> hadCouponList = baseDAO.getGenericByHql("from TCouponExchange where couponId = ? and userId = ?", couponId, userId);
-		if(couponInfo != null && couponInfo.getLeftNum() > 0 && couponInfo.getLeftNum() > hadCouponList.size()){
+		if(couponInfo != null && couponInfo.getLeftNum() > 0 && couponInfo.getLimitNumber() > hadCouponList.size()){
 			couponInfo.setLeftNum(couponInfo.getLeftNum() -1);
 			baseDAO.update(couponInfo);
 			TCouponExchange change = new TCouponExchange();

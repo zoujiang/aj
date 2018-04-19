@@ -5,16 +5,20 @@
 
 package com.aj.kindergarten.service;
 
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+
 import com.frame.core.dao.GenericDAO;
+import com.frame.core.util.SystemConfig;
 import com.frame.ifpr.exception.PublicException;
 import com.frame.ifpr.service.PublishService;
 import com.util.Constant;
-import net.sf.json.JSONObject;
-import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
-import java.util.List;
-import java.util.Map;
+import net.sf.json.JSONObject;
 
 
 @Service("kindergartenHonorQuery")
@@ -47,9 +51,9 @@ public class KindergartenHonorQueryService implements PublishService{
 			returnJSON.put("errorMsg", re +"不能为空！");
 			return returnJSON.toString();
 		}
-
+		String imgPrefix =  SystemConfig.getValue("img.http.url");
 	//	TUser user = baseDAO.get(TUser.class, Integer.parseInt( userId));
-        String sql = "select id honorId, photo_url honorUrl, create_time createTime,name honorName from t_kindergarten_honor  where type = ? and owner_id = ? order by create_time desc limit ?,?";
+        String sql = "select id honorId, case when (photo_url is not null and photo_url != '') then concat('"+ imgPrefix+"',photo_url) else '' end honorUrl, create_time createTime,name honorName from t_kindergarten_honor  where type = ? and owner_id = ? order by create_time desc limit ?,?";
         List<Map<String, Object>> data = baseDAO.getGenericBySQL(sql, new Object[]{type, ownerId, currentPage * pageSize, pageSize });
 
 		result.put("succMsg", "查询成功");

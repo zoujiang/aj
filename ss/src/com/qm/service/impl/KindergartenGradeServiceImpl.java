@@ -1,8 +1,6 @@
 package com.qm.service.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.qm.entities.KindergartenGrade;
 import com.qm.mapper.KindergartenGradeMapper;
 import com.qm.service.KindergartenGradeService;
+import com.util.GradeNameUtil;
 
 @Service
 public class KindergartenGradeServiceImpl implements KindergartenGradeService {
@@ -42,14 +41,8 @@ public class KindergartenGradeServiceImpl implements KindergartenGradeService {
 			grade2.setRule(ruleString);
 			
 			String series = grade2.getSeries();
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
-			String currentYear = sdf.format(new Date());
-			int index = Integer.parseInt(currentYear) - Integer.parseInt(series);
 			String name = series +"级";
-			if(index > ruleString.split(";").length -1){
-				index = ruleString.split(";").length -1;
-			}
-			String className = ruleString.split(";")[index];
+			String className = GradeNameUtil.getGradeName(grade2);
 			grade2.setName(name + className + grade2.getClassNo());
 		}
 		return gradeList;
@@ -95,14 +88,8 @@ public class KindergartenGradeServiceImpl implements KindergartenGradeService {
 			grade.setRule(ruleString);
 			
 			String series = grade.getSeries();
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
-			String currentYear = sdf.format(new Date());
-			int index = Integer.parseInt(currentYear) - Integer.parseInt(series);
 			String name = series +"级";
-			if(index > ruleString.split(";").length -1){
-				index = ruleString.split(";").length -1;
-			}
-			String className = ruleString.split(";")[index];
+			String className = GradeNameUtil.getGradeName(grade);
 			grade.setName(name + className + grade.getClassNo());
 			
 		}
@@ -116,23 +103,9 @@ public class KindergartenGradeServiceImpl implements KindergartenGradeService {
 		String names = "";
 		for(KindergartenGrade grade : list){
 			
-			String ruleString = "";
-			String rule = grade.getRule();
-			char[] ruleChar = rule.toCharArray();
-			for(int i= 0 ; i< ruleChar.length ; i++){
-				if(ruleChar[i] == '1'){
-					ruleString += ruleNames[i] +";";
-				}
-			}
 			String series = grade.getSeries();
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
-			String currentYear = sdf.format(new Date());
-			int index = Integer.parseInt(currentYear) - Integer.parseInt(series);
 			String name = series +"级";
-			if(index > ruleString.split(";").length -1){
-				index = ruleString.split(";").length -1;
-			}
-			String className = ruleString.split(";")[index];
+			String className = GradeNameUtil.getGradeName(grade);
 			names += name + className + grade.getClassNo() +",";
 		}
 		

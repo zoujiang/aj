@@ -7,100 +7,94 @@ import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-
 /**
  * TRewardInfo entity. @author MyEclipse Persistence Tools
  */
 @Entity
-@Table(name="t_reward_info")
+@Table(name = "t_reward_info")
 
-public class TRewardInfo  implements java.io.Serializable {
+public class TRewardInfo implements java.io.Serializable {
 
+	// Fields
 
-    // Fields    
+	private Integer id;
+	private Integer userType;
+	private Integer kindergartenCategory;
+	private Integer rewardInfo;
+	private String rewardIcon;
 
-     private Integer id;
-     private String rewardCondition;
-     private String rewardContent;
-     private Integer imageNum;
-     private Integer videoNum;
+	// Constructors
 
+	/** default constructor */
+	public TRewardInfo() {
+	}
 
-    // Constructors
+	/** minimal constructor */
+	public TRewardInfo(Integer userType, Integer kindergartenCategory) {
+		this.userType = userType;
+		this.kindergartenCategory = kindergartenCategory;
+	}
 
-    /** default constructor */
-    public TRewardInfo() {
-    }
+	/** full constructor */
+	public TRewardInfo(Integer userType, Integer kindergartenCategory, Integer rewardInfo, String rewardIcon) {
+		this.userType = userType;
+		this.kindergartenCategory = kindergartenCategory;
+		this.rewardInfo = rewardInfo;
+		this.rewardIcon = rewardIcon;
+	}
 
-    
-    /** full constructor */
-    public TRewardInfo(String rewardCondition, String rewardContent, Integer imageNum, Integer videoNum) {
-        this.rewardCondition = rewardCondition;
-        this.rewardContent = rewardContent;
-        this.imageNum = imageNum;
-        this.videoNum = videoNum;
-    }
+	// Property accessors
+	@Id
+	@GeneratedValue(strategy = IDENTITY)
 
-   
-    // Property accessors
-    @Id @GeneratedValue(strategy=IDENTITY)
-    
-    @Column(name="id", unique=true, nullable=false)
+	@Column(name = "id", unique = true, nullable = false)
 
-    public Integer getId() {
-        return this.id;
-    }
-    
-    public void setId(Integer id) {
-        this.id = id;
-    }
-    
-    @Column(name="reward_condition", length=2)
+	public Integer getId() {
+		return this.id;
+	}
 
-    public String getRewardCondition() {
-        return this.rewardCondition;
-    }
-    
-    public void setRewardCondition(String rewardCondition) {
-        this.rewardCondition = rewardCondition;
-    }
-    
-    @Column(name="reward_content", length=200)
+	public void setId(Integer id) {
+		this.id = id;
+	}
 
-    public String getRewardContent() {
-        return this.rewardContent;
-    }
-    
-    public void setRewardContent(String rewardContent) {
-        this.rewardContent = rewardContent;
-    }
-    
-    @Column(name="image_num")
+	@Column(name = "user_type", nullable = false)
 
-    public Integer getImageNum() {
-        return this.imageNum;
-    }
-    
-    public void setImageNum(Integer imageNum) {
-        this.imageNum = imageNum;
-    }
-    
-    @Column(name="video_num")
+	public Integer getUserType() {
+		return this.userType;
+	}
 
-    public Integer getVideoNum() {
-        return this.videoNum;
-    }
-    
-    public void setVideoNum(Integer videoNum) {
-        this.videoNum = videoNum;
-    }
-   
+	public void setUserType(Integer userType) {
+		this.userType = userType;
+	}
 
+	@Column(name = "kindergarten_category", nullable = false)
 
+	public Integer getKindergartenCategory() {
+		return this.kindergartenCategory;
+	}
 
+	public void setKindergartenCategory(Integer kindergartenCategory) {
+		this.kindergartenCategory = kindergartenCategory;
+	}
 
+	@Column(name = "reward_info")
 
+	public Integer getRewardInfo() {
+		return this.rewardInfo;
+	}
 
+	public void setRewardInfo(Integer rewardInfo) {
+		this.rewardInfo = rewardInfo;
+	}
 
+	@Column(name = "reward_icon", length = 128)
+
+	public String getRewardIcon() {
+		return this.rewardIcon;
+	}
+
+	public void setRewardIcon(String rewardIcon) {
+		this.rewardIcon = rewardIcon;
+	}
 
 }

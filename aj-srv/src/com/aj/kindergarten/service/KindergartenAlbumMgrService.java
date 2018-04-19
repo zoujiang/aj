@@ -5,21 +5,19 @@
 
 package com.aj.kindergarten.service;
 
-import com.aam.model.TUser;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+
 import com.aj.kindergarten.vo.TKindergartenAlbumVisible;
 import com.frame.core.dao.GenericDAO;
-import com.frame.core.util.SystemConfig;
 import com.frame.ifpr.exception.PublicException;
 import com.frame.ifpr.service.PublishService;
 import com.util.Constant;
-import net.sf.json.JSONObject;
-import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import net.sf.json.JSONObject;
 
 
 @Service("kindergartenAlbumMgr")
@@ -51,16 +49,17 @@ public class KindergartenAlbumMgrService implements PublishService{
 			return returnJSON.toString();
 		}
 
-		TUser user = baseDAO.get(TUser.class, Integer.parseInt( userId));
-        List<TKindergartenAlbumVisible> vbs = baseDAO.getGenericByHql("from TKindergartenAlbumVisible where albumId = ? and familyId = ?", albumId, user.getFamilyId());
+		//TUser user = baseDAO.get(TUser.class, Integer.parseInt( userId));
+        List<TKindergartenAlbumVisible> vbs = baseDAO.getGenericByHql("from TKindergartenAlbumVisible where albumId = ? ", albumId);
 		if(vbs.size() > 0){
             TKindergartenAlbumVisible visible = vbs.get(0);
             visible.setVisibleProperty(visibleProperty);
+            visible.setFamilyId(userId);
             baseDAO.update(visible);
         }else{
             TKindergartenAlbumVisible visible = new TKindergartenAlbumVisible();
             visible.setAlbumId(albumId);
-            visible.setFamilyId(user.getFamilyId());
+            visible.setFamilyId(userId);
             visible.setVisibleProperty(visibleProperty);
             baseDAO.save(visible);
         }

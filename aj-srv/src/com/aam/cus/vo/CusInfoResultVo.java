@@ -25,6 +25,7 @@ public class CusInfoResultVo  extends ResultVo {
 	private String flag;
 	private Integer isVip;
 	private Integer type;
+	private String vipExpiredDate;
 	
 	/**
 	 * @return the userId
@@ -163,4 +164,11 @@ public class CusInfoResultVo  extends ResultVo {
 	public void setType(Integer type) {
 		this.type = type;
 	}
+	public String getVipExpiredDate() {
+		return vipExpiredDate;
+	}
+	public void setVipExpiredDate(String vipExpiredDate) {
+		this.vipExpiredDate = vipExpiredDate;
+	}
+	
 }

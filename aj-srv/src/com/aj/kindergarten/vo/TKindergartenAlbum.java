@@ -12,9 +12,9 @@ import javax.persistence.Table;
  * TKindergartenAlbun entity. @author MyEclipse Persistence Tools
  */
 @Entity
-@Table(name="t_kindergarten_albun")
+@Table(name="t_kindergarten_album")
 
-public class TKindergartenAlbun  implements java.io.Serializable {
+public class TKindergartenAlbum  implements java.io.Serializable {
 
 
     // Fields    
@@ -30,16 +30,18 @@ public class TKindergartenAlbun  implements java.io.Serializable {
      private Integer student;
      private String currentGradeName;
      private Integer type;
+     private String downloadUrl;
+     private String downloadSecret;
 
 
     // Constructors
 
     /** default constructor */
-    public TKindergartenAlbun() {
+    public TKindergartenAlbum() {
     }
 
 	/** minimal constructor */
-    public TKindergartenAlbun(String albumName, String createTime, String createUser, Integer type) {
+    public TKindergartenAlbum(String albumName, String createTime, String createUser, Integer type) {
         this.albumName = albumName;
         this.createTime = createTime;
         this.createUser = createUser;
@@ -47,7 +49,7 @@ public class TKindergartenAlbun  implements java.io.Serializable {
     }
     
     /** full constructor */
-    public TKindergartenAlbun(String albumName, String albumUrl, String albumDesc, String createTime, String createUser, Integer shcoolId, Integer gradeId, Integer student, String currentGradeName, Integer type) {
+    public TKindergartenAlbum(String albumName, String albumUrl, String albumDesc, String createTime, String createUser, Integer shcoolId, Integer gradeId, Integer student, String currentGradeName, Integer type) {
         this.albumName = albumName;
         this.albumUrl = albumUrl;
         this.albumDesc = albumDesc;
@@ -173,13 +175,22 @@ public class TKindergartenAlbun  implements java.io.Serializable {
     public void setType(Integer type) {
         this.type = type;
     }
-   
+    @Column(name="download_url", length=128)
+	public String getDownloadUrl() {
+		return downloadUrl;
+	}
 
+	public void setDownloadUrl(String downloadUrl) {
+		this.downloadUrl = downloadUrl;
+	}
+	 @Column(name="download_secret", length=10)
+	public String getDownloadSecret() {
+		return downloadSecret;
+	}
 
-
-
-
-
+	public void setDownloadSecret(String downloadSecret) {
+		this.downloadSecret = downloadSecret;
+	}
 
 
 }

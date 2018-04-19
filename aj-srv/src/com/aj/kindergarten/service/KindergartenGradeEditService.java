@@ -8,6 +8,7 @@ package com.aj.kindergarten.service;
 import com.aj.kindergarten.vo.TKindergartenGrade;
 import com.aj.kindergarten.vo.TKindergartenPhoto;
 import com.frame.core.dao.GenericDAO;
+import com.frame.core.util.SystemConfig;
 import com.frame.ifpr.exception.PublicException;
 import com.frame.ifpr.service.PublishService;
 import com.util.Constant;
@@ -65,6 +66,8 @@ public class KindergartenGradeEditService implements PublishService{
 			grade.setDeclaration(declaration);
 		}
 		if(logo != null){
+			String imgUrl= SystemConfig.getValue("img.http.url");
+			logo = logo.replaceAll(imgUrl, "");
 			grade.setLogo(logo);
 		}
 		baseDAO.update(grade);

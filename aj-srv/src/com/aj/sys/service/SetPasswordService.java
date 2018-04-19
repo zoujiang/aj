@@ -49,6 +49,8 @@ public class SetPasswordService implements PublishService{
 		String newPssword = params.optString("newPssword");
 		String smsValidateToken = params.optString("smsValidateToken");
 		String ucode = params.optString("ucode");
+		//该字段APP接口不需要传递，后台默认设置为 1：普通用户； 当后台管理系统注册教师，园长等角色时，需要该值
+		String userType = params.optString("userType");
 		
 		JSONObject returnJSON = new JSONObject();
 		JSONObject result = new JSONObject();
@@ -101,6 +103,12 @@ public class SetPasswordService implements PublishService{
 				//	user.setIsMarried(3);
 					//系统默认的头像
 					user.setPhoto("/clt/default/defaultPhoto.png");
+					user.setIsVip(0);
+					if(userType == null || "".equals(userType)){
+						user.setType(1);
+					}else{
+						user.setType(Integer.parseInt(userType));
+					}
 					isRegist = true;
 				
 				}else{

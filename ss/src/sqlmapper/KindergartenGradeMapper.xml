@@ -35,7 +35,7 @@
     delete from t_kindergarten_grade
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.qm.entities.KindergartenGrade">
+  <insert id="insert" parameterType="com.qm.entities.KindergartenGrade"  useGeneratedKeys="true" keyProperty="id">
     insert into t_kindergarten_grade (id, kindergarten_id, series, 
       class_no, first_teacher, second_teacher, 
       nurse, logo, declaration, 
@@ -47,7 +47,7 @@
       #{name,jdbcType=VARCHAR}, #{rule,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, 
       #{createUser,jdbcType=VARCHAR}, #{className,jdbcType=VARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.qm.entities.KindergartenGrade">
+  <insert id="insertSelective" parameterType="com.qm.entities.KindergartenGrade"  useGeneratedKeys="true" keyProperty="id">
     insert into t_kindergarten_grade
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">

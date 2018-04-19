@@ -59,7 +59,7 @@ public class QueryShopDetailService implements PublishService{
 			shopInfo.put("shopName", shop.getShopName());
 			shopInfo.put("shopAddress", shop.getAddress());
 			shopInfo.put("tel",  shop.getTel());
-			shopInfo.put("description", shop.getDescription());
+			shopInfo.put("shopDesc", shop.getDescription());
 
 			List<Map<String, Object>> cmtList = baseDAO.getGenericBySQL(commentSql, new Object[]{shopId});
 			if(cmtList != null && cmtList.size() > 0){

@@ -62,7 +62,7 @@ public class QueryKindergartenDetailService implements PublishService{
 			shopInfo.put("kindergartenName", kindergartenInfo.getName());
 			shopInfo.put("kindergartenAddress", kindergartenInfo.getAddress());
 			shopInfo.put("tel",  kindergartenInfo.getTele());
-			shopInfo.put("description", kindergartenInfo.getDescription());
+			shopInfo.put("kindergartenDesc", kindergartenInfo.getDescription());
 
 			List<Map<String, Object>> cmtList = baseDAO.getGenericBySQL(commentSql, new Object[]{kindergartenId});
 			if(cmtList != null && cmtList.size() > 0){

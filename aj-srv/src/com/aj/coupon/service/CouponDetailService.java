@@ -47,8 +47,8 @@ public class CouponDetailService implements PublishService{
 		JSONObject returnJSON = new JSONObject();
 		returnJSON.put("serviceName", serviceName);
 
-		String sql = "SELECT i.`id` couponId, i.`name` couponName, i.`first_page_pic` couponLogo, i.get_condition  getCondition, i.show_img couponShowPic, i.`is_link` isLink, i.`link_address` linkAddress, i.description, i.limit_num limitNum, i.left_num leftNum, s.`id` shopId, s.`shop_name` shopName," +
-				"s.`address` shopAddress, s.`tel` shopTel FROM t_coupon_info i, t_coupon_shop_info s WHERE i.`shop_id` = s.`id` and i.id = ? ";
+		String sql = "SELECT i.`id` couponId, i.`name` couponName, i.`first_page_pic` couponLogo, i.get_condition  getCondition, i.show_img couponShowPic, i.`is_link` isLink, i.`link_address` linkAddress, i.description couponDesc, i.limit_num limitNum, i.left_num leftNum, i.total_num totalNum, s.`id` shopId, s.`shop_name` shopName," +
+				"s.`address` shopAddress, s.`tel` shopTel, s.logo shopLogo, s.show_pic shopShowPic FROM t_coupon_info i, t_coupon_shop_info s WHERE i.`shop_id` = s.`id` and i.id = ? ";
 
 		List<Map<String, Object>> couponList = baseDAO.getGenericBySQL(sql , new Object[]{couponId} );
 
@@ -56,6 +56,9 @@ public class CouponDetailService implements PublishService{
 		Map<String, Object> coupon = couponList.get(0);
 		if(coupon.get("couponLogo") != null && !"".equals(coupon.get("couponLogo"))){
 			coupon.put("couponLogo", imgUrl + coupon.get("couponLogo") );
+		}
+		if(coupon.get("shopLogo") != null && !"".equals(coupon.get("shopLogo"))){
+			coupon.put("shopLogo", imgUrl + coupon.get("shopLogo") );
 		}
 		if(coupon.get("couponShowPic") != null && !"".equals(coupon.get("couponShowPic"))){
 
@@ -66,6 +69,15 @@ public class CouponDetailService implements PublishService{
 			}
 			coupon.put("couponShowPic" , pics.substring(0, pics.length() -1));
 		}
+		if(coupon.get("shopShowPic") != null && !"".equals(coupon.get("shopShowPic"))){
+			
+			String[] showPics = coupon.get("shopShowPic").toString().split(",");
+			String pics = "";
+			for(String pic : showPics){
+				pics += imgUrl + pic +",";
+			}
+			coupon.put("shopShowPic" , pics.substring(0, pics.length() -1));
+		}
 
 		List<Map<String, Object>> cmtList = baseDAO.getGenericBySQL(commentSql, new Object[]{coupon.get("shopId")});
 		if(cmtList != null && cmtList.size() > 0){
@@ -75,16 +87,17 @@ public class CouponDetailService implements PublishService{
 			coupon.put("couponScore", 4);
 			coupon.put("couponCmtCount", 0);
 		}
+		
 		int limitNum = Integer.parseInt(coupon.get("limitNum")+"");
 		int leftNum = Integer.parseInt(coupon.get("leftNum")+"");
 		if(userId != null && !"".equals(userId)){
 			
 			List<TCouponExchange> hadCouponList = baseDAO.getGenericByHql("from TCouponExchange where couponId = ? and userId =?", couponId, userId);
-			if(leftNum == 0 ||  limitNum >= hadCouponList.size()){
+			if(leftNum == 0 ||  limitNum <= hadCouponList.size()){
 				
-				coupon.put("hadGet", 0);
+				coupon.put("isRechange", 0);
 			}else{
-				coupon.put("hadGet", 1);
+				coupon.put("isRechange", 1);
 			}
 		}
 

@@ -15,11 +15,14 @@ import javax.annotation.Resource;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import com.aam.model.TUser;
 import com.aj.pay.util.JsonXmlUtil;
 import com.aj.pay.util.SignUtil;
 import com.aj.pay.vo.TShopAlbumOrder;
+import com.aj.pay.vo.TVipOrder;
 import com.aj.shop.vo.TShopInfo;
 import com.aj.sms.SingletonClient;
+import com.aj.sys.vo.TVipPackage;
 import com.frame.core.constant.Constant;
 import com.frame.core.constant.FtpConstant;
 import com.frame.core.dao.GenericDAO;
@@ -87,7 +90,7 @@ public class WxPayCallBackNotify implements PublishService{
 			//成功
 			String result_code = json.optString("result_code");
 			String out_trade_no = json.optString("out_trade_no"); //商户订单号 
-			//存在2中订单，一种是用户购买相册， 另一种是商户购买服务时间（该种情况会有attach夹带shopId字段）
+			//存在3种订单，一种是用户购买相册， 一种是商户购买服务时间（该种情况会有attach夹带shopId字段），另一种是VIP开通或续费该种情况会有attach夹带vip字段）
 			if(json.optString("attach") != null && json.optString("attach").indexOf("shopId:::") != -1){
 				String shopId = json.optString("attach").substring(json.optString("attach").indexOf("shopId:::")+9);
 				String transaction_id = json.optString("transaction_id");
@@ -97,7 +100,47 @@ public class WxPayCallBackNotify implements PublishService{
 				}
 				baseDAO.execteNativeBulk(sql, transaction_id, result_code, return_code, return_msg, DateUtil.now(), out_trade_no);
 			
-			}else{
+			}else if(json.optString("attach") != null && json.optString("attach").indexOf("vip:::") != -1){
+				//VIP开通或续费
+				List<TVipOrder> orderList = baseDAO.getGenericByHql("from TVipOrder where orderId = ? and isPay = 0", out_trade_no);
+				if(orderList != null && orderList.size() > 0){
+					TVipOrder order = orderList.get(0);
+					TUser user = baseDAO.get(TUser.class, order.getUserId());
+					TVipPackage pack = baseDAO.get(TVipPackage.class, order.getVipPackageId());
+					SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+					if(user != null){
+						if(user.getVipExpiredDate() == null || "".equals(user.getVipExpiredDate())){
+							int second = (int) (System.currentTimeMillis() /1000 + (pack.getPackageDays() * 24 * 60 * 60));
+							user.setVipExpiredDate(format.format(second));
+							user.setIsVip(1);
+							baseDAO.update(user);
+						}else{
+							String expiredDate = user.getVipExpiredDate();
+							try {
+								if(format.parse(expiredDate).getTime() < (int) (System.currentTimeMillis()/ 1000)){
+									//过期时间小于当前时间，那么过期时间从今天开始
+									int second = (int) (System.currentTimeMillis() /1000 + (pack.getPackageDays() * 24 * 60 * 60));
+									user.setVipExpiredDate(format.format(second));
+									user.setIsVip(1);
+									baseDAO.update(user);
+								}else{
+									//在原过期时间上累加
+									int second = (int) (format.parse(expiredDate).getTime() + (pack.getPackageDays() * 24 * 60 * 60));
+									user.setVipExpiredDate(format.format(second));
+									user.setIsVip(1);
+									baseDAO.update(user);
+								}
+							} catch (ParseException e) {
+								e.printStackTrace();
+							}
+						}
+					}
+					order.setIsPay(1);
+					order.setPayTime(DateUtil.now());
+					order.setTradeNo(json.optString("transaction_id"));
+					baseDAO.update(order);
+				}
+			} else{
 				
 				List<TShopAlbumOrder> orderList = baseDAO.getGenericByHql("from TShopAlbumOrder where orderNo = ?", out_trade_no);
 				if(orderList != null && orderList.size() > 0){

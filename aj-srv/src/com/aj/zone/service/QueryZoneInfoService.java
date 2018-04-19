@@ -239,24 +239,40 @@ public class QueryZoneInfoService implements PublishService{
 						Map<String, Object> albumInfo = new HashMap<String, Object>();
 						albumInfo.put("shopName", albumName);
 						albumInfo.put("shopLogo", logo);
+						albumInfo.put("studentId", studentId);
 						
 						//查询相册
-						sql = "select a.*, (select count(1) from t_kindergarten_photo p where p.album_id = a.id ) photoNumber, (select count(1) from t_kindergarten_photo p where p.album_id = a.id AND DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= DATE(p.create_time)) laterNumber   from `t_kindergarten_albun` a where  a.shcool_id = ? and a.grade_id = ?  and case when a.type = 2 then  a.student = ? else 1=1 end";
+						sql = "select a.*, (select count(1) from t_kindergarten_photo p where p.album_id = a.id ) photoNumber, (select count(1) from t_kindergarten_photo p where p.album_id = a.id AND DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= DATE(p.create_time)) laterNumber   from `t_kindergarten_album` a where  a.shcool_id = ? and a.grade_id = ?  and case when a.type = 2 then  a.student = ? else 1=1 end";
 						List<Map<String, Object>> kinderpratenAlbumList = baseDAO.getGenericBySQL(sql, new Object[]{ kindergartenId, gradeId, studentId} );
 						
 						List<Map<String, Object>> albumListResult = new ArrayList<Map<String, Object>>();
 						
 						for(Map<String, Object> album : kinderpratenAlbumList){
 							//查看此相册是否被设置为 非所有人可见
-							String hql2 = "from TKindergartenAlbumVisible where familyId = ? and albumId = ?";
-							List<TKindergartenAlbumVisible> av = baseDAO.getGenericByHql(hql2, user.getFamilyId(), album.get("id"));
+							String hql2 = "from TKindergartenAlbumVisible where albumId = ?";
+							List<TKindergartenAlbumVisible> av = baseDAO.getGenericByHql(hql2,  album.get("id"));
 							if(av.size() == 0 || av.get(0).getVisibleProperty() ==2 ){
 								Map<String, Object> temp = new HashMap<String, Object>();
 								temp.put("zoneId", album.get("id"));
 								temp.put("zoneName", album.get("album_name"));
 								temp.put("zoneUrl", album.get("zoneUrl") == null ? "" : imgUrl+ album.get("zoneUrl"));
-								temp.put("photoNumber", album.get("photoNumber"));
-								temp.put("laterNumber", album.get("laterNumber"));
+								//temp.put("photoNumber", album.get("photoNumber"));
+								//temp.put("laterNumber", album.get("laterNumber"));
+								int photoNumber = Integer.parseInt(album.get("photoNumber")+"");
+								int laterNumber = Integer.parseInt(album.get("laterNumber")+"");
+								//班级照片数量为 班级照片数 + 个人照片数
+								String sql1 = "select id from t_kindergarten_album a where a.shcool_id = ? and a.grade_id = ?  and a.type = 2 and student = ? and current_grade_name =?";
+								List<Map<String, Object>> generAlbumList = baseDAO.getGenericBySQL(sql1, new Object[]{ kindergartenId, gradeId, studentId, album.get("current_grade_name")} );
+								if(generAlbumList != null && generAlbumList.size() > 0){
+									String sql2 = "select count(1) from t_kindergarten_photo p where p.album_id = ? ";
+									int studentPhotoNum = baseDAO.getGenericCountToSQL(sql2, new Object[]{generAlbumList.get(0).get("id")} );
+									photoNumber += studentPhotoNum;
+									String sql3 = "select count(1) from t_kindergarten_photo p where  DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= DATE(p.create_time) and p.album_id = ? ";
+									int studentLastPhotoNum = baseDAO.getGenericCountToSQL(sql3, new Object[]{generAlbumList.get(0).get("id")} );
+									laterNumber += studentLastPhotoNum;
+								}
+								temp.put("photoNumber", photoNumber);
+								temp.put("laterNumber", laterNumber);
 								
 								albumListResult.add(temp);
 							}
@@ -447,9 +463,9 @@ public class QueryZoneInfoService implements PublishService{
 						Map<String, Object> albumInfo = new HashMap<String, Object>();
 						albumInfo.put("shopName", albumName);
 						albumInfo.put("shopLogo", logo);
-
+						albumInfo.put("studentId", studentId);
 						//查询相册
-						sql = "select a.*, (select count(1) from t_kindergarten_photo p where p.album_id = a.id ) photoNumber, (select count(1) from t_kindergarten_photo p where p.album_id = a.id AND DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= DATE(p.create_time)) laterNumber   from `t_kindergarten_albun` a where  a.shcool_id = ? and a.grade_id = ?  and case when a.type = 2 then  a.student = ? else 1=1 end";
+						sql = "select a.*, (select count(1) from t_kindergarten_photo p where p.album_id = a.id ) photoNumber, (select count(1) from t_kindergarten_photo p where p.album_id = a.id AND DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= DATE(p.create_time)) laterNumber   from `t_kindergarten_album` a where  a.shcool_id = ? and a.grade_id = ?  and case when a.type = 2 then  a.student = ? else 1=1 end";
 						List<Map<String, Object>> kinderpratenAlbumList = baseDAO.getGenericBySQL(sql, new Object[]{ kindergartenId, gradeId, studentId} );
 
 						List<Map<String, Object>> albumListResult = new ArrayList<Map<String, Object>>();
@@ -463,9 +479,23 @@ public class QueryZoneInfoService implements PublishService{
 								temp.put("zoneId", album.get("id"));
 								temp.put("zoneName", album.get("album_name"));
 								temp.put("zoneUrl", album.get("zoneUrl") == null ? "" : imgUrl+ album.get("zoneUrl"));
-								temp.put("photoNumber", album.get("photoNumber"));
-								temp.put("laterNumber", album.get("laterNumber"));
-
+								//temp.put("photoNumber", album.get("photoNumber"));
+								//temp.put("laterNumber", album.get("laterNumber"));
+								int photoNumber = Integer.parseInt(album.get("photoNumber")+"");
+								int laterNumber = Integer.parseInt(album.get("laterNumber")+"");
+								//班级照片数量为 班级照片数 + 个人照片数
+								String sql1 = "select id from t_kindergarten_album a where a.shcool_id = ? and a.grade_id = ?  and a.type = 2 and student = ? and current_grade_name =?";
+								List<Map<String, Object>> generAlbumList = baseDAO.getGenericBySQL(sql1, new Object[]{ kindergartenId, gradeId, studentId, album.get("current_grade_name")} );
+								if(generAlbumList != null && generAlbumList.size() > 0){
+									String sql2 = "select count(1) from t_kindergarten_photo p where p.album_id = ? ";
+									int studentPhotoNum = baseDAO.getGenericCountToSQL(sql2, new Object[]{generAlbumList.get(0).get("id")} );
+									photoNumber += studentPhotoNum;
+									String sql3 = "select count(1) from t_kindergarten_photo p where  DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= DATE(p.create_time) and p.album_id = ? ";
+									int studentLastPhotoNum = baseDAO.getGenericCountToSQL(sql3, new Object[]{generAlbumList.get(0).get("id")} );
+									laterNumber += studentLastPhotoNum;
+								}
+								temp.put("photoNumber", photoNumber);
+								temp.put("laterNumber", laterNumber);
 								albumListResult.add(temp);
 							}
 						}

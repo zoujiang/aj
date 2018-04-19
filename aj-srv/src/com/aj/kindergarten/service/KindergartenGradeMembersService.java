@@ -6,6 +6,7 @@
 package com.aj.kindergarten.service;
 
 import com.aam.model.TUser;
+import com.aj.familymgr.vo.TFamilyInfo;
 import com.aj.kindergarten.vo.TKindergartenGrade;
 import com.frame.core.dao.GenericDAO;
 import com.frame.core.util.SystemConfig;
@@ -74,25 +75,30 @@ public class KindergartenGradeMembersService implements PublishService{
 		}
 		if(teachers != null && !"".equals(teachers)){
 			sql = "SELECT id memberId,CASE TYPE  WHEN  1 THEN '园长' WHEN 2 THEN '副园长' WHEN 3 THEN '管理人员' WHEN 4 THEN '主教' WHEN 5 THEN '副教' WHEN 6 THEN '保育员' WHEN 7 THEN '其他'  END memberNickName, CASE WHEN photo is not null THEN  CONCAT('"+imgUrl+"', photo) ELSE '' END memberPhoto , 0 isVip FROM t_kindergarten_teacher WHERE id IN ("+ teachers +")";
-			List<Map<String, Object>>  teacherMember =	baseDAO.getGenericBySQL(sql , new Object[]{grade.getKindergartenId()});
+			List<Map<String, Object>>  teacherMember =	baseDAO.getGenericBySQL(sql , null);
 			classMember.addAll(teacherMember);
 		}
 		//查询家长信息
-		sql = "SELECT f.id memberId, f.`family_name` memberNickName, u.`IS_VIP` isVip FROM t_user u , t_kindergarten_student s, t_family_info f WHERE u.`USERTEL` = s.`parents_tel` AND u.`FAMILYID` = f.`id` AND s.`grade_id` = ?";
-		List<Map<String, Object>> parentsFamilyList = baseDAO.getGenericBySQL(sql , new Object[]{gradeId});
-		for(Map<String, Object> parentFamily : parentsFamilyList){
-			String familyId = parentFamily.get("memberId")+"";
-			List<TUser> parentList = baseDAO.getGenericByHql("from TUser where familyId = ?", familyId);
-			String familyPhoto = "";
-			for(TUser u : parentList){
-				if(u.getPhoto() != null && !"".equals(u.getPhoto())){
-					familyPhoto += imgUrl + u.getPhoto() +",";
+		sql = "select s.id, s.`name` memberNickName, s.photo, u.familyid, u.`IS_VIP` isVip from t_kindergarten_student s left join t_user u on s.parents_tel = u.USERTEL where s.grade_id = ?";
+		List<Map<String, Object>> studentAndParentsFamilyList = baseDAO.getGenericBySQL(sql , new Object[]{gradeId});
+		for(Map<String, Object> spf : studentAndParentsFamilyList){
+			String familyPhoto = spf.get("familyid") == null ? "" : imgUrl + spf.get("photo") +"," ;
+			String familyId = spf.get("familyid") ==null? null :spf.get("familyid").toString() ;
+			if(familyId != null && !"".equals(familyId)){
+				
+				TFamilyInfo family = baseDAO.get(TFamilyInfo.class, familyId);
+				spf.put("memberNickName", family.getFamilyName());
+				List<TUser> parentList = baseDAO.getGenericByHql("from TUser where familyId = ?", familyId);
+				for(TUser u : parentList){
+					if(u.getPhoto() != null && !"".equals(u.getPhoto())){
+						familyPhoto += imgUrl + u.getPhoto() +",";
+					}
 				}
 			}
-			parentFamily.put("memberPhoto", familyPhoto.length() == 0 ? "" : familyPhoto.substring(0, familyPhoto.length()-1 ));
-
+			spf.put("memberPhoto", familyPhoto);
 		}
-		classMember.addAll(parentsFamilyList);
+		
+		classMember.addAll(studentAndParentsFamilyList);
 
 		result.put("succMsg", "查询成功");
 		result.put("classMember", classMember);

@@ -30,6 +30,7 @@ public class TKindergartenTeacher  implements java.io.Serializable {
      private String photo;
      private String createUser;
      private String createTime;
+     private Integer userId;
 
 
     // Constructors
@@ -166,13 +167,16 @@ public class TKindergartenTeacher  implements java.io.Serializable {
     public void setCreateTime(String createTime) {
         this.createTime = createTime;
     }
+
+    @Column(name="user_id")
+	public Integer getUserId() {
+		return userId;
+	}
+
+
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
    
-
-
-
-
-
-
-
 
 }

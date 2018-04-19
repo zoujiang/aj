@@ -96,10 +96,10 @@ public class QueryShopAlbumListService implements PublishService{
 				List<Map<String, Object>> albumList =new ArrayList<Map<String,Object>>();
 				sql = "SELECT DISTINCT t.* FROM ("+
 						"	SELECT  sa.id albumId, sa.album_name albumName , sa.album_logo albumLogo, (SELECT COUNT(1) FROM t_shop_photo WHERE album_id = sa.id) photoCount  ,sa.create_time createTime,"+
-						"	CASE WHEN sa.is_pay = 0 OR sa.had_paid = 1 THEN 1 ELSE 0 END isPaid , 0 albumType , '' albumUrl, '' musicUrl"+
+						"	CASE WHEN sa.is_pay = 0 OR sa.had_paid = 1 THEN 1 ELSE 0 END isPaid , 0 albumType , '' albumUrl, '' musicUrl, sa.VISIBLE_PROPERTY visibleProperty "+
 						"	FROM t_shop_album sa , t_shop_customer_user scu  WHERE  scu.id  = sa.user_id  AND scu.user_id = ?  AND sa.shop_id = ?"+
 						"	UNION "+
-						"	SELECT  sa.id albumId, sa.album_name albumName , sa.album_logo albumLogo, (SELECT COUNT(1) FROM t_shop_photo WHERE album_id = sa.id) photoCount  ,sa.create_time createTime,1 isPaid , 1 albumType, a.template_url albumUrl, a.music_url musicUrl "+
+						"	SELECT  sa.id albumId, sa.album_name albumName , sa.album_logo albumLogo, (SELECT COUNT(1) FROM t_shop_photo WHERE album_id = sa.id) photoCount  ,sa.create_time createTime,1 isPaid , 1 albumType, a.template_url albumUrl, a.music_url musicUrl, sa.VISIBLE_PROPERTY visibleProperty  "+
 						"	FROM t_shop_dynamic_album sa ,t_shop_customer_user scu, t_album_template a  WHERE scu.id  = sa.user_id  AND sa.template_id = a.id AND scu.user_id = ? AND sa.shop_id = ?"+
 						"	) t "+
 						"	ORDER BY t.createTime desc";

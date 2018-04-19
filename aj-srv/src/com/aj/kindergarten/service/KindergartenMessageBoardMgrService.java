@@ -67,7 +67,7 @@ public class KindergartenMessageBoardMgrService implements PublishService{
 			board.setMessageTye(messageType);
 			board.setUserId(userId);
 			board.setUserType(userType);
-
+			board.setAlbumId(albumId);
             baseDAO.save(board);
 
 			result.put("succMsg", "新增成功");

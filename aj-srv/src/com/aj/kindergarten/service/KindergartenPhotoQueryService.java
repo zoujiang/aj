@@ -79,7 +79,7 @@ public class KindergartenPhotoQueryService implements PublishService{
 				JSONObject album = new JSONObject();
 				String sharedate = dateList.get(i).get("sharedate").toString();
 				album.put("photoDate", sharedate);
-				sql = "SELECT p.id,'' descript, p.photo_url,  p.dig_num, p.dig_relation_user_id FROM t_kindergarten_photo p WHERE  p.ALBUM_ID = ? AND SUBSTRING(p.create_time, 1,10) = ? ORDER BY p.create_time DESC";
+				sql = "SELECT p.id,'' descript, p.photo_url, p.video_url, p.dig_num, p.dig_relation_user_id, name photoName, category FROM t_kindergarten_photo p WHERE  p.ALBUM_ID = ? AND SUBSTRING(p.create_time, 1,10) = ? ORDER BY p.create_time DESC";
 				List<Map<String, Object>> photoList = baseDAO.getGenericBySQL(sql, new Object[]{albumId, sharedate});
 				JSONArray photoPreDayList = new JSONArray();
 				if(photoList != null && photoList.size()>0){
@@ -87,10 +87,10 @@ public class KindergartenPhotoQueryService implements PublishService{
 						JSONObject photoDigComments = new JSONObject();
 						Map<String, Object> photo = photoList.get(j);
 						photoDigComments.put("photoId", photo.get("id"));
-						photoDigComments.put("descript", "");
-						photoDigComments.put("photo", imgUrl+photo.get("photo_url"));
-						photoDigComments.put("video", "");
-						photoDigComments.put("photoType", "1");
+						photoDigComments.put("photoName", photo.get("photoName"));
+						photoDigComments.put("photo", (photo.get("photo_url") ==null || "".equals(photo.get("photo_url")) ? "" : imgUrl+photo.get("photo_url")));
+						photoDigComments.put("video", (photo.get("video_url") ==null || "".equals(photo.get("video_url")) ? "" : imgUrl+photo.get("video_url")));
+						photoDigComments.put("photoType", photo.get("category"));
 						photoDigComments.put("dig_num", photo.get("dig_num"));
 						String digUsers = photo.get("dig_relation_user_id") == null ? "" : photo.get("dig_relation_user_id").toString();
 						boolean isDig = false;
@@ -140,6 +140,13 @@ public class KindergartenPhotoQueryService implements PublishService{
 								"	LIMIT 0, 3 ";
 						List<Map<String, Object>> commentList =baseDAO.getGenericBySQL(sql, new Object[]{photo.get("id")});
 						photoDigComments.put("cmtList", commentList);
+						sql= "SELECT "+
+								" count(1) num "+
+								"	FROM "+
+								"  t_comment c "+
+								"  where c.PHOTO_ID = ?";
+						int commentNum = baseDAO.getGenericCountToSQL(sql, new Object[]{photo.get("id")});
+						photoDigComments.put("commentNum", commentNum);
 						photoPreDayList.add(photoDigComments);
 					}
 					album.put("photoList", photoPreDayList);

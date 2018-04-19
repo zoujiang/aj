@@ -332,6 +332,7 @@ public class CusServiceImpl implements PublishService,CusService{
 		uor.setIsMarried(family.getIsMarried()+"");
 		uor.setAjNo(tcs.get(0).getAjNo());
 		uor.setIsVip(tcs.get(0).getIsVip());
+		uor.setVipExpiredDate(tcs.get(0).getVipExpiredDate());
 		uor.setType(tcs.get(0).getType());
 		if(users.size() > 1){
 			uor.setFlag("1");

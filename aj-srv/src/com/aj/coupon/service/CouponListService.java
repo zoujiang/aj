@@ -1,19 +1,22 @@
 package com.aj.coupon.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
+
 import com.frame.core.dao.GenericDAO;
 import com.frame.core.util.SystemConfig;
 import com.frame.ifpr.exception.PublicException;
 import com.frame.ifpr.service.PublishService;
 import com.util.Constant;
-import com.util.GpsDistanceUtil;
-import net.sf.json.JSONObject;
-import org.apache.log4j.Logger;
-import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import net.sf.json.JSONObject;
 
 
 /**
@@ -40,17 +43,15 @@ public class CouponListService implements PublishService{
 		String serviceName = json.optString("serviceName");
 		JSONObject params = json.optJSONObject("params");
 		String userId = params.optString("userId");
-		String gps = params.optString("gps");
 		String pageSize = params.optString("pageSize");
 		String currentPage = params.optString("currentPage");
-		String couponName = params.optString("couponName");
-		String brandId = params.optString("brandId");
+		String shopId = params.optString("shopId");
 		
 		JSONObject returnJSON = new JSONObject();
 		returnJSON.put("serviceName", serviceName);
 		JSONObject result = new JSONObject();
 
-		String re = checkParam(params, new String[]{"pageSize", "currentPage"});
+		String re = checkParam(params, new String[]{"shopId","pageSize", "currentPage"});
 		if(re != null){
 			returnJSON.put("returnCode", Constant.RETURNCODE_FAILED);
 			returnJSON.put("result", result);
@@ -58,51 +59,35 @@ public class CouponListService implements PublishService{
 			return returnJSON.toString();
 		}
 		List<Object> sqlParam = new ArrayList<Object>();
-		String sql = "SELECT i.`id` couponId, i.`name` couponName, i.`first_page_pic` couponLogo, i.`is_link` isLink, i.`link_address` linkAddress, i.description, s.`id` shopId, s.`shop_name` shopName," +
-				"s.`address` shopAddress, s.`gps` FROM t_coupon_info i, t_coupon_shop_info s WHERE i.`shop_id` = s.`id` and i.is_validate = 0 ";
-		if(brandId != null && !"".equals(brandId)){
-			sql += "and s.brand_id = ? ";
-			sqlParam.add(brandId);
-		}
-		if(couponName != null && !"".equals(couponName)){
-			sql += " and i.name like '%"+couponName+"%'";
-		}
-		if(userId != null && !"".equals(userId)){
-
-			sql += " and i.id in (select coupon_id from t_my_coupon where user_id = ?) ";
-			sqlParam.add(userId);
-		}
-		sql += " ORDER BY i.recommend_idx limit ?, ?";
+		String sql = "SELECT i.* FROM t_coupon_info i WHERE i.`shop_id` = ? and i.is_validate = 0  ";
+		sqlParam.add(shopId);
+		sql += " order by i.create_time limit ?, ?";
 		sqlParam.add( Integer.parseInt(currentPage) * Integer.parseInt(pageSize) );
 		sqlParam.add(Integer.parseInt(pageSize));
 
 		List<Map<String, Object>> couponList = baseDAO.getGenericBySQL(sql , sqlParam.toArray());
 
-		String commentSql = "SELECT COUNT(1) num, FORMAT(AVG(score),1) score FROM t_shop_comment WHERE cmt_shop_id = ?";
-
+		List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
 		for(Map<String, Object> coupon : couponList){
-			if(coupon.get("couponLogo") != null && !"".equals(coupon.get("couponLogo"))){
-				coupon.put("couponLogo", imgUrl + coupon.get("couponLogo") );
-			}
-
-			List<Map<String, Object>> cmtList = baseDAO.getGenericBySQL(commentSql, new Object[]{coupon.get("shopId")});
-			if(cmtList != null && cmtList.size() > 0){
-				coupon.put("couponScore", cmtList.get(0).get("score") == null ? 4 : cmtList.get(0).get("score"));
-				coupon.put("couponCmtCount", cmtList.get(0).get("num"));
+			Map<String, Object> data = new HashMap<String, Object>();
+			if(coupon.get("first_page_pic") != null && !"".equals(coupon.get("first_page_pic"))){
+				data.put("couponLogo", imgUrl + coupon.get("first_page_pic") );
 			}else{
-				coupon.put("couponScore", 4);
-				coupon.put("couponCmtCount", 0);
+				data.put("couponLogo", "");
 			}
-			if(gps != null && !"".equals(gps) && coupon.get("gps") != null && !"".equals(coupon.get("gps"))){
-				double distance = GpsDistanceUtil.getDistance(gps, coupon.get("gps").toString());
-				coupon.put("distance", distance);
-			}else{
-				coupon.put("distance", -1);
-			}
+			data.put("couponId", coupon.get("id"));
+			data.put("couponName", coupon.get("name"));
+			data.put("couponGetCondition", coupon.get("get_condition"));
+			data.put("startTime", coupon.get("start_time"));
+			data.put("endTime", coupon.get("end_time"));
+			data.put("isLink", coupon.get("is_link"));
+			data.put("linkAddress", coupon.get("link_address"));
+			dataList.add(data);
+			
 		}
-
+		result.put("dataList", dataList);
 		returnJSON.put("returnCode", Constant.RETURNCODE_SUCCESS);
-		returnJSON.put("result", couponList);
+		returnJSON.put("result", result);
 		returnJSON.put("errorMsg", "");
 		return returnJSON.toString();
 		

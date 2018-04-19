@@ -66,12 +66,12 @@ public class QueryMyLiveService implements PublishService{
 
 		sql = "SELECT  2 type, i.id shopId, i.name shopName, c.`name` shopCategory,  i.`logo` shopLogo, i.`address` shopAddress, i.`gps` gps " +
 				"FROM t_kindergarten_info i, t_shop_category c WHERE i.`shop_category_id` = c.`id` AND i.status = 0 AND i.`id` " +
-				"IN (SELECT shcool_id FROM t_kindergarten_albun WHERE `student` IN (SELECT id FROM t_kindergarten_student WHERE  parents_tel IN (SELECT USERTEL FROM t_user WHERE familyid = ? ))) ";
+				"IN (SELECT shcool_id FROM t_kindergarten_album WHERE `student` IN (SELECT id FROM t_kindergarten_student WHERE  parents_tel IN (SELECT USERTEL FROM t_user WHERE familyid = ? ))) ";
 		shopList.addAll((Collection<? extends Map<String, Object>>) baseDAO.getGenericBySQL(sql , new Object[]{user.getFamilyId()}));
 
 		sql = "SELECT 3 type,i.id shopId, i.shop_name shopName, c.`name` shopCategory,  i.`logo` shopLogo, i.`address` shopAddress, i.`gps` gps "+
 				" FROM t_coupon_shop_info i, t_shop_category c WHERE i.`shop_category` = c.`id` AND i.status = 0 AND i.`id` "+
-				" IN (SELECT c.shop_id FROM t_coupon_info c, t_my_coupon m WHERE c.`id` = m.`coupon_id` AND m.`user_id` = ?)";
+				" IN (SELECT c.shop_id FROM t_coupon_info c, t_coupon_exchange m WHERE c.`id` = m.`coupon_id` AND m.`user_id` = ?)";
 		shopList.addAll((Collection<? extends Map<String, Object>>) baseDAO.getGenericBySQL(sql, new Object[]{userId}));
 
 

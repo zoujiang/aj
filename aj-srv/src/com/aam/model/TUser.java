@@ -42,6 +42,7 @@ public class TUser implements java.io.Serializable {
 	private Integer createUserId;
 	private Integer type;  //1普通用户  2.教师  3校长／管理员
 	private Integer isVip;  //是否VIP  0否 1是
+	private String vipExpiredDate; //vip过期时间
 
 	// Constructors
 
@@ -318,4 +319,13 @@ public class TUser implements java.io.Serializable {
 	public void setIsVip(Integer isVip) {
 		this.isVip = isVip;
 	}
+	@Column(name = "VIP_EXPIRED_DATE")
+	public String getVipExpiredDate() {
+		return vipExpiredDate;
+	}
+
+	public void setVipExpiredDate(String vipExpiredDate) {
+		this.vipExpiredDate = vipExpiredDate;
+	}
+	
 }

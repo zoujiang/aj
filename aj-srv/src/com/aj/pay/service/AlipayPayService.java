@@ -35,6 +35,7 @@ public class AlipayPayService implements PublishService{
 
 	private Logger log = Logger.getLogger(AlipayPayService.class);
 	
+	static String API_TYPE ="photopay_";
 	
 	private static String ALI_PAY_ISDEBUG = SystemConfig.getValue("ali.pay.isdebug");//是否调试
 	private static String ALI_PAY_ADDRESS = SystemConfig.getValue("ali.pay.address");//支付宝接口地址
@@ -144,7 +145,7 @@ public class AlipayPayService implements PublishService{
 			String out_trade_no = UUIDUtil.uuid();
 			map.put("out_trade_no", out_trade_no);
 			map.put("product_code", ALI_PAY_PRODUCT_CODE);
-			map.put("subject", goodsName);
+			map.put("subject", API_TYPE + goodsName);
 			map.put("total_amount", total_fee * 0.01+"");
 			
 			Map<String,String> signMap = new HashMap<String, String>();

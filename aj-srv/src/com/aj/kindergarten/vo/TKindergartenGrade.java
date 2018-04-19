@@ -11,7 +11,7 @@ import javax.persistence.Table;
  * TKindergartenGrade entity. @author MyEclipse Persistence Tools
  */
 @Entity
-@Table(name = "t_kindergarten_grade", catalog = "aj")
+@Table(name = "t_kindergarten_grade")
 
 public class TKindergartenGrade implements java.io.Serializable {
 

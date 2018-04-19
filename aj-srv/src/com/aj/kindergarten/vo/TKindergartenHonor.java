@@ -31,6 +31,8 @@ public class TKindergartenHonor  implements java.io.Serializable {
      private String name;
      private String ownerId;
     private String digRelationUerId;
+    private Integer gradeId;
+    private Integer albumId;
 
 
     // Constructors
@@ -186,9 +188,22 @@ public class TKindergartenHonor  implements java.io.Serializable {
     public void setDigRelationUerId(String digRelationUerId) {
         this.digRelationUerId = digRelationUerId;
     }
+    @Column(name="grade_id")
+	public Integer getGradeId() {
+		return gradeId;
+	}
 
+	public void setGradeId(Integer gradeId) {
+		this.gradeId = gradeId;
+	}
+	 @Column(name="album_id")
+	public Integer getAlbumId() {
+		return albumId;
+	}
 
-
+	public void setAlbumId(Integer albumId) {
+		this.albumId = albumId;
+	}
 
 
 

@@ -32,6 +32,8 @@ public class TKindergartenPhoto  implements java.io.Serializable {
      private String name;
      private String ownerId;
      private String digRelationUerId;
+     private Integer gradeId;
+     private Integer kindergartenId;
 
 
     // Constructors
@@ -196,4 +198,21 @@ public class TKindergartenPhoto  implements java.io.Serializable {
     public void setDigRelationUerId(String digRelationUerId) {
         this.digRelationUerId = digRelationUerId;
     }
+    @Column(name="grade_id")
+	public Integer getGradeId() {
+		return gradeId;
+	}
+
+	public void setGradeId(Integer gradeId) {
+		this.gradeId = gradeId;
+	}
+	 @Column(name="kindergarten_id")
+	public Integer getKindergartenId() {
+		return kindergartenId;
+	}
+
+	public void setKindergartenId(Integer kindergartenId) {
+		this.kindergartenId = kindergartenId;
+	}
+    
 }

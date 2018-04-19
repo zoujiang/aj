@@ -37,7 +37,6 @@
      -->
     <link href="${ctx }/resources/silviomoreto/css/bootstrap-select.css" rel="stylesheet">
 
-
     <script src="${ctx }/resources/hplus4.1/js/bootstrap.min.js"></script>
     <script src="${ctx }/resources/hplus4.1/js/content.min.js"></script>
     <script src="${ctx }/resources/hplus4.1/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>

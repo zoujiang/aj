@@ -88,7 +88,6 @@ background: #18c8f6;
 	        			async: false,
 	        		  	success: function (result) { //表单提交后更新页面显示的数据
 	        		  		var obj = eval("("+result+")");
-	        		  	alert(obj.result)
 	        		  		if(obj.result){
 	        		  			//showMsg(obj.message, 6);
 	        		  			//layer.msg(obj.message, {time:20,title:'提示', btn: ['确定'],icon: 6}, function(){

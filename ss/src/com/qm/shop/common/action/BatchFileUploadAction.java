@@ -42,6 +42,7 @@ import com.qm.mapper.KindergartenPhotoMapper;
 import com.qm.mapper.KindergartenStudentMapper;
 import com.qm.shop.Constant;
 import com.util.FileZipUtil;
+import com.util.GradeNameUtil;
 
 import net.sf.json.JSONObject;
 /**
@@ -126,7 +127,7 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 							KindergartenGrade grade = kindergartenGradeMapper.selectByPrimaryKey(Integer.parseInt(ownerId));
 							album.setShcoolId(grade.getKindergartenId());
 							album.setGradeId(Integer.parseInt(ownerId));
-							currentClass = getCurrentClass(grade);
+							currentClass =  GradeNameUtil.getGradeName(grade);
 							kindergartenId = grade.getKindergartenId();
 							
 						}else if(type == 2){
@@ -136,7 +137,7 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 							album.setGradeId(student.getGradeId());
 							album.setStudent(Integer.parseInt(ownerId));
 							KindergartenGrade grade = kindergartenGradeMapper.selectByPrimaryKey(student.getGradeId());
-							currentClass = getCurrentClass(grade);
+							currentClass =  GradeNameUtil.getGradeName(grade);
 							
 							gradeId = student.getGradeId();
 							kindergartenId = grade.getKindergartenId();
@@ -275,28 +276,6 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 			e.printStackTrace();
 		}
 		
-	}
-	private String getCurrentClass(KindergartenGrade grade2){
-		
-		String[] ruleNames = {"小小班","小班","中班","大班","大大班"};
-		String ruleString = "";
-		String rule = grade2.getRule();
-		char[] ruleChar = rule.toCharArray();
-		for(int i= 0 ; i< ruleChar.length ; i++){
-			if(ruleChar[i] == '1'){
-				ruleString += ruleNames[i] +";";
-			}
-		}
-		grade2.setRule(ruleString);
-		
-		String series = grade2.getSeries();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
-		String currentYear = sdf.format(new Date());
-		int index = Integer.parseInt(currentYear) - Integer.parseInt(series);
-		if(index > ruleString.split(";").length -1){
-			index = ruleString.split(";").length -1;
-		}
-		return ruleString.split(";")[index];
 	}
 	
     /**

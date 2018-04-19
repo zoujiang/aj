@@ -43,7 +43,12 @@ public class LiveListService implements PublishService{
 		returnJSON.put("serviceName", serviceName);
 		JSONObject result = new JSONObject();
 
-		String sql = "SELECT type , id brandId,brand_name brandName, CASE WHEN brand_icon IS NOT NULL AND brand_icon != '' THEN CONCAT('"+imgUrl+"',brand_icon) ELSE '' END brandIcon FROM t_shop_brand WHERE STATUS = 0 AND is_recommend = 1 ORDER  BY TYPE, sort_index limit 0,4";
+		String sql = "(SELECT type , id brandId,brand_name brandName, CASE WHEN brand_icon IS NOT NULL AND brand_icon != '' THEN CONCAT('"+imgUrl+"',brand_icon) ELSE '' END brandIcon FROM t_shop_brand WHERE type =1 and STATUS = 0 AND is_recommend = 1 order by sort_index limit 0,4) "
+				+ " union "
+				+ " (SELECT type , id brandId,brand_name brandName, CASE WHEN brand_icon IS NOT NULL AND brand_icon != '' THEN CONCAT('"+imgUrl+"',brand_icon) ELSE '' END brandIcon FROM t_shop_brand WHERE type = 2 and STATUS = 0 AND is_recommend = 1 order by sort_index limit 0,4) "
+				+ " union "
+				+ " (SELECT type , id brandId,brand_name brandName, CASE WHEN brand_icon IS NOT NULL AND brand_icon != '' THEN CONCAT('"+imgUrl+"',brand_icon) ELSE '' END brandIcon FROM t_shop_brand WHERE type =3 and STATUS = 0 AND is_recommend = 1 order by sort_index limit 0,4) " ;
+	
 		List<Map<String, Object>> brandList = baseDAO.getGenericBySQL(sql, null);
 		result.put("brandList",brandList);
 
@@ -53,19 +58,19 @@ public class LiveListService implements PublishService{
 			int couponRecommendCount = Integer.parseInt(recommendCount.split("\\|")[2]) ;
 			sql = "";
 			if(shopRecommendCount > 0){
-				sql += "(SELECT i.id shopId, i.shop_name shopName, c.`name` shopCategory, i.`logo` shopLogo, i.`address` shopAddress, i.`gps` gps FROM t_shop_info i, t_shop_category c WHERE i.`shop_category_id` = c.`id` AND i.status = 0 ANd i.is_recommend = 1 order by i.recommend_ix limit "+shopRecommendCount +")";
+				sql += "(SELECT 1 type, i.id shopId, i.shop_name shopName, c.`name` shopCategory, i.`logo` shopLogo, i.`address` shopAddress, i.`gps` gps FROM t_shop_info i, t_shop_category c WHERE i.`shop_category_id` = c.`id` AND i.status = 0 ANd i.is_recommend = 1 order by i.recommend_ix limit "+shopRecommendCount +")";
 			}
 			if(kindergartenRecommendCount > 0){
 				if(sql.length() > 0){
 					sql += " union ";
 				}
-				sql += "(SELECT i.id shopId, i.name shopName, c.`name` shopCategory,  i.`logo` shopLogo, i.`address` shopAddress, i.`gps` gps FROM t_kindergarten_info i, t_shop_category c WHERE i.`shop_category_id` = c.`id` AND i.status = 0 AND i.`is_recommend` = 0 order by i.sort_index limit "+kindergartenRecommendCount +")";
+				sql += "(SELECT 2 type, i.id shopId, i.name shopName, c.`name` shopCategory,  i.`logo` shopLogo, i.`address` shopAddress, i.`gps` gps FROM t_kindergarten_info i, t_shop_category c WHERE i.`shop_category_id` = c.`id` AND i.status = 0 AND i.`is_recommend` = 0 order by i.sort_index limit "+kindergartenRecommendCount +")";
 			}
 			if(couponRecommendCount > 0){
 				if(sql.length() > 0){
 					sql += " union ";
 				}
-				sql += "(SELECT i.id shopId, i.shop_name shopName, c.`name` shopCategory,  i.`logo` shopLogo, i.`address` shopAddress, i.`gps` gps FROM t_coupon_shop_info i, t_shop_category c WHERE i.`shop_category` = c.`id` AND i.status = 0 AND i.`is_recommend` = 1 order by i.recommend_ix limit "+couponRecommendCount +")";
+				sql += "(SELECT 3 type, i.id shopId, i.shop_name shopName, c.`name` shopCategory,  i.`logo` shopLogo, i.`address` shopAddress, i.`gps` gps FROM t_coupon_shop_info i, t_shop_category c WHERE i.`shop_category` = c.`id` AND i.status = 0 AND i.`is_recommend` = 1 order by i.recommend_ix limit "+couponRecommendCount +")";
 			}
 			List<Map<String, Object>> recommendList = new ArrayList<Map<String, Object>>();
 			if(sql.length() > 0){

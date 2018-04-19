@@ -69,26 +69,29 @@
 			initMenu();
 		});
 	</script>
+	<link href="${ctx }/pages/system/welcome/css/bootstrap.min.css" rel="stylesheet">
+    <link href="${ctx }/resources/hplus4.1/css/plugins/bootstrap-table/bootstrap-table.css" rel="stylesheet">
+	<link href="${ctx }/resources/hplus4.1/css/style_002.css" rel="stylesheet">
 </head>
 
 <body class="fixed-sidebar full-height-layout gray-bg" style="overflow:hidden">
-    <div id="wrapper">
-		 <nav class="navbar-default navbar-static-side" role="navigation">
+    <div id="wrapper" >
+		 <nav class="navbar-default navbar-static-side" role="navigation" >
             <div class="nav-close"><i class="fa fa-times-circle"></i></div>
             <div class="sidebar-collapse">
-                <ul class="nav" id="side-menu">
-                    <li class="nav-header">
+                <ul class="nav" id="side-menu" style="background: #d6f1fb">
+                    <li class="nav-header" style="background: #e2f7ff">
                         <div class="dropdown profile-element">
                             <span ><img alt="image" class="img-circle" width="80px" height="80px" src="${ctx }/pages/system/img/cqmls.png" /></span>
                             <a data-toggle="dropdown" class="dropdown-toggle" href="#">
                                 <span class="clear">
                                		<span class="block m-t-xs" >
-                               			<strong class="font-bold" style="padding-left: 20px;" >${Login_User_Info.name }</strong>
+                               			<strong class="font-bold" >${Login_User_Info.name }</strong>
                                		</span>
                                 </span>
                             </a>                            
                         </div>
-                        <div class="logo-element">${Login_User_Info.name } 
+                        <div class="logo-element" >${Login_User_Info.name } 
                         </div>
                     </li>
                 </ul>
@@ -117,12 +120,12 @@
                     	<a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i> </a>
                     </div>
                     <ul class="nav navbar-top-links navbar-right">
-                        <li class="dropdown hidden-xs">
+                       <!--  <li class="dropdown hidden-xs">
                             <a class="right-sidebar-toggle" aria-expanded="false">
                                 <i class="fa fa-tasks"></i> 主题
                                 
                             </a>
-                        </li>
+                        </li> -->
                         <li class=" dropdown hidden-xs">
                            <a  class="J_menuItem"   href="javascript:void(0);" onclick="javascript:logOut();" >
                            		<i class="fa fa-cart-arrow-down"></i> 退出登录
@@ -152,12 +155,12 @@
             <div class="row J_mainContent" id="content-main">
                 <iframe class="J_iframe" name="iframe0" width="100%" height="100%" src="${ctx }/pages/system/welcome/index.jsp"  frameborder="0" data-id="index_v1.html" seamless></iframe>
             </div>
-            <!-- 
+            
             <div class="footer">
-                <div class="pull-right">&copy; 2014-2015 <a href="../../default.htm" target="_blank">zihan's blog</a>
+                <div class="pull-right">&copy; 2018 <a href="#" >幼教汇</a>
                 </div>
             </div>
-             -->
+             
         </div>
         <!--右侧部分结束-->
         <!--右侧边栏开始-->

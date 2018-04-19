@@ -1,5 +1,6 @@
 package com.aj.pay.service;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,12 +12,16 @@ import javax.annotation.Resource;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import com.aam.model.TUser;
 import com.aj.pay.vo.TShopAlbumOrder;
+import com.aj.pay.vo.TVipOrder;
+import com.aj.sys.vo.TVipPackage;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.frame.core.constant.Constant;
 import com.frame.core.constant.FtpConstant;
 import com.frame.core.dao.GenericDAO;
+import com.frame.core.util.DateUtil;
 import com.frame.core.util.FtpUtil;
 import com.frame.core.util.RandomGUID;
 import com.frame.core.util.SystemConfig;
@@ -94,37 +99,87 @@ public class AliPayCallBackNotify implements PublishService{
 	private String dealRequest(Map<String, String> resultMap) {
 		
 		String out_trade_no = resultMap.get("out_trade_no");
-		List<TShopAlbumOrder> orderList = baseDAO.getGenericByHql("from TShopAlbumOrder where orderNo = ?", out_trade_no);
-		if(orderList != null && orderList.size() > 0){
-			TShopAlbumOrder order = orderList.get(0); 
-			//待支付状态才处理
-			if(order.getStatus() == 0){
-				//判断支付总额和实际支付的总额是否相等,防止数据被更改，实际支付金额不等于需要支付的金额
-				//由于支付宝返回的金额不是不填， 这里不验证金额
-				//if(order.getTotalFee()* 0.01 == resultMap.get("total_amount")){}
-				order.setBankType(resultMap.get("buyer_logon_id")); //支付宝帐号
-				order.setPayComplateTime(resultMap.get("gmt_close"));
-				String trade_status = resultMap.get("trade_status"); //交易状态
-				/*枚举名称	枚举说明
+		String payType = resultMap.get("subject").substring(0, resultMap.get("subject").indexOf("_"));
+		//payType支付类型，有3种： 购买照片：AlipayPayService.API_TYPE  ;vip开通或续费：VipOrderAlipayPayService.API_TYPE; 商户续费： 暂未实现
+		if(AlipayPayService.API_TYPE.equals(payType)){
+			
+			List<TShopAlbumOrder> orderList = baseDAO.getGenericByHql("from TShopAlbumOrder where orderNo = ?", out_trade_no);
+			if(orderList != null && orderList.size() > 0){
+				TShopAlbumOrder order = orderList.get(0); 
+				//待支付状态才处理
+				if(order.getStatus() == 0){
+					//判断支付总额和实际支付的总额是否相等,防止数据被更改，实际支付金额不等于需要支付的金额
+					//由于支付宝返回的金额不是不填， 这里不验证金额
+					//if(order.getTotalFee()* 0.01 == resultMap.get("total_amount")){}
+					order.setBankType(resultMap.get("buyer_logon_id")); //支付宝帐号
+					order.setPayComplateTime(resultMap.get("gmt_close"));
+					String trade_status = resultMap.get("trade_status"); //交易状态
+					/*枚举名称	枚举说明
 				WAIT_BUYER_PAY	交易创建，等待买家付款
 				TRADE_CLOSED	未付款交易超时关闭，或支付完成后全额退款
 				TRADE_SUCCESS	交易支付成功
 				TRADE_FINISHED	交易结束，不可退款*/
-				
-				if("TRADE_SUCCESS".equals(trade_status) || "TRADE_FINISHED".equals(trade_status)){
-					order.setStatus(1); //成功
-					updateShopAlbumPayStatus(order.getAlbumId(), 1);
-				}else{
-					order.setStatus(2); //失败
+					
+					if("TRADE_SUCCESS".equals(trade_status) || "TRADE_FINISHED".equals(trade_status)){
+						order.setStatus(1); //成功
+						updateShopAlbumPayStatus(order.getAlbumId(), 1);
+					}else{
+						order.setStatus(2); //失败
+					}
+					order.setTransactionId(resultMap.get("trade_no"));
+					baseDAO.update(order);
 				}
-				order.setTransactionId(resultMap.get("trade_no"));
-				baseDAO.update(order);
+				return "success";
+			}else{
+				log.info("支付宝支付回调请求验证不通过！不存在订单号："+resultMap.get("out_trade_no"));
+				return "failure";
 			}
-			return "success";
-		}else{
-			log.info("支付宝支付回调请求验证不通过！不存在订单号："+resultMap.get("out_trade_no"));
-			return "failure";
+		}else if(VipOrderAlipayPayService.API_TYPE.equals(payType)){
+			List<TVipOrder> orderList = baseDAO.getGenericByHql("from TVipOrder where orderId = ? and isPay = 0 ", out_trade_no);
+			if(orderList != null && orderList.size() > 0){
+				TVipOrder order = orderList.get(0);
+				TUser user = baseDAO.get(TUser.class, order.getUserId());
+				TVipPackage pack = baseDAO.get(TVipPackage.class, order.getVipPackageId());
+				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+				if(user != null){
+					if(user.getVipExpiredDate() == null || "".equals(user.getVipExpiredDate())){
+						int second = (int) (System.currentTimeMillis() /1000 + (pack.getPackageDays() * 24 * 60 * 60));
+						user.setVipExpiredDate(format.format(second));
+						user.setIsVip(1);
+						baseDAO.update(user);
+					}else{
+						String expiredDate = user.getVipExpiredDate();
+						try {
+							if(format.parse(expiredDate).getTime() < (int) (System.currentTimeMillis()/ 1000)){
+								//过期时间小于当前时间，那么过期时间从今天开始
+								int second = (int) (System.currentTimeMillis() /1000 + (pack.getPackageDays() * 24 * 60 * 60));
+								user.setVipExpiredDate(format.format(second));
+								user.setIsVip(1);
+								baseDAO.update(user);
+							}else{
+								//在原过期时间上累加
+								int second = (int) (format.parse(expiredDate).getTime() + (pack.getPackageDays() * 24 * 60 * 60));
+								user.setVipExpiredDate(format.format(second));
+								user.setIsVip(1);
+								baseDAO.update(user);
+							}
+						} catch (ParseException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+				order.setIsPay(1);
+				order.setPayTime(DateUtil.now());
+				order.setTradeNo(resultMap.get("trade_no"));
+				baseDAO.update(order);
+				return "success";
+			}else{
+				log.info("支付宝支付回调请求验证不通过！不存在订单号："+resultMap.get("out_trade_no"));
+				return "failure";
+			}
 		}
+		//防止一直回调，直接返回成功
+		return "success";
 	}
 
 	private void updateShopAlbumPayStatus(String albumId, int status) {
