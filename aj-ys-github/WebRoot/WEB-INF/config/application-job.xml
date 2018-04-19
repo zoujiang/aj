@@ -3,6 +3,7 @@
 	<bean id="messageSend" class="com.qm.job.MessageSendJob"></bean>
 	<bean id="teacherTaskStatistics" class="com.qm.job.KindergartenTeacherTaskStatistics"></bean>
 	<bean id="kindergartenDailyStatistics" class="com.qm.job.KindergartenDailyStatisticsJob"></bean>
+	<bean id="kindergartenGradeUpgrade" class="com.qm.job.KindergartenGradeUpgradeJob"></bean>
 	
 	<bean id="messageSendJob"
 		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
@@ -17,6 +18,11 @@
 	<bean id="kindergartenDailyStatisticsJob"
 		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
 		<property name="targetObject" ref="kindergartenDailyStatistics" />
+		<property name="targetMethod" value="process" />
+	</bean>
+	<bean id="kindergartenGradeUpgradeJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="kindergartenGradeUpgrade" />
 		<property name="targetMethod" value="process" />
 	</bean>
 	
@@ -39,13 +45,20 @@
 		 <property name="cronExpression" value="0 55 21 * * ?" />  <!--每天凌晨12点半--> 
             
 	</bean>
+	<bean id="kindergartenGradeUpgradeTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="kindergartenGradeUpgradeJob" />
+		 <property name="cronExpression" value="0 1 0 1 9 ?" />  <!--每年9月1号--> 
+            
+	</bean>
 	
 	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="triggers">
 			<list>
-				 <ref bean="messageSendTrigger"/>
+				<!--  <ref bean="messageSendTrigger"/>
 				 <ref bean="teacherTaskStatisticsTrigger"/>
 				 <ref bean="kindergartenDailyStatisticsTrigger"/>
+				 <ref bean="kindergartenGradeUpgradeTrigger"/> -->
 			</list>
 		</property>
 	</bean>

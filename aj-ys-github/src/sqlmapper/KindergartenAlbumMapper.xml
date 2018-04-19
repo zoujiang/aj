@@ -223,4 +223,19 @@
 	        and type = #{type,jdbcType=INTEGER}
 	      </if>
   </select>
+  
+  <insert id="batchInsert" parameterType="java.util.List">
+       
+        insert into t_kindergarten_album (album_name, album_url, 
+	      create_time, create_user, 
+	      shcool_id, grade_id, 
+	      current_grade_name, type)
+	    values 
+	     <foreach collection="list" item="item" index="index" separator=",">
+		     (#{item.albumName,jdbcType=VARCHAR}, #{item.albumUrl,jdbcType=VARCHAR}, 
+		       #{item.createTime,jdbcType=VARCHAR}, #{item.createUser,jdbcType=VARCHAR}, 
+		      #{item.shcoolId,jdbcType=INTEGER}, #{item.gradeId,jdbcType=INTEGER},
+		      #{item.currentGradeName,jdbcType=VARCHAR}, #{item.type,jdbcType=INTEGER})
+	      </foreach>
+    </insert>
 </mapper>

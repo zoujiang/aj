@@ -436,6 +436,7 @@ if(roleId == null || "".equals(roleId)){
 						    <div class="form-group col-sm-6">
 	                        </div>
                         </div>
+                      <!-- 
                         <div class="row" id="pic1">
 	               			<div class="form-group col-sm-6"> 
 	               				<label class="col-sm-4 control-label">商户横条图：</label> 
@@ -446,6 +447,20 @@ if(roleId == null || "".equals(roleId)){
 	               			<div class="form-group col-sm-6"> 
 	               				<div class="col-sm-12" style="margin-left: -20px;margin-top: 8px;">
 				                       <input type="button" value="+" onclick="addLine()" style="height:19px;float: left;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (支持jpg，png，大小100k以内)
+	               				</div>
+						    </div>
+                        </div>
+                        -->
+                        <div class="row" id="pic1">
+	               			<div class="form-group col-sm-6"> 
+	               				<label class="col-sm-4 control-label">商户横条图：</label> 
+	               				<div class="col-sm-8">
+				                       <input type="file" id="tsmpPic" multiple="multiple" name="showPics" accept="image/*" class="form-control"/> &nbsp;&nbsp;&nbsp;
+	               				</div>
+						    </div>
+	               			<div class="form-group col-sm-6"> 
+	               				<div class="col-sm-12" style="margin-left: -20px;margin-top: 8px;">
+				                       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (支持同时选择多张jpg，png图片，大小100k以内)
 	               				</div>
 						    </div>
                         </div>

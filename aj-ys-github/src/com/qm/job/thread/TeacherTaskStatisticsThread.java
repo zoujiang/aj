@@ -1,5 +1,6 @@
 package com.qm.job.thread;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -11,17 +12,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.frame.core.dao.GenericDAO;
 import com.frame.core.util.DateUtil;
 import com.frame.core.util.SystemConfig;
-import com.qm.entities.KindergartenGradeVisitInfo;
 import com.qm.entities.KindergartenInfo;
 import com.qm.entities.KindergartenTaskInfo;
 import com.qm.entities.KindergartenTeacher;
 import com.qm.entities.RewardInfo;
 import com.qm.mapper.KindergartenGradeMapper;
-import com.qm.mapper.KindergartenGradeVisitInfoMapper;
 import com.qm.mapper.KindergartenInfoMapper;
+import com.qm.mapper.KindergartenPhotoViewHistoryMapper;
 import com.qm.mapper.KindergartenTaskInfoMapper;
 import com.qm.mapper.RewardInfoMapper;
 
@@ -39,7 +38,7 @@ public class TeacherTaskStatisticsThread extends Thread{
 	@Override
 	public void run() {
 		
-		KindergartenGradeVisitInfoMapper visitInfoMapper = (KindergartenGradeVisitInfoMapper) param.get("kindergartenGradeVisitInfoMapper");
+		KindergartenPhotoViewHistoryMapper visitInfoMapper = (KindergartenPhotoViewHistoryMapper) param.get("kindergartenPhotoViewHistoryMapper");
 		KindergartenTaskInfoMapper kindergartenTaskInfoMapper = (KindergartenTaskInfoMapper) param.get("kindergartenTaskInfoMapper");
 		RewardInfoMapper rewardInfoMapper = (RewardInfoMapper) param.get("rewardInfoMapper");
 		KindergartenInfoMapper kindergartenInfoMapper = (KindergartenInfoMapper) param.get("kindergartenInfoMapper");
@@ -52,7 +51,16 @@ public class TeacherTaskStatisticsThread extends Thread{
 		}
 		
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM");
+		SimpleDateFormat format0 = new SimpleDateFormat("yyyy-MM-dd");
 		String currentMonth = format.format(new Date());
+		
+		Long currentMonthTime =null;
+		try {
+			currentMonthTime = format0.parse(currentMonth+"-01").getTime() /1000;
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
 		for(KindergartenTeacher teacher : list){
 			
 			KindergartenTaskInfo taskInfo = new KindergartenTaskInfo();
@@ -65,10 +73,12 @@ public class TeacherTaskStatisticsThread extends Thread{
 			taskInfo.setRenewPhone(teacher.getRechargeTelNo());
 			if(teacher.getType() == 1 || teacher.getType() == 2 || teacher.getType() == 3){
 				//园长 副园长 管理人员
-				KindergartenGradeVisitInfo visitInfo = new KindergartenGradeVisitInfo();
-				visitInfo.setCreateTime(currentMonth);
-				visitInfo.setUserId(teacher.getUserId());
-				int visitGradeNum = visitInfoMapper.selectTotalByCondition(visitInfo);
+				Map<String, Object> queryParam = new HashMap<String, Object>();
+				queryParam.put("userId", teacher.getUserId());
+				queryParam.put("startTime", currentMonthTime);
+				queryParam.put("endTime", getLastDayOfMonth(currentMonth));
+				
+				int visitGradeNum = visitInfoMapper.selectTotalByCondition(queryParam);
 				taskInfo.setVisitGradeNum(visitGradeNum);
 				if(managerVisitNum < visitGradeNum){
 					taskInfo.setIsGetReward(1);
@@ -253,4 +263,36 @@ public class TeacherTaskStatisticsThread extends Thread{
 		
 		return list;
 	}
+	 /** 
+     * 获取某月的最后一天 
+     * @Title:getLastDayOfMonth 
+     * @Description: 
+     * @param:@param yearMonth  2018-05
+     * @param:@return 
+     * @return:String 
+     * @throws 
+     */  
+    public static Long getLastDayOfMonth(String yearMonth)  
+    {  
+    	String[] ym = yearMonth.split("-");
+        Calendar cal = Calendar.getInstance();  
+        //设置年份  
+        cal.set(Calendar.YEAR, Integer.parseInt(ym[0]));  
+        //设置月份  
+        cal.set(Calendar.MONTH, Integer.parseInt(ym[1])-1);  
+        //获取某月最大天数  
+        int lastDay = cal.getActualMaximum(Calendar.DAY_OF_MONTH);  
+        //设置日历中月份的最大天数  
+        cal.set(Calendar.DAY_OF_MONTH, lastDay);  
+        //格式化日期  
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");  
+        String lastDayOfMonth = sdf.format(cal.getTime());  
+        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
+        try {
+			return sdf2.parse(lastDayOfMonth+" 23:59:59").getTime() / 1000;
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+        return null;
+    }  
 }

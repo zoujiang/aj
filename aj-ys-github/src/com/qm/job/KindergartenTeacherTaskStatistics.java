@@ -1,30 +1,22 @@
 package com.qm.job;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.frame.core.dao.GenericDAO;
-import com.frame.core.jdbcdao.BaseDao;
 import com.qm.entities.KindergartenTeacher;
-import com.qm.entities.MessagePublishInfo;
-import com.qm.job.thread.SendMsgThread;
 import com.qm.job.thread.TeacherTaskStatisticsThread;
 import com.qm.job.thread.ThreadPoolFactory;
 import com.qm.mapper.KindergartenGradeMapper;
-import com.qm.mapper.KindergartenGradeVisitInfoMapper;
 import com.qm.mapper.KindergartenInfoMapper;
+import com.qm.mapper.KindergartenPhotoViewHistoryMapper;
 import com.qm.mapper.KindergartenTaskInfoMapper;
 import com.qm.mapper.KindergartenTeacherMapper;
 import com.qm.mapper.RewardInfoMapper;
-import com.qm.service.MessagePublishSendLogService;
-import com.qm.service.MessagePublishService;
 /**
  * 幼儿园园长、管理人员、老师 任务情况
  * */
@@ -38,7 +30,7 @@ public class KindergartenTeacherTaskStatistics {
 	@Autowired
 	private KindergartenTaskInfoMapper kindergartenTaskInfoMapper;
 	@Autowired
-	private KindergartenGradeVisitInfoMapper kindergartenGradeVisitInfoMapper;
+	private KindergartenPhotoViewHistoryMapper kindergartenPhotoViewHistoryMapper;
 	@Autowired
 	private RewardInfoMapper rewardInfoMapper;
 	@Autowired
@@ -52,7 +44,7 @@ public class KindergartenTeacherTaskStatistics {
 		
 		Map<String, Object> param = new HashMap<String, Object>();
 		param.put("kindergartenTaskInfoMapper", kindergartenTaskInfoMapper);
-		param.put("kindergartenGradeVisitInfoMapper", kindergartenGradeVisitInfoMapper);
+		param.put("kindergartenPhotoViewHistoryMapper", kindergartenPhotoViewHistoryMapper);
 		param.put("rewardInfoMapper", rewardInfoMapper);
 		param.put("kindergartenInfoMapper", kindergartenInfoMapper);
 		param.put("kindergartenGradeMapper", kindergartenGradeMapper);

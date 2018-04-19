@@ -526,12 +526,12 @@ String id = request.getParameter("id");
 	               				<label class="col-sm-4 control-label">商户横条图：</label> 
 	               				<input type="hidden" name="oldShowPics" id="oldShowPics">
 	               				<div class="col-sm-8">
-				                       <input type="file" id="tsmpPic" name="showPics" accept="image/*" class="form-control"/> &nbsp;&nbsp;&nbsp;
+				                       <input type="file" id="tsmpPic" multiple="multiple" name="showPics" accept="image/*" class="form-control"/> &nbsp;&nbsp;&nbsp;
 	               				</div>
 						    </div>
 	               			<div class="form-group col-sm-6"> 
 	               				<div class="col-sm-12" style="margin-left: -20px;margin-top: 8px;">
-				                       <input type="button" value="+" onclick="addLine()" style="height:19px;float: left;"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (支持jpg，png，大小100k以内)&nbsp;&nbsp; <span id="viewShowPic"></span> 
+				                         (支持同时选择多张jpg，png图片，大小100k以内)&nbsp;&nbsp; <span id="viewShowPic"></span> 
 	               				</div>
 						    </div>
                         </div>
@@ -584,4 +584,14 @@ String id = request.getParameter("id");
             </div>
       </div>
   </body>
+   <style >
+	.modal-backdrop{
+		display :none;
+		
+	}
+	.modal-dialog{
+		z-index: 2 !important
+	}
+
+</style>
 </html>

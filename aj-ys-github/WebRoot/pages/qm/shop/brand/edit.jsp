@@ -164,8 +164,8 @@ String id = request.getParameter("id");
 							<div class="form-group col-sm-6">
 								<label class="col-sm-4 control-label">是否推荐：</label>
 								<div class="col-sm-7" style="line-height: 35px;">
-									<input type="radio" name="isRecommend" id="recommend_0" value="0" checked="checked">是&nbsp;&nbsp;&nbsp;&nbsp;
-									<input type="radio" name="isRecommend" id="recommend_1" value="1">否
+									<input type="radio" name="isRecommend" id="recommend_1" value="1" checked="checked">是&nbsp;&nbsp;&nbsp;&nbsp;
+									<input type="radio" name="isRecommend" id="recommend_0" value="0">否
 								</div>
 							</div>
 						</div>

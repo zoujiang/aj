@@ -16,6 +16,8 @@ public interface KindergartenAlbumMapper {
     int updateByPrimaryKeySelective(KindergartenAlbum record);
 
     int updateByPrimaryKey(KindergartenAlbum record);
+    
+    int batchInsert(List<KindergartenAlbum> records);
 
 	List<KindergartenAlbum> selectByCondition(KindergartenAlbum album);
 }

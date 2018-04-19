@@ -1,5 +1,6 @@
 package com.qm.action;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -18,9 +19,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.frame.core.action.FtpImgDownUploadAction;
 import com.frame.core.util.DateUtil;
 import com.frame.system.vo.UserExtForm;
+import com.qm.entities.KindergartenAlbum;
 import com.qm.entities.KindergartenGrade;
+import com.qm.mapper.KindergartenAlbumMapper;
 import com.qm.service.KindergartenGradeService;
 import com.qm.shop.Constant;
+import com.util.GradeNameUtil;
 
 @RestController
 @RequestMapping("/kindergarten/grade")
@@ -29,6 +33,8 @@ public class KindergartenGradeAction extends FtpImgDownUploadAction{
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	@Autowired
 	private KindergartenGradeService kindergartenGradeService;
+	@Autowired
+	private KindergartenAlbumMapper kindergartenAlbumMapper;
 
 	@RequestMapping("/add")
 	public String add(int kindergartenId, String series, String classNo, Integer firstTeacher, Integer secondTeacher, Integer nurse, 
@@ -83,6 +89,19 @@ public class KindergartenGradeAction extends FtpImgDownUploadAction{
 			
 			int i = kindergartenGradeService.save(grade);
 			if(i > 0){
+				//生成一个班级相册
+				KindergartenAlbum album = new KindergartenAlbum();
+				String albumName = GradeNameUtil.getGradeName(grade);
+				album.setAlbumName(albumName);
+				album.setAlbumUrl(icon);
+				album.setCreateTime(DateUtil.getNowDate());
+				album.setCreateUser(userExtForm.getAccount());
+				album.setCurrentGradeName(albumName);
+				album.setGradeId(grade.getId());
+				album.setShcoolId(grade.getKindergartenId());
+				album.setType(1);
+				kindergartenAlbumMapper.insertSelective(album);
+				
 				 json.put("success",true );
 			     json.put("message", "新增成功");
 			}else{
@@ -98,6 +117,7 @@ public class KindergartenGradeAction extends FtpImgDownUploadAction{
 		}
 		return json.toString();
 	}
+	
 	@RequestMapping("/list")
 	public String list(Integer kindergartenId, String series, Integer limit, Integer offset){
 		JSONObject json = new JSONObject();
@@ -176,7 +196,10 @@ public class KindergartenGradeAction extends FtpImgDownUploadAction{
 	public String update(Integer id, int kindergartenId, String series, String classNo, Integer firstTeacher, Integer secondTeacher, Integer nurse, 
 			@RequestParam(value = "logoImg") MultipartFile logo, String declaration, String rule, HttpServletRequest request ){
 		
+		UserExtForm userExtForm = (UserExtForm) request.getSession().getAttribute(com.frame.core.constant.Constant.LoginAdminUser);
 
+		KindergartenGrade oldGrade = kindergartenGradeService.selectByPrimaryKey(id);
+		
         KindergartenGrade grade = new KindergartenGrade();
         JSONObject json = new JSONObject();
         grade.setId(id);
@@ -222,8 +245,37 @@ public class KindergartenGradeAction extends FtpImgDownUploadAction{
 			
 			int i = kindergartenGradeService.update(grade);
 			if(i > 0){
-				 json.put("success",true );
-			     json.put("message", "编辑成功");
+				
+				if( !oldGrade.getSeries().equals(grade.getSeries())
+						|| oldGrade.getRule().equals(grade.getRule())){
+					
+					//生成一个班级相册
+					KindergartenAlbum album = new KindergartenAlbum();
+					String albumName = GradeNameUtil.getGradeName(grade);
+					album.setShcoolId(grade.getKindergartenId());
+					album.setGradeId(grade.getId());
+					album.setCurrentGradeName(albumName);
+					album.setType(1);
+					List<KindergartenAlbum> albumList = kindergartenAlbumMapper.selectByCondition(album);
+					if(albumList == null || albumList.size() == 0){
+						album.setAlbumUrl(icon);
+						album.setCreateTime(DateUtil.getNowDate());
+						album.setCreateUser(userExtForm.getAccount());
+						
+						album.setAlbumName(albumName);
+						kindergartenAlbumMapper.insertSelective(album);
+					}else{
+						if(icon != null){
+							album = albumList.get(0);
+							album.setAlbumUrl(icon);
+							kindergartenAlbumMapper.updateByPrimaryKeySelective(album);
+						}
+						
+					}
+				}
+				
+				json.put("success",true );
+			    json.put("message", "编辑成功");
 			}else{
 			    json.put("success",false );
 			    json.put("message", "编辑失败");

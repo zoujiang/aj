@@ -29,7 +29,8 @@ String id = request.getParameter("id");
 	
 
 	<script type="text/javascript">
-	
+		var a =0, b =0; 
+		var flag ;
 		function AppMgr(){
 			 this.initDatas = function(){
 				 $.ajax({
@@ -44,6 +45,7 @@ String id = request.getParameter("id");
 		            		  html += "<option value='"+c.id+"'>"+c.name+"</option>";
 		            	  });
 		            	  $("#shopCategoryId").html(html);
+		            	  a =1;
 		         	 }
 		    	});
 		    	 $.ajax({
@@ -58,57 +60,67 @@ String id = request.getParameter("id");
 		            		  html += "<option value='"+c.id+"'>"+c.brand_name+"</option>";
 		            	  });
 		            	  $("#brandId").html(html);
+		            	  b =1;
 		         	 }
 		    	});
 
 				 $('#showStationGc').click(function(e){
 						AppMgr.edit(e);
 					});
-				 //初始化页面数据
-				 $.ajax({
-		             type: "GET",
-		             url: "<%=path %>/admin/kindergarten/kindergarten/find?id=<%=id %>",
-		             dataType: "json",
-		             success: function(data){
-		            	 if(data.success){
-		            		 
-			            	 var d = data.data;
-			            	 $("#name").val(d.name);
-			            	 $("#registName").val(d.registName);
-			            	 $("#address").val(d.address);
-			            	 $("#shopCategoryId").find("option[value='"+d.shopCategoryId+"']").attr("selected",true);
-			            	 $("#properties").find("option[value='"+d.properties+"']").attr("selected",true);
-			            	 $("#brandId").find("option[value='"+d.brandId+"']").attr("selected",true);
-			            	 $("#category").find("option[value='"+d.category+"']").attr("selected",true);
-			            	 $("input[name='isRecommend'][value='"+d.isRecommend+"']").attr("checked",true);
-			            	 $("#gps").val(d.gps);
-			            	 $("#tele").val(d.tele);
-			            	 $("#serviceTel").val(d.serviceTel);
-			            	 $("#serviceStartTime").val(d.serviceStartTime);
-			            	 $("#serviceEndTime").val(d.serviceEndTime);
-			            	 $("#sortIndex").val(d.sortIndex);
-			            	 //$("#description").text(d.description);
-			            	 $('#summernote').summernote('code',d.description);
-			            	 var shopLogo = d.logo;
-			            	 if(shopLogo != ""){
-			            		 $("#oldLogo").val(shopLogo);
-			            		 $("#viewLogo").html("<a href='#' onclick='viewImg(\""+shopLogo+"\", 1)'><b>预览</b></>");
-			            	 }else{
-			            		 $("#viewLogo").text("暂无图片");
-			            	 }
-			            	 var showPic = d.showPics;
-			            	 if(showPic != ""){
-			            		 $("#oldShowPics").val(showPic);
-			            		 $("#viewShowPic").html("<a href='#' onclick='viewImg(\""+showPic+"\", 2)'><b>预览</b></>");
-			            	 }else{
-			            		 $("#viewShowPic").text("暂无图片");
-			            	 }
-		            	 }else{
-		            		 layer.msg(obj.message, {title:'提示', btn: ['确定'],icon: 6}, function(index){
-								});
-		            	 }
-		         	 }
-		    	});
+				 
+		flag = setInterval(function(){
+					 
+					 if(a == 1 && b == 1){
+							clearInterval(flag);
+							 //初始化页面数据
+							 $.ajax({
+					             type: "GET",
+					             url: "<%=path %>/admin/kindergarten/kindergarten/find?id=<%=id %>",
+					             dataType: "json",
+					             success: function(data){
+					            	 if(data.success){
+					            		 
+						            	 var d = data.data;
+						            	 $("#name").val(d.name);
+						            	 $("#registName").val(d.registName);
+						            	 $("#address").val(d.address);
+						            	 $("#shopCategoryId").find("option[value='"+d.shopCategoryId+"']").attr("selected",true);
+						            	 $("#properties").find("option[value='"+d.properties+"']").attr("selected",true);
+						            	 $("#brandId").find("option[value='"+d.brandId+"']").attr("selected",true);
+						            	 $("#category").find("option[value='"+d.category+"']").attr("selected",true);
+						            	 $("input[name='isRecommend'][value='"+d.isRecommend+"']").attr("checked",true);
+						            	 $("#gps").val(d.gps);
+						            	 $("#tele").val(d.tele);
+						            	 $("#serviceTel").val(d.serviceTel);
+						            	 $("#serviceStartTime").val(d.serviceStartTime);
+						            	 $("#serviceEndTime").val(d.serviceEndTime);
+						            	 $("#sortIndex").val(d.sortIndex);
+						            	 //$("#description").text(d.description);
+						            	 $('#summernote').summernote('code',d.description);
+						            	 var shopLogo = d.logo;
+						            	 if(shopLogo != ""){
+						            		 $("#oldLogo").val(shopLogo);
+						            		 $("#viewLogo").html("<a href='#' onclick='viewImg(\""+shopLogo+"\", 1)'><b>预览</b></>");
+						            	 }else{
+						            		 $("#viewLogo").text("暂无图片");
+						            	 }
+						            	 var showPic = d.showPics;
+						            	 if(showPic != ""){
+						            		 $("#oldShowPics").val(showPic);
+						            		 $("#viewShowPic").html("<a href='#' onclick='viewImg(\""+showPic+"\", 2)'><b>预览</b></>");
+						            	 }else{
+						            		 $("#viewShowPic").text("暂无图片");
+						            	 }
+					            	 }else{
+					            		 layer.msg(obj.message, {title:'提示', btn: ['确定'],icon: 6}, function(index){
+											});
+					            	 }
+					         	 }
+					    	});
+					
+						}
+				 
+				 }, 1000);
 		  	 }
 			//编辑
 			AppMgr.edit = function(id,valid,e){
