@@ -218,8 +218,9 @@ String id = request.getParameter("id");
                     				<option value="1">园长</option>
                     				<option value="2">副园长</option>
                     				<option value="3">管理人员</option>
-                    				<option value="4">主教</option>
-                    				<option value="5">副教</option>
+                    				<option value="4">教师</option>
+                    			<!-- 	<option value="4">主教</option>
+                    				<option value="5">副教</option> -->
                     				<option value="6">保育员</option>
                     				<option value="7">其他</option>
                     			</select>

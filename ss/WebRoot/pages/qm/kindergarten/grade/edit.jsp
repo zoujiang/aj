@@ -102,6 +102,7 @@ String id = request.getParameter("id");
 	             success: function(data){
 	            	 var arr = data.rows;
 	            	 var html = "<option value=''>-- 请选择 --</option>";
+	            	 var html2 = "<option value=''>-- 请选择 --</option>";
 	            	  $.each( arr, function(index, content)
 	            	  { 
 	            		  if(content.id == firstTeacher){
@@ -109,12 +110,17 @@ String id = request.getParameter("id");
 	            	   	  }else{
 	            	   		 html += "<option value='"+content.id+"'>"+content.name+"</option>";
 	            	   	  }
-	            		 
+	            		  if(content.id == secondTeacher){
+	            			  html2 += "<option selected='selected' value='"+content.id+"'>"+content.name+"</option>";
+	            	   	  }else{
+	            	   		 html2 += "<option value='"+content.id+"'>"+content.name+"</option>";
+	            	   	  }
 	            	  });
 	            	  $("#firstTeacher").html(html);
+	            	  $("#secondTeacher").html(html2);
 	         	 }
 	    	});
-			 $.ajax({
+			 <%-- $.ajax({
 	             type: "GET",
 	             url: "<%=path %>/admin/kindergarten/teacher/list?type=5&offset=0&limit=10000&kindergartenId="+kinder,
 	             dataType: "json",
@@ -131,7 +137,7 @@ String id = request.getParameter("id");
 	            	  });
 	            	  $("#secondTeacher").html(html);
 	         	 }
-	    	});
+	    	}); --%>
 			 $.ajax({
 	             type: "GET",
 	             url: "<%=path %>/admin/kindergarten/teacher/list?type=6&offset=0&limit=10000&kindergartenId="+kinder,

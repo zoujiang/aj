@@ -111,7 +111,7 @@ String id = request.getParameter("id");
     		        	}else if(value == 3){
     		        		return "管理人员";
     		        	}else if(value == 4){
-    		        		return "主教";
+    		        		return "教师";
     		        	}else if(value == 5){
     		        		return "副教";
     		        	}else if(value == 6){
@@ -201,8 +201,7 @@ String id = request.getParameter("id");
                     				<option value="1">园长</option>
                     				<option value="2">副园长</option>
                     				<option value="3">管理人员</option>
-                    				<option value="4">主教</option>
-                    				<option value="5">副教</option>
+                    				<option value="4">教师</option>
                     				<option value="6">保育员</option>
                     				<option value="7">其他</option>
                     			</select>

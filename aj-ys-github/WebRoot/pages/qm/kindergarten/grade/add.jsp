@@ -135,9 +135,10 @@ if(roleId == null || "".equals(roleId)){
 		            		  html += "<option value='"+content.id+"'>"+content.name+"</option>";
 		            	  });
 		            	  $("#firstTeacher").html(html);
+		            	  $("#secondTeacher").html(html);
 		         	 }
 		    	});
-				 $.ajax({
+		<%-- 		 $.ajax({
 		             type: "GET",
 		             url: "<%=path %>/admin/kindergarten/teacher/list?type=5&offset=0&limit=10000&kindergartenId="+kinder,
 		             dataType: "json",
@@ -150,7 +151,7 @@ if(roleId == null || "".equals(roleId)){
 		            	  });
 		            	  $("#secondTeacher").html(html);
 		         	 }
-		    	});
+		    	}); --%>
 				 $.ajax({
 		             type: "GET",
 		             url: "<%=path %>/admin/kindergarten/teacher/list?type=6&offset=0&limit=10000&kindergartenId="+kinder,
