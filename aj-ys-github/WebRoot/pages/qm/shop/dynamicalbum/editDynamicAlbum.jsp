@@ -289,10 +289,11 @@ String id = request.getParameter("id");
 										</div>
 									</div>
 									<div class="form-group col-sm-6">
-										<label class="col-sm-4 control-label">相册封面：<br/><span style="font-size: 3mm ;font-weight: normal;">(100K内jpg,png图片)</span></label>
+										<label class="col-sm-4 control-label">相册封面：</label>
 										<input type="hidden" name="oldAlbumLogo" id="oldAlbumLogo">
 										<div class="col-sm-6">
 											<input type="file" class="form-control" name="albumLogo" id="albumLogo">
+											<span class="help-block m-b-none" style="font-size: 6px;color: lightgray;">建议尺寸520x388，大小100K内jpg,png图片</span>
 										</div>
 										<span id="showAlbumLogo" style="line-height: 35px;"></span>
 									</div>

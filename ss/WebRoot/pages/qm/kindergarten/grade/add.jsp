@@ -27,6 +27,7 @@ if(roleId == null || "".equals(roleId)){
 	<script type="text/javascript">
 	function AppMgr(){
 		 this.initDatas = function(){
+			 queryTeacherByKinder();
 	  	 }
 		 
 		 var date=new Date;
@@ -36,7 +37,7 @@ if(roleId == null || "".equals(roleId)){
 			 serHtml += "<option value="+(year -i)+">" + (year -i) +"</option>" ;
 		 }
 		 $("#series").html(serHtml)
-		 $("#className").val(year + "级");
+		 $("#className").val(year + "级小班");
 	 }
 	 $(document).ready(function() {
 	  		new AppMgr().initDatas();
@@ -100,7 +101,8 @@ if(roleId == null || "".equals(roleId)){
 			 }
 			 setClassName();
 		 }
-		 function queryTeacherByKinder(kinder){
+		 function queryTeacherByKinder(){
+			 var kinder = '<%=request.getSession().getAttribute("Login_User_Shop_Id") %>';
 			 if(kinder != ""){
 				 $.ajax({
 		             type: "GET",
@@ -241,9 +243,9 @@ if(roleId == null || "".equals(roleId)){
 	                            <label class="col-sm-3 control-label">级数规则：</label>
 	                            <div class="col-sm-9" style="margin-top: 5px;">
 	               					<input type="checkbox" name="rule" value="小小班" onclick="setClassName()" >小小班&nbsp;&nbsp;&nbsp;&nbsp;
-	               					<input type="checkbox" name="rule" value="小班" onclick="setClassName()" >小班&nbsp;&nbsp;&nbsp;&nbsp;
-	               					<input type="checkbox" name="rule" value="中班" onclick="setClassName()" >中班&nbsp;&nbsp;&nbsp;&nbsp;
-	               					<input type="checkbox" name="rule" value="大班" onclick="setClassName()" >大班&nbsp;&nbsp;&nbsp;&nbsp;
+	               					<input type="checkbox" name="rule" value="小班" onclick="setClassName()" checked="checked" >小班&nbsp;&nbsp;&nbsp;&nbsp;
+	               					<input type="checkbox" name="rule" value="中班" onclick="setClassName()" checked="checked">中班&nbsp;&nbsp;&nbsp;&nbsp;
+	               					<input type="checkbox" name="rule" value="大班" onclick="setClassName()" checked="checked">大班&nbsp;&nbsp;&nbsp;&nbsp;
 	               					<input type="checkbox" name="rule" value="大大班" onclick="setClassName()" >大大班
 	               				</div>
 	                        </div>

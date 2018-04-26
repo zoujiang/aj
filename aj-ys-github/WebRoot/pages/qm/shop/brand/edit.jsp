@@ -154,11 +154,7 @@ String id = request.getParameter("id");
 								<label class="col-sm-4 control-label">品牌图标：</label>
 								<div class="col-sm-8">
 									<input type="file" class="form-control" name="file" id="icon"><a id="preView" href="" target="blank" style="display:none;">预览</a>
-								</div>
-								<div class="form-group col-sm-6">
-									<div class="col-sm-13" style="">
-										<span style="font-size: 8px;"> (支持png,大小50k以内)</span>
-									</div>
+									<span class="help-block m-b-none" style="font-size: 6px;color: lightgray;">建议尺寸220x164,大小50k以内</span>
 								</div>
 							</div>
 							<div class="form-group col-sm-6">

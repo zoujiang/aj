@@ -29,7 +29,7 @@
 			//data = data.children;
 			data = data[0].children;
     	   	$.each(data, function (n, value) {
-    	   		str+="<li>";
+    	   		str+="<li class="active">";
     		   	str+="<a";
     		   	if(value.children == null || value.children == ""){
     		   		str += " href=\"${ctx}"+value.attributes.href+"?id="+value.code+"\"";
@@ -79,7 +79,7 @@
 		 <nav class="navbar-default navbar-static-side" role="navigation" >
             <div class="nav-close"><i class="fa fa-times-circle"></i></div>
             <div class="sidebar-collapse">
-                <ul class="nav" id="side-menu" style="background: #d6f1fb">
+                <ul class="nav" id="side-menu" style="background: #d6f1fb;">
                     <li class="nav-header" style="background: #e2f7ff">
                         <div class="dropdown profile-element">
                             <span ><img alt="image" class="img-circle" width="80px" height="80px" src="${ctx }/pages/system/img/cqmls.png" /></span>

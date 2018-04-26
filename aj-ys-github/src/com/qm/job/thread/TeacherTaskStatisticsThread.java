@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.frame.core.util.DateUtil;
 import com.frame.core.util.SystemConfig;
 import com.qm.entities.KindergartenInfo;
@@ -26,7 +29,7 @@ import com.qm.mapper.RewardInfoMapper;
 
 public class TeacherTaskStatisticsThread extends Thread{
 
-	
+	private Logger log = LoggerFactory.getLogger(TeacherTaskStatisticsThread.class);
 	private List<KindergartenTeacher> list;
 	private Map<String, Object> param ;
 	
@@ -80,10 +83,24 @@ public class TeacherTaskStatisticsThread extends Thread{
 				
 				int visitGradeNum = visitInfoMapper.selectTotalByCondition(queryParam);
 				taskInfo.setVisitGradeNum(visitGradeNum);
-				if(managerVisitNum < visitGradeNum){
+				if(managerVisitNum > visitGradeNum){
 					taskInfo.setIsGetReward(1);
 				}else{
+					KindergartenInfo kindergarten = kindergartenInfoMapper.selectByPrimaryKey(teacher.getKindergartenId());
+					RewardInfo ri = new RewardInfo();
+					ri.setUserType(teacher.getType());
+					ri.setKindergartenCategory(kindergarten.getCategory());
+					List<RewardInfo> rewardList = rewardInfoMapper.selectByCondition(ri);
+					if(rewardList != null && !rewardList.isEmpty()){
+						ri = rewardList.get(0);
+						int rewardInfo = ri.getRewardInfo() ==null ? 0 : ri.getRewardInfo();
+						taskInfo.setTotalReward(rewardInfo+"");
+					}else{
+						log.info("当前学校未配置奖励标准："+ kindergarten.getId() +"-"+kindergarten.getCategory());
+					}
+					
 					taskInfo.setIsGetReward(0);
+					
 					taskInfo.setRemark("当月任务完成获得");
 				}
 				taskInfo.setIsSend(1);
@@ -227,6 +244,19 @@ public class TeacherTaskStatisticsThread extends Thread{
 									info.setIsGetReward(0);
 									info.setUpdateTime(DateUtil.getNowDate());
 									info.setRemark("由"+currentMonth +"补充上传获得");
+									
+									KindergartenInfo kindergarten = kindergartenInfoMapper.selectByPrimaryKey(teacher.getKindergartenId());
+									RewardInfo ri = new RewardInfo();
+									ri.setUserType(teacher.getType());
+									ri.setKindergartenCategory(kindergarten.getCategory());
+									List<RewardInfo> rewardList = rewardInfoMapper.selectByCondition(ri);
+									int totalReward = 0;
+									if(rewardList != null && !rewardList.isEmpty()){
+										ri = rewardList.get(0);
+										int rewardInfo = ri.getRewardInfo() ==null ? 0 : ri.getRewardInfo();
+										totalReward += rewardInfo;
+									}
+									info.setTotalReward(totalReward+"");
 									kindergartenTaskInfoMapper.updateByPrimaryKeySelective(info);
 								}
 								

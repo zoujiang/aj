@@ -395,18 +395,19 @@ if(id == null){
 	               				</div>
 						    </div>
 	               			<div class="form-group col-sm-6"> 
-	               				<label class="col-sm-4 control-label" >相册封面：<br/><span style="font-size: 3mm ;font-weight: normal;">(100K内jpg,png图片)</span></label> 
-	               				<input type="hidden" name="oldAlbumLogo" id="oldAlbumLogo">
-	               				<div class="col-sm-6">
-	               					<input type="file" class="form-control" name="albumLogo" id="albumLogo"> 
-	               				</div>
-	               				<span id="showAlbumLogo" style="line-height: 35px;"></span>
+	               				<label class="col-sm-4 control-label" >相册封面：</span></label> 
+	               					<input type="hidden" name="oldAlbumLogo" id="oldAlbumLogo">
+		               				<div class="col-sm-6">
+		               					<input type="file" class="form-control" name="albumLogo" id="albumLogo"> 
+		               					<span class="help-block m-b-none" style="font-size: 6px;color: lightgray;float: left;">建议尺寸520x388，大小100K内jpg,png图片</span>
+		               				</div>
+		               				<span id="showAlbumLogo" style="line-height: 35px;"></span>
 						    </div>
                     </div>
                	 	<div class="row">
 	               			<div class="form-group col-sm-6"> 
 	               				<label class="col-sm-4 control-label" >类型：</label> 
-	               				<div class="col-sm-8">
+	               				<div class="col-sm-8" style="padding-top: 5px;">
 	               					<input type="radio" class="" name="albumType" value="0" id="type_free" checked="checked" onclick="changeAlbumType(0)"> 赠送&nbsp;&nbsp;&nbsp;&nbsp;
 	               					<input type="radio" class="" name="albumType" value="1" id="type_pay" onclick="changeAlbumType(1)"> 付费
 	               				</div>
@@ -422,19 +423,15 @@ if(id == null){
                      <div class="form-group">
 	                            <label class="col-sm-2 control-label">摄影时间：</label>
 	                            <div class="col-sm-10">
-	                                <div class="col-sm-10" style="float: left;">
+	                                <div class="col-sm-10" style="float: left;margin-left: -22px;">
 										<div style="float: left;">
 											  <input id="photoTime" class="form-control layer-date" placeholder="摄影时间"  style="width: 237px;" name="photoTime" onclick="laydate({istime: true, format: 'YYYY-MM-DD'})">
 			               					  <label class="laydate-icon"></label>
-			               					  <span class="help-block m-b-none">备注:折扣价以商户上传照片时间为基点。例如:客户于2016年9月15日照相，商户于2017年6月5日上传此客户未购买照片，原价800元，现以2017年6月5日为基点，三个月8折，六个月7.5折，以此类推。</span>
+			               					  <span class="help-block m-b-none" style="font-size: 6px;color: lightgray;">备注:折扣价以商户上传照片时间为基点。例如:客户于2016年9月15日照相，商户于2017年6月5日上传此客户未购买照片，原价800元，现以2017年6月5日为基点，三个月8折，六个月7.5折，以此类推。</span>
 										</div>
 									</div>
 	                            </div>
 	                    </div>
-                    
-                    
-                    
-                    
 	               	<div class="row">
 	               			<div class="form-group col-sm-12"> 
 	               				<label class="col-sm-2 control-label">付费方式<span style="font-size: 3mm ;font-weight: normal;">(折扣)</span>：</label> 
@@ -451,7 +448,7 @@ if(id == null){
                     </div>		
 	                <div class="row">
 	               			<div class="form-group col-sm-12"> 
-	               				<label class="col-sm-2 control-label"><span style="font-size: 3mm ;font-weight: normal;"> 85代表85折(1-100整数)</span></label> 
+	               				<label class="col-sm-2 control-label"><span style="font-size: 6px;color: lightgray;font-weight: normal;"> 85代表85折(1-100整数)</span></label> 
 	               				<div class="col-sm-3">
 	               					<span style="float: left;text-align: center;line-height: 35px;">一&nbsp;&nbsp;&nbsp;年：</span><input type="text" class="form-control" name="payType_12" id="payType_12" style="width: 100px;"> 
 	               				</div>

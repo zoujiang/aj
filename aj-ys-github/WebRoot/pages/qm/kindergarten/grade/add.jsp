@@ -50,7 +50,7 @@ if(roleId == null || "".equals(roleId)){
 			 serHtml += "<option value="+(year -i)+">" + (year -i) +"</option>" ;
 		 }
 		 $("#series").html(serHtml)
-		 $("#className").val(year + "级");
+		 $("#className").val(year + "级小班");
 	 }
 	 $(document).ready(function() {
 	  		new AppMgr().initDatas();
@@ -257,6 +257,7 @@ if(roleId == null || "".equals(roleId)){
 	               				<label class="col-sm-4 control-label">班级LOGO：</label> 
 	               				 <div class="col-sm-8">
 	               					<input class="form-control" type="file" id="logo" name="logoImg" >
+	               					<span class="help-block m-b-none" style="font-size: 6px;color: lightgray;">建议尺寸172x172，大小50K</span>
 	               				</div>
 						    </div>
                         </div>
@@ -273,9 +274,9 @@ if(roleId == null || "".equals(roleId)){
 	                            <label class="col-sm-3 control-label">级数规则：</label>
 	                            <div class="col-sm-9" style="margin-top: 5px;">
 	               					<input type="checkbox" name="rule" value="小小班" onclick="setClassName()" >小小班&nbsp;&nbsp;&nbsp;&nbsp;
-	               					<input type="checkbox" name="rule" value="小班" onclick="setClassName()" >小班&nbsp;&nbsp;&nbsp;&nbsp;
-	               					<input type="checkbox" name="rule" value="中班" onclick="setClassName()" >中班&nbsp;&nbsp;&nbsp;&nbsp;
-	               					<input type="checkbox" name="rule" value="大班" onclick="setClassName()" >大班&nbsp;&nbsp;&nbsp;&nbsp;
+	               					<input type="checkbox" name="rule" value="小班" onclick="setClassName()" checked="checked" >小班&nbsp;&nbsp;&nbsp;&nbsp;
+	               					<input type="checkbox" name="rule" value="中班" onclick="setClassName()" checked="checked">中班&nbsp;&nbsp;&nbsp;&nbsp;
+	               					<input type="checkbox" name="rule" value="大班" onclick="setClassName()" checked="checked">大班&nbsp;&nbsp;&nbsp;&nbsp;
 	               					<input type="checkbox" name="rule" value="大大班" onclick="setClassName()" >大大班
 	               				</div>
 	                        </div>

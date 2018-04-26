@@ -326,6 +326,7 @@ String id = request.getParameter("id");
 	               				<label class="col-sm-4 control-label">班级LOGO：</label> 
 	               				 <div class="col-sm-8">
 	               					<input class="form-control" type="file" id="logo" name="logoImg" > <a id="preView" href="" target="_blank" style="display: none"><b>预览</b></a>
+	               					<span class="help-block m-b-none" style="font-size: 6px;color: lightgray;">建议尺寸172x172，大小50K</span>
 	               				</div>
 						    </div>
                         </div>

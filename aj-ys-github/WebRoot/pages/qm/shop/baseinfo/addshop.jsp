@@ -451,32 +451,35 @@ if(roleId == null || "".equals(roleId)){
 						    </div>
                         </div>
                         -->
-                        <div class="row" id="pic1">
-	               			<div class="form-group col-sm-6"> 
-	               				<label class="col-sm-4 control-label">商户横条图：</label> 
-	               				<div class="col-sm-8">
-				                       <input type="file" id="tsmpPic" multiple="multiple" name="showPics" accept="image/*" class="form-control"/> &nbsp;&nbsp;&nbsp;
-	               				</div>
-						    </div>
-	               			<div class="form-group col-sm-6"> 
-	               				<div class="col-sm-12" style="margin-left: -20px;margin-top: 8px;">
-				                       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (支持同时选择多张jpg，png图片，大小100k以内)
-	               				</div>
-						    </div>
-                        </div>
-                        <div class="row">
+                         <div class="row">
 						    <div class="form-group col-sm-6">
 	                            <label class="col-sm-4 control-label"><b style="color:red;">*</b>商户LOGO：</label>
 	                            <div class="col-sm-8">
 	               					<input class="form-control" type="file" id="logo" name="logo" >
+	               					<span class="help-block m-b-none" style="font-size: 6px;color: lightgray;">建议尺寸220x164,大小50k以内</span>
 	               				</div>
 	                        </div>
-	                        <div class="form-group col-sm-6"> 
+	                     <!--    <div class="form-group col-sm-6"> 
 	               				<div class="col-sm-12" style="margin-left: -20px;margin-top: 8px;">
 				                       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (支持png，大小50k以内)
 	               				</div>
-						    </div>
+						    </div> -->
                         </div>
+                        <div class="row" id="pic1">
+	               			<div class="form-group col-sm-6"> 
+	               				<label class="col-sm-4 control-label">商户横条图：</label> 
+	               				<div class="col-sm-8">
+				                       <input type="file" id="tsmpPic" multiple="multiple" name="showPics" accept="image/*" class="form-control"/> 
+	               						<span class="help-block m-b-none" style="font-size: 6px;color: lightgray;">支持同时选择多张jpg，png图片.建议尺寸1500x960,大小100k以内</span>
+	               				</div>
+						    </div>
+	               		<!-- 	<div class="form-group col-sm-6"> 
+	               				<div class="col-sm-12" style="margin-left: -20px;margin-top: 8px;">
+				                       支持同时选择多张jpg，png图片.建议尺寸1500x960,大小100k以内
+	               				</div>
+						    </div> -->
+                        </div>
+                       
                         <div class="row">
                             <div class="form-group col-sm-6">
 	                            <label class="col-sm-4 control-label">商户介绍：</label>

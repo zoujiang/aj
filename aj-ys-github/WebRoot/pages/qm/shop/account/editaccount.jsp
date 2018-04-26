@@ -227,7 +227,7 @@ String id = request.getParameter("id");
 	               			<div class="form-group col-sm-6"> 
 	               				<label class="col-sm-4 control-label"><span style="color: red;">*</span>登录密码：</label> 
 	               				<div class="col-sm-8">
-	               					<input type="password" class="form-control" name="password" id="password">  
+	               					<input type="password" class="form-control" name="password" id="password" autocomplete="new-password">  
 	               				</div>
 						    </div>
                         </div>

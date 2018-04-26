@@ -14,7 +14,7 @@ String id = request.getParameter("id");
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
-    <title>管理平台-编辑幼儿园</title>
+    <title>管理平台-编辑优惠券</title>
 
 	<%@ include file="/pages/comm/jsp/inc.jsp"%>
 	
@@ -61,13 +61,15 @@ String id = request.getParameter("id");
 			            	 $('#summernote').summernote('code',d.description);
 			            	 var firstPagePic = d.firstPagePic;
 			            	 if(firstPagePic != ""){
-			            		 $("#viewLogo").html("<a href='#' onclick='viewImg(\""+firstPagePic+"\", 1)'><b>预览</b></>");
+			            		 $("#viewLogo").attr('href', firstPagePic);
+			            		 $("#viewLogo").show();
 			            	 }else{
 			            		 $("#viewLogo").text("暂无图片");
 			            	 }
 			            	 var showPic = d.showImg;
 			            	 if(showPic != ""){
 			            		 $("#oldShowPics").val(showPic);
+			            		 console.info("000000"+showPic)
 			            		 $("#viewShowPic").html("<a href='#' onclick='viewImg(\""+showPic+"\", 2)'><b>预览</b></>");
 			            	 }else{
 			            		 $("#viewShowPic").text("暂无图片");
@@ -425,7 +427,7 @@ String id = request.getParameter("id");
 	                        </div>
 	                        <div class="form-group col-sm-6"> 
 	               				<div class="col-sm-12" style="margin-left: -20px;margin-top: 8px;">
-				                       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (支持png，大小50k以内) <span id="viewLogo"></span>
+				                       <a id="viewLogo" href="" target="_blank" style="display: none"><b>预览</b></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="help-block m-b-none" style="font-size: 6px;color: lightgray;"> 建议尺寸220x164，大小50K</span>
 	               				</div>
 						    </div>
                         </div>
@@ -440,7 +442,7 @@ String id = request.getParameter("id");
 						    </div>
 	               			<div class="form-group col-sm-6"> 
 	               				<div class="col-sm-12" style="margin-left: -20px;margin-top: 8px;">
-				                        (支持选择多张jpg，png格式图片，大小100k以内)  <span id="viewShowPic"></span>
+				                         <span id="viewShowPic"></span>&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 6px;color: lightgray;">支持选择多张jpg，png格式图片，建议尺寸1500x960，大小100k以内</span>
 	               				</div>
 						    </div>
                         </div>

@@ -232,9 +232,10 @@ if(roleId == null || "".equals(roleId)){
 										</div>
 									</div>
 									<div class="form-group col-sm-6">
-										<label class="col-sm-4 control-label">相册封面：<br/><span style="font-size: 3mm ;font-weight: normal;">(100K内jpg,png图片)</span></label>
+										<label class="col-sm-4 control-label">相册封面：</label>
 										<div class="col-sm-8">
 											<input type="file" class="form-control" name="albumLogo" id="albumLogo">
+											<span class="help-block m-b-none" style="font-size: 6px;color: lightgray;">建议尺寸520x388，大小100K内jpg,png图片</span>
 										</div>
 									</div>
 								</div>

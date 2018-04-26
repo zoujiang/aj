@@ -155,6 +155,22 @@ public class CouponAction extends FtpImgDownUploadAction {
         try {
         	CouponInfo info  = couponService.selectByPrimaryKey(id);
             if(info != null){
+            	if(info.getFirstPagePic() != null && !"".equals(info.getFirstPagePic())){
+            		info.setFirstPagePic(Constant.imgPrefix + info.getFirstPagePic() );
+            	}
+            	if(info.getShowImg() != null && !"".equals(info.getShowImg())){
+            		String[] pics = info.getShowImg().split(",");
+            		String showPicsFullPath = "";
+            		for(String pic : pics){
+                        if("".equals(showPicsFullPath)){
+                            showPicsFullPath += Constant.imgPrefix + pic;
+                        }else{
+                            showPicsFullPath += ","+ Constant.imgPrefix + pic;
+                        }
+                    }
+            		info.setShowImg(showPicsFullPath);
+            	}
+            	
                 json.put("success",true );
                 json.put("data", info);
             }else{

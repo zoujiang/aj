@@ -253,7 +253,7 @@
     
   </select>
   <select id="selectGradeAndTeacherInfo" parameterType="java.util.HashMap" resultType="java.util.HashMap">
-  	select t.gradeId, t.category, t.total, g.rule, g.series, g.class_no classNo, g.kindergarten_id kindergartenId from t_kindergarten_grade g, (select grade_id gradeId,category, count(category) total from t_kindergarten_photo where create_user = ? and left(create_time, 7) = ? group by grade_id, category ) t where g.id = t.gradeId
+  	select t.gradeId, t.category, t.total, g.rule, g.series, g.class_no classNo, g.kindergarten_id kindergartenId from t_kindergarten_grade g, (select grade_id gradeId,category, count(category) total from t_kindergarten_photo where create_user = #{userId} and left(create_time, 7) = #{yearMonth} group by grade_id, category ) t where g.id = t.gradeId
   </select>
   
   <select id="getSeriesNum" parameterType="com.qm.entities.KindergartenGrade" resultType="int">

@@ -224,6 +224,7 @@ public class KindergartenGradeAction extends FtpImgDownUploadAction{
 			grade.setNurse(nurse);
 			grade.setSeries(series);
 			grade.setSecondTeacher(secondTeacher);
+			grade.setCreateTime(oldGrade.getCreateTime());
 			char[] ruleChar = "00000".toCharArray();
 			if(rule != null && !"".equals(rule)){
 				String[] splitRuleString = rule.split(",");

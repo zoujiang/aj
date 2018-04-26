@@ -31,12 +31,12 @@
 		class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
 		<property name="jobDetail" ref="messageSendJob" />
 		<property name="repeatInterval" value="60000" />
-		<property name="startDelay" value="3000" />
+		<property name="startDelay" value="60000" />
 	</bean>
 	<bean id="teacherTaskStatisticsTrigger"
 		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 		<property name="jobDetail" ref="teacherTaskStatisticsJob" />
-		 <property name="cronExpression" value="0 0 0 26 * ?" />  <!--每月26号--> 
+		 <property name="cronExpression" value="0 18 16 24 * ?" />  <!--每月26号--> 
             
 	</bean>
 	<bean id="kindergartenDailyStatisticsTrigger"
@@ -55,10 +55,10 @@
 	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="triggers">
 			<list>
-				<!--  <ref bean="messageSendTrigger"/>
+				<!-- --> <ref bean="messageSendTrigger"/>
 				 <ref bean="teacherTaskStatisticsTrigger"/>
 				 <ref bean="kindergartenDailyStatisticsTrigger"/>
-				 <ref bean="kindergartenGradeUpgradeTrigger"/> -->
+				 <ref bean="kindergartenGradeUpgradeTrigger"/> 
 			</list>
 		</property>
 	</bean>

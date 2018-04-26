@@ -68,7 +68,7 @@ String id = request.getParameter("id");
 		                		  $("#preView").show();
 		                	  }
 			            	 
-			            	 var showPic = d.showPics;
+			            	 var showPic = d.showPic;
 			            	 if(showPic != ""){
 			            		 $("#oldShowPics").val(showPic);
 			            		 $("#viewShowPic").html("<a href='#' onclick='viewImg(\""+showPic+"\", 2)'><b>预览</b></>");
@@ -453,7 +453,7 @@ String id = request.getParameter("id");
 						    </div>
 	               			<div class="form-group col-sm-6"> 
 	               				<div class="col-sm-12" style="margin-left: -20px;margin-top: 8px;">
-				                       <input type="button" value="+" onclick="addLine()" style="height:19px;float: left;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (支持jpg，png，大小100k以内)
+				                       <span id="viewShowPic"></span>&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 6px;color: lightgray;">支持选择多张jpg，png格式图片，建议尺寸1500x960，大小100k以内</span>
 	               				</div>
 						    </div>
                         </div>
@@ -467,7 +467,7 @@ String id = request.getParameter("id");
 	                        </div>
 	                        <div class="form-group col-sm-6"> 
 	               				<div class="col-sm-12" style="margin-left: -20px;margin-top: 8px;">
-				                       &nbsp;&nbsp;&nbsp;&nbsp;(支持png，大小50k以内) &nbsp; <a id="preView" href="" target="_blank" style="display: none"><b>预览</b></a>
+				                       <a id="preView" href="" target="_blank" style="display: none"><b>预览</b></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="help-block m-b-none" style="font-size: 6px;color: lightgray;"> 建议尺寸220x164，大小50K</span>
 	               				</div>
 						    </div>
                         </div>

@@ -72,22 +72,22 @@ public class KindergartenTeacherAction extends FtpImgDownUploadAction {
 		String role = "";
 		if(account.getType() == 1){
 			role = "园长";
-			userType = "3";
+			userType = "2";
 		}else if(account.getType() == 2){
 			role = "副园长";
-			userType = "3";
+			userType = "2";
 		}else if(account.getType() == 3){
 			role = "管理人员";
-			userType = "4";
+			userType = "3";
 		}else if(account.getType() == 4){
 			role = "主教";
-			userType = "2";
+			userType = "4";
 		}else if(account.getType() == 5){
 			role = "副教";
-			userType = "2";
+			userType = "5";
 		}else if(account.getType() == 6){
 			role = "保育员";
-			userType = "2";
+			userType = "6";
 		}else if(account.getType() == 7){
 			role = "其他";
 		}
@@ -97,7 +97,7 @@ public class KindergartenTeacherAction extends FtpImgDownUploadAction {
         //验证学校园长，管理人员，教师个数，不能超过个数
         String teacherNumber = SystemConfig.getValue("aj.kindergarten.teacher.number");
         String[] nubs = teacherNumber.split("\\|");
-        if("3".equals(userType)){
+        if("2".equals(userType)){
         	//园长
         	int teacherNum = kindergartenTeacherService.getNumberByType(3);
         	if(Integer.parseInt(nubs[0]) <= teacherNum){
@@ -105,14 +105,14 @@ public class KindergartenTeacherAction extends FtpImgDownUploadAction {
                 json.put("message", "每个幼儿园最多只能有"+nubs[0]+"个园长");
                 return json.toString();
         	}
-        }else if("4".equals(userType)){
+        }else if("3".equals(userType)){
         	int teacherNum = kindergartenTeacherService.getNumberByType(4);
         	if(Integer.parseInt(nubs[1]) <= teacherNum){
         		json.put("success", false);
                 json.put("message", "每个幼儿园最多只能有"+nubs[1]+"个管理人员");
                 return json.toString();
         	}
-        }else if("2".equals(userType)){
+        }else if("4".equals(userType)||"5".equals(userType)||"6".equals(userType)){
         	int teacherNum = kindergartenTeacherService.getNumberByType(2);
         	if(Integer.parseInt(nubs[2]) <= teacherNum){
         		json.put("success", false);
@@ -212,26 +212,30 @@ public class KindergartenTeacherAction extends FtpImgDownUploadAction {
 
         JSONObject json = new JSONObject();
         
+        KindergartenTeacher validate = new KindergartenTeacher();
+        validate.setTel(account.getTel());
+        validate = kindergartenTeacherService.queryTeacherByTel(validate);
+        
         String userType = "";
 		String role = "";
 		if(account.getType() == 1){
 			role = "园长";
-			userType = "3";
+			userType = "2";
 		}else if(account.getType() == 2){
 			role = "副园长";
-			userType = "3";
+			userType = "2";
 		}else if(account.getType() == 3){
 			role = "管理人员";
-			userType = "4";
+			userType = "3";
 		}else if(account.getType() == 4){
 			role = "主教";
-			userType = "2";
+			userType = "4";
 		}else if(account.getType() == 5){
 			role = "副教";
-			userType = "2";
+			userType = "5";
 		}else if(account.getType() == 6){
 			role = "保育员";
-			userType = "2";
+			userType = "6";
 		}else if(account.getType() == 7){
 			role = "其他";
 		}
@@ -239,27 +243,41 @@ public class KindergartenTeacherAction extends FtpImgDownUploadAction {
       //验证学校园长，管理人员，教师个数，不能超过个数
         String teacherNumber = SystemConfig.getValue("aj.kindergarten.teacher.number");
         String[] nubs = teacherNumber.split("\\|");
-        if("3".equals(userType)){
-        	//园长
-        	int teacherNum = kindergartenTeacherService.getNumberByType(3);
-        	if(Integer.parseInt(nubs[0]) <= teacherNum){
-        		json.put("success", false);
-                json.put("message", "每个幼儿园最多只能有"+nubs[0]+"个园长");
-                return json.toString();
-        	}
-        }else if("4".equals(userType)){
-        	int teacherNum = kindergartenTeacherService.getNumberByType(4);
-        	if(Integer.parseInt(nubs[1]) <= teacherNum){
-        		json.put("success", false);
-                json.put("message", "每个幼儿园最多只能有"+nubs[1]+"个管理人员");
-                return json.toString();
-        	}
-        }else if("2".equals(userType)){
-        	int teacherNum = kindergartenTeacherService.getNumberByType(2);
-        	if(Integer.parseInt(nubs[2]) <= teacherNum){
-        		json.put("success", false);
-                json.put("message", "每个幼儿园最多只能有"+nubs[2]+"个教师");
-                return json.toString();
+        
+        boolean needValidate = true;
+        if((validate.getType() == 1 || validate.getType() == 2) &&  (account.getType() == 1 || account.getType() == 2) ){
+        	needValidate = false;
+        }
+        if(validate.getType() == account.getType()){
+        	needValidate = false;
+        }
+        if((validate.getType() == 4 || validate.getType() == 5 || validate.getType() == 6) &&  (account.getType() == 4 || account.getType() == 5 || validate.getType() == 6) ){
+        	needValidate = false;
+        }
+        if(needValidate){
+        	
+        	if("2".equals(userType)){
+        		//园长
+        		int teacherNum = kindergartenTeacherService.getNumberByType(3);
+        		if(Integer.parseInt(nubs[0]) <= teacherNum){
+        			json.put("success", false);
+        			json.put("message", "每个幼儿园最多只能有"+nubs[0]+"个园长");
+        			return json.toString();
+        		}
+        	}else if("3".equals(userType)){
+        		int teacherNum = kindergartenTeacherService.getNumberByType(4);
+        		if(Integer.parseInt(nubs[1]) <= teacherNum){
+        			json.put("success", false);
+        			json.put("message", "每个幼儿园最多只能有"+nubs[1]+"个管理人员");
+        			return json.toString();
+        		}
+        	}else if("4".equals(userType) || "5".equals(userType) || "6".equals(userType)){
+        		int teacherNum = kindergartenTeacherService.getNumberByType(2);
+        		if(Integer.parseInt(nubs[2]) <= teacherNum){
+        			json.put("success", false);
+        			json.put("message", "每个幼儿园最多只能有"+nubs[2]+"个教师");
+        			return json.toString();
+        		}
         	}
         }
         
@@ -279,9 +297,7 @@ public class KindergartenTeacherAction extends FtpImgDownUploadAction {
         
       //如果教师手机号已经改变
         KindergartenTeacher info = kindergartenTeacherService.selectByPrimaryKey(account.getId());
-        KindergartenTeacher validate = new KindergartenTeacher();
-        validate.setTel(account.getTel());
-        validate = kindergartenTeacherService.queryTeacherByTel(validate);
+        
         if( !info.getTel().equals(account.getTel())) {
         	 //验证手机号是否已经注册为教师
             if(validate != null && validate.getId() == account.getId()){
@@ -291,17 +307,20 @@ public class KindergartenTeacherAction extends FtpImgDownUploadAction {
             }
         }
        
-        //判断教师的类型是否改变，如果改变，则更新user表的类型
-        if(validate.getType() != account.getType()){
-        	UserInfo user = new UserInfo();
-			user.setType(Integer.parseInt(userType));
-			user.setId(validate.getUserId());
-			userInfoMapper.updateByPrimaryKeySelective(user);
-        }
+        
         
          try {
             int i = kindergartenTeacherService.updateByPrimaryKeySelective(account);
             if(i > 0){
+            	
+            	//判断教师的类型是否改变，如果改变，则更新user表的类型
+                if(validate.getType() != account.getType()){
+                	UserInfo user = new UserInfo();
+        			user.setType(Integer.parseInt(userType));
+        			user.setId(validate.getUserId());
+        			userInfoMapper.updateByPrimaryKeySelective(user);
+                }
+            	
                 json.put("success",true );
                 json.put("message", "编辑成功");
             }else{

@@ -425,7 +425,7 @@ String id = request.getParameter("id");
 	                        </div>
 	                        <div class="form-group col-sm-6"> 
 	               				<div class="col-sm-12" style="margin-left: -20px;margin-top: 8px;">
-				                       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (支持png，大小50k以内) <span id="viewLogo"></span>
+				                       <span id="viewLogo"></span>&nbsp;&nbsp;&nbsp;&nbsp; <span class="help-block m-b-none" style="font-size: 6px;color: lightgray;"> 建议尺寸220x164，大小50K</span> 
 	               				</div>
 						    </div>
                         </div>
@@ -440,7 +440,7 @@ String id = request.getParameter("id");
 						    </div>
 	               			<div class="form-group col-sm-6"> 
 	               				<div class="col-sm-12" style="margin-left: -20px;margin-top: 8px;">
-				                        (支持选择多张jpg，png格式图片，大小100k以内)  <span id="viewShowPic"></span>
+				                       <span id="viewShowPic"></span> &nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 6px;color: lightgray;">支持选择多张jpg，png格式图片，建议尺寸1500x960，大小100k以内</span>
 	               				</div>
 						    </div>
                         </div>

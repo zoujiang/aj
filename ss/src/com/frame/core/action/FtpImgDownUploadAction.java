@@ -202,12 +202,16 @@ public class FtpImgDownUploadAction extends FileDownUploadAction {
 			param.put("ucode", "1111");
 			param.put("userType", userType);
 			jo.put("params", param);
-			String returnStr = HttpClient.doJSONPostMethod(SystemConfig.getValue("qm.app.interface.url"), jo.toString());
-			JSONObject returnJson = JSONObject.parseObject(returnStr);
-			String returnCode =  returnJson.getString("returnCode");
-			if("000000".equals(returnCode)){
-				//注册成功
-				return true;
+			try {
+				String returnStr = HttpClient.doJSONPostMethod(SystemConfig.getValue("qm.app.interface.url"), jo.toString());
+				JSONObject returnJson = JSONObject.parseObject(returnStr);
+				String returnCode =  returnJson.getString("returnCode");
+				if("000000".equals(returnCode)){
+					//注册成功
+					return true;
+				}
+			} catch (Exception e) {
+				log.info("调用接口注册账号异常："+e);
 			}
 		}
 		return false;
