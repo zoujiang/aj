@@ -79,7 +79,7 @@ public class KindergartenPhotoQueryService implements PublishService{
 				JSONObject album = new JSONObject();
 				String sharedate = dateList.get(i).get("sharedate").toString();
 				album.put("photoDate", sharedate);
-				sql = "SELECT p.id,'' descript, p.photo_url, p.video_url, p.dig_num, p.dig_relation_user_id, name photoName, category FROM t_kindergarten_photo p WHERE  p.ALBUM_ID = ? AND SUBSTRING(p.create_time, 1,10) = ? ORDER BY p.create_time DESC";
+				sql = "SELECT p.id,'' descript, p.photo_url, p.video_url, p.dig_num, p.dig_relation_user_id,comment_num, name photoName, category,case when u.id is null then p.create_user else u.nick_name end createUser  FROM t_kindergarten_photo p left join t_user u on p.create_user = u.id WHERE  p.ALBUM_ID = ? AND SUBSTRING(p.create_time, 1,10) = ? ORDER BY p.create_time DESC";
 				List<Map<String, Object>> photoList = baseDAO.getGenericBySQL(sql, new Object[]{albumId, sharedate});
 				JSONArray photoPreDayList = new JSONArray();
 				if(photoList != null && photoList.size()>0){
@@ -92,6 +92,8 @@ public class KindergartenPhotoQueryService implements PublishService{
 						photoDigComments.put("video", (photo.get("video_url") ==null || "".equals(photo.get("video_url")) ? "" : imgUrl+photo.get("video_url")));
 						photoDigComments.put("photoType", photo.get("category"));
 						photoDigComments.put("dig_num", photo.get("dig_num"));
+						photoDigComments.put("commentNum", photo.get("comment_num"));
+						photoDigComments.put("createUser", photo.get("createUser"));
 						String digUsers = photo.get("dig_relation_user_id") == null ? "" : photo.get("dig_relation_user_id").toString();
 						boolean isDig = false;
 						//查询点赞人员信息
@@ -130,7 +132,7 @@ public class KindergartenPhotoQueryService implements PublishService{
 								"  ru.NICK_NAME replyUserNickName,"+
 								"  c.REPLY_COMMENT_ID replayCommentId "+
 								"	FROM "+
-								"  t_comment c "+
+								"  t_kindergarten_photo_comment c "+
 								"  LEFT JOIN t_user ru "+
 								"    ON ru.id = c.REPLY_USER_ID,"+
 								"  t_user u "+
@@ -140,13 +142,6 @@ public class KindergartenPhotoQueryService implements PublishService{
 								"	LIMIT 0, 3 ";
 						List<Map<String, Object>> commentList =baseDAO.getGenericBySQL(sql, new Object[]{photo.get("id")});
 						photoDigComments.put("cmtList", commentList);
-						sql= "SELECT "+
-								" count(1) num "+
-								"	FROM "+
-								"  t_comment c "+
-								"  where c.PHOTO_ID = ?";
-						int commentNum = baseDAO.getGenericCountToSQL(sql, new Object[]{photo.get("id")});
-						photoDigComments.put("commentNum", commentNum);
 						photoPreDayList.add(photoDigComments);
 					}
 					album.put("photoList", photoPreDayList);

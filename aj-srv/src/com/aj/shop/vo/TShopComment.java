@@ -23,6 +23,7 @@ public class TShopComment implements java.io.Serializable {
 	private String cmtTime;
 	private Integer status;
 	private String cmtShopId;
+	private Integer shopType;
 
 	// Constructors
 
@@ -133,6 +134,14 @@ public class TShopComment implements java.io.Serializable {
 
 	public void setCmtShopId(String cmtShopId) {
 		this.cmtShopId = cmtShopId;
+	}
+	@Column(name = "shop_type")
+	public Integer getShopType() {
+		return shopType;
+	}
+
+	public void setShopType(Integer shopType) {
+		this.shopType = shopType;
 	}
 
 }

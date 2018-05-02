@@ -5,9 +5,7 @@
 
 package com.aj.kindergarten.service;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -16,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.aj.kindergarten.vo.TKindergartenAlbum;
 import com.aj.kindergarten.vo.TKindergartenGrade;
+import com.aj.kindergarten.vo.TKindergartenInfo;
 import com.aj.kindergarten.vo.TKindergartenPhoto;
 import com.aj.kindergarten.vo.TKindergartenStudent;
 import com.frame.core.constant.FtpConstant;
@@ -63,17 +62,17 @@ public class KindergartenPhotoMgrService implements PublishService{
 		returnJSON.put("serviceName", serviceName);
 		JSONObject result = new JSONObject();
 
-        String re = checkParam(params, new String[]{"userId", "photoUrl", "ownerId","type", "oper"});
-		if(re != null){
-			returnJSON.put("returnCode", Constant.RETURNCODE_FAILED);
-			returnJSON.put("result", result);
-			returnJSON.put("errorMsg", re +"不能为空！");
-			return returnJSON.toString();
-		}
+        
 
 		//TUser user = baseDAO.get(TUser.class, Integer.parseInt( userId));
         if(oper == 1){
-
+        	String re = checkParam(params, new String[]{"userId", "photoUrl", "ownerId","type", "oper"});
+    		if(re != null){
+    			returnJSON.put("returnCode", Constant.RETURNCODE_FAILED);
+    			returnJSON.put("result", result);
+    			returnJSON.put("errorMsg", re +"不能为空！");
+    			return returnJSON.toString();
+    		}
         	
         	TKindergartenAlbum album = new TKindergartenAlbum();
         	album.setType(type);
@@ -107,12 +106,11 @@ public class KindergartenPhotoMgrService implements PublishService{
 				albumList = baseDAO.getGenericByHql("from TKindergartenAlbum where shcoolId=? and gradeId = ? and student =? and currentGradeName = ?", album.getShcoolId(), album.getGradeId(), album.getStudent(), currentClass);
 				gradeId = student.getGradeId();
 			}
-			
+			TKindergartenInfo kinder = baseDAO.get(TKindergartenInfo.class, kindergartenId);
 			//查询是否已经有相册生成
 			JSONArray ja = null;
 			String imgUrl= SystemConfig.getValue("img.http.url");
 			photoUrl = photoUrl.replaceAll(imgUrl, "");
-			String albumUrl = "";
 			try {
 				ja = JSONArray.fromObject(photoUrl);
 				if(ja.size() ==0){
@@ -120,14 +118,6 @@ public class KindergartenPhotoMgrService implements PublishService{
 					returnJSON.put("result", result);
 					returnJSON.put("errorMsg", "photoUrl不能为空");
 					return returnJSON.toString();
-				}else{
-					for(int i=0;i < ja.size(); i ++){
-						JSONObject jo = JSONObject.fromObject(ja.get(i));
-						if(jo.optInt("category") == 1){
-							albumUrl = jo.optString("photoUrl");
-							break;
-						}
-					}
 				}
 			} catch (Exception e) {
 				returnJSON.put("returnCode", Constant.RETURNCODE_FAILED);
@@ -138,7 +128,7 @@ public class KindergartenPhotoMgrService implements PublishService{
 			if(albumList == null || albumList.size() == 0){
 				album.setAlbumDesc("");
 				album.setAlbumName(currentClass);
-				album.setAlbumUrl(albumUrl);
+				album.setAlbumUrl(kinder.getLogo());
 				album.setCreateTime(DateUtil.now());
 				album.setCreateUser(userId);
 				album.setGradeId(gradeId);
@@ -174,6 +164,15 @@ public class KindergartenPhotoMgrService implements PublishService{
 			returnJSON.put("errorMsg", "");
 			return returnJSON.toString();
         }else if(oper == 2){
+        	
+        	String re = checkParam(params, new String[]{"userId", "photoId", "oper"});
+    		if(re != null){
+    			returnJSON.put("returnCode", Constant.RETURNCODE_FAILED);
+    			returnJSON.put("result", result);
+    			returnJSON.put("errorMsg", re +"不能为空！");
+    			return returnJSON.toString();
+    		}
+        	
         	if(photoId == null || photoId == 0){
         		returnJSON.put("returnCode", Constant.RETURNCODE_FAILED);
     			returnJSON.put("result", result);

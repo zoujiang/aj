@@ -31,7 +31,7 @@ public class TKindergartenPhoto  implements java.io.Serializable {
      private Integer commentNum;
      private String name;
      private String ownerId;
-     private String digRelationUerId;
+     private String digRelationUserId;
      private Integer gradeId;
      private Integer kindergartenId;
 
@@ -191,12 +191,12 @@ public class TKindergartenPhoto  implements java.io.Serializable {
     }
 
     @Column(name="dig_relation_user_id",  length=1000)
-    public String getDigRelationUerId() {
-        return digRelationUerId;
+    public String getDigRelationUserId() {
+        return digRelationUserId;
     }
 
-    public void setDigRelationUerId(String digRelationUerId) {
-        this.digRelationUerId = digRelationUerId;
+    public void setDigRelationUserId(String digRelationUserId) {
+        this.digRelationUserId = digRelationUserId;
     }
     @Column(name="grade_id")
 	public Integer getGradeId() {

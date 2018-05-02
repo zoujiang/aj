@@ -1,10 +1,8 @@
-package com.aj.shop.service;
+package com.aj.kindergarten.service;
 
 import java.util.Date;
 
 import javax.annotation.Resource;
-
-import net.sf.json.JSONObject;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
@@ -18,15 +16,17 @@ import com.frame.ifpr.service.PublishService;
 import com.util.Constant;
 import com.util.UUIDUtil;
 
+import net.sf.json.JSONObject;
+
 
 /**
- *5.7.6发布影楼评价
+ *5.7.6发布幼儿园评价
  * */
 
-@Service("shopCommentPush")
-public class ShopCommentPushService implements PublishService{
+@Service("kindergartenCommentPush")
+public class KindergartenCommentPushService implements PublishService{
 
-	private Logger log = Logger.getLogger(ShopCommentPushService.class);
+	private Logger log = Logger.getLogger(KindergartenCommentPushService.class);
 	
 	@Resource
 	private GenericDAO baseDAO;
@@ -39,7 +39,7 @@ public class ShopCommentPushService implements PublishService{
 		String serviceName = json.optString("serviceName");
 		JSONObject params = json.optJSONObject("params");
 		String userId = params.optString("userId");
-		String shopId = params.optString("shopId");
+		String kindergartenId = params.optString("kindergartenId");
 		String content = params.optString("content");
 		String imgUrl = params.optString("imgUrl");
 		String score = params.optString("score");
@@ -54,10 +54,10 @@ public class ShopCommentPushService implements PublishService{
 			return returnJSON.toString();
 		}
 		
-		if(shopId == null || "".equals(shopId)){
+		if(kindergartenId == null || "".equals(kindergartenId)){
 			returnJSON.put("returnCode", Constant.RETURNCODE_FAILED);
 			returnJSON.put("result", result);
-			returnJSON.put("errorMsg", "shopId为空！");
+			returnJSON.put("errorMsg", "kindergartenId为空！");
 			return returnJSON.toString();
 		}
 		if( (content == null || "".equals(content)) && (imgUrl == null || "".equals(imgUrl))){
@@ -75,12 +75,12 @@ public class ShopCommentPushService implements PublishService{
 			cmtImgs = imgUrl.replaceAll(SystemConfig.getValue("clear.img.http.url"), "");
 		}
 		cmt.setCmtImg(cmtImgs);
-		cmt.setCmtShopId(shopId);
+		cmt.setCmtShopId(kindergartenId);
 		cmt.setCmtTime(DateUtil.dateFromat(new Date(), DateUtil.DATE_TIME_PATTERN2));
 		cmt.setCmtUserId(userId);
 		cmt.setScore(score != null ? Integer.parseInt(score) : null);
 		cmt.setStatus(0);
-		cmt.setShopType(0);
+		cmt.setShopType(1);
 		baseDAO.save(cmt);
 		
 		result.put("successMsg", "发布成功");

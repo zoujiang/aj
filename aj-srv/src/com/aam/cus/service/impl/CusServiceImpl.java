@@ -3,6 +3,8 @@ package com.aam.cus.service.impl;
 import java.io.UnsupportedEncodingException;
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -333,7 +335,28 @@ public class CusServiceImpl implements PublishService,CusService{
 		uor.setAjNo(tcs.get(0).getAjNo());
 		uor.setIsVip(tcs.get(0).getIsVip());
 		uor.setVipExpiredDate(tcs.get(0).getVipExpiredDate());
-		uor.setType(tcs.get(0).getType());
+		if(tcs.get(0).getVipExpiredDate() == null || "".equals(tcs.get(0).getVipExpiredDate())){
+			uor.setIsVip(1);
+		}else{
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+			try {
+				if(format.parse(tcs.get(0).getVipExpiredDate()).before(new Date())){
+					uor.setIsVip(1);
+				}else{
+					uor.setIsVip(0);
+				}
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+		}
+		int userType = 1;
+		if(tcs.get(0).getType() == 2){
+			userType =2;
+		}else if(tcs.get(0).getType() == 4 || tcs.get(0).getType() == 5){
+			userType =3;
+		}
+		uor.setType(userType);
+		
 		if(users.size() > 1){
 			uor.setFlag("1");
 		}else{

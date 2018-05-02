@@ -155,7 +155,7 @@ public class UserAction extends BaseAction {
 			messageModel.setMessage("2");
 			logBizOprService.saveLog("用户管理", "4", "用户登陆(用户账号:" + userAccount + ",登陆结果:用户未启用" + ")", null, null,userAccount);
 
-		}else if(userInfo.getShopId() == null || "".equals(userInfo.getShopId())){
+		}else if(userInfo.getShopId() == null || "".equals(userInfo.getShopId()) || !"4".equals(userInfo.getAccountType())){
 			//ms系统只能商户管理员登陆
 			messageModel.setResult(false);
 			messageModel.setMessage("2");

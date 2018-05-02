@@ -48,7 +48,7 @@ public class TaskRewardExchangeHistoryService implements PublishService{
 		}
 
 		String hsql = "from TKindergartenTaskInfo where userId =? order by taskDate desc";
-		List<TKindergartenTaskInfo> taskInfoList =baseDAO.getGenericByPosition(hsql, Integer.parseInt( userId), pageSize * currentPage, pageSize);
+		List<TKindergartenTaskInfo> taskInfoList =baseDAO.getGenericByPosition(hsql, pageSize * currentPage, pageSize, Integer.parseInt( userId));
 		result.put("succMsg", "查询成功");
 		result.put("list", taskInfoList);
 		returnJSON.put("result", result);

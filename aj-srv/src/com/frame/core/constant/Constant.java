@@ -15,4 +15,5 @@ public class Constant {
 	public static final String EditType = "editType";//1 新建 2 修改 3 详情 4 复制
 	public static String resPath = (String) SystemConfig.getValue("ftp.res.path.root");
 	public static String photoZipDownloadAddress = (String) SystemConfig.getValue("aj.photo.zip.download.address");
+	public static String kindergartenPhotoZipDownloadAddress = (String) SystemConfig.getValue("aj.kindergarten.photo.zip.download.address");
 }

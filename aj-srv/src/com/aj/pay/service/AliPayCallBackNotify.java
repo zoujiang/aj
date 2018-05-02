@@ -144,7 +144,7 @@ public class AliPayCallBackNotify implements PublishService{
 				if(user != null){
 					if(user.getVipExpiredDate() == null || "".equals(user.getVipExpiredDate())){
 						int second = (int) (System.currentTimeMillis() /1000 + (pack.getPackageDays() * 24 * 60 * 60));
-						user.setVipExpiredDate(format.format(second));
+						user.setVipExpiredDate(format.format(second* 1000L));
 						user.setIsVip(1);
 						baseDAO.update(user);
 					}else{
@@ -153,13 +153,13 @@ public class AliPayCallBackNotify implements PublishService{
 							if(format.parse(expiredDate).getTime() < (int) (System.currentTimeMillis()/ 1000)){
 								//过期时间小于当前时间，那么过期时间从今天开始
 								int second = (int) (System.currentTimeMillis() /1000 + (pack.getPackageDays() * 24 * 60 * 60));
-								user.setVipExpiredDate(format.format(second));
+								user.setVipExpiredDate(format.format(second* 1000L));
 								user.setIsVip(1);
 								baseDAO.update(user);
 							}else{
 								//在原过期时间上累加
-								int second = (int) (format.parse(expiredDate).getTime() + (pack.getPackageDays() * 24 * 60 * 60));
-								user.setVipExpiredDate(format.format(second));
+								int second = (int) (format.parse(expiredDate).getTime() /1000 + (pack.getPackageDays() * 24 * 60 * 60));
+								user.setVipExpiredDate(format.format(second* 1000L));
 								user.setIsVip(1);
 								baseDAO.update(user);
 							}

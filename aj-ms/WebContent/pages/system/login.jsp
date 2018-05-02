@@ -96,10 +96,12 @@ background: #18c8f6;
   	        		  			  location.href="${ctx}/pages/system/index.jsp"
   	        		  		//});
 	        		  		} else {
+	        		  			$("#regMsg").text("登录失败，请输入正确的账号及密码");
+	        		  			$("#account").focus();
 	        		  			//showMsg("登录失败，请输入正确的账号及密码", 5);
-		        		  		layer.msg("登录失败，请输入正确的账号及密码", {time:20,title:'提示', btn: ['确定'],icon: 6}, function(){
-		        		  			$("#account").focus();
-		        		  		});
+		        		  		//layer.msg("登录失败，请输入正确的账号及密码", {time:20,title:'提示', btn: ['确定'],icon: 6}, function(){
+		        		  	//		$("#account").focus();
+		        		  	//	});
 	        		  		}
 	        		  		
 	        		  	}
@@ -129,6 +131,7 @@ background: #18c8f6;
                 <div class="form-group">
                     <input name="pwd" id="pwd"  type="password" class="form-control" placeholder="密码" required="true">
                 </div>
+                <div  id="regMsg"></div>
                 <button type="submit" class="btn btn-primary block full-width m-b">登 录</button>
                 </p>
 

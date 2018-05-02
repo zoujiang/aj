@@ -67,7 +67,7 @@ public class KindergartenGradeZoneService implements PublishService{
 		List<Map<String, Object>> honorZone = new ArrayList<Map<String, Object>>();
 		TKindergartenAlbum album = baseDAO.get(TKindergartenAlbum.class, albumId);
 		//照片/视频
-		String sql = "SELECT p.id photoId,p.name name, p.category category, p.photo_url photoUrl, p.video_url videoUrl,  p.dig_num digNum, p.dig_relation_user_id, p.comment_num commentNum FROM t_kindergarten_photo p WHERE  p.ALBUM_ID = ? AND type = 2  ORDER BY p.create_time DESC limit ?";
+		String sql = "SELECT p.id photoId,p.name name, p.category category, p.photo_url photoUrl, p.video_url videoUrl,  p.dig_num digNum, p.dig_relation_user_id, p.comment_num commentNum FROM t_kindergarten_photo p WHERE  p.ALBUM_ID = ?   ORDER BY p.create_time DESC limit ?";
 		photoList = baseDAO.getGenericBySQL(sql, new Object[]{album.getId(), classLimit});
 		if(photoList != null && photoList.size()>0){
 			for(int j=0;j<photoList.size();j++){
@@ -95,7 +95,7 @@ public class KindergartenGradeZoneService implements PublishService{
 		}
 		//留言板
 		List<Map<String, Object>> messageBoard = baseDAO.getGenericBySQL("SELECT message_id messageId, message_content messageContent, message_tye messageType, create_time createTime ," +
-				"m.user_type userType,m.user_id userId,  CASE WHEN user_type != 8 THEN (SELECT CASE TYPE WHEN 1 THEN '园长' WHEN 2 THEN '副园长' ELSE NAME END NAME FROM t_kindergarten_teacher t WHERE t.id = m.user_id)  ELSE (SELECT f.family_name FROM t_user u, t_family_info f WHERE u.familyid = f.id AND u.id = m.user_id) END messageNickName " +
+				"m.user_type userType,m.user_id userId,  CASE WHEN user_type != 8 THEN (SELECT CASE TYPE WHEN 1 THEN '园长' WHEN 2 THEN '副园长' ELSE NAME END NAME FROM t_kindergarten_teacher t WHERE t.user_id = m.user_id)  ELSE (SELECT f.family_name FROM t_user u, t_family_info f WHERE u.familyid = f.id AND u.id = m.user_id) END messageNickName " +
 				"FROM t_kindergarten_message_board m WHERE album_id = ? limit 0, 4", new Object[]{albumId});
 		for(Map<String, Object> mb : messageBoard){
 			if(mb.get("userType") != null && !"8".equals(mb.get("userType").toString())){

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import com.aam.model.TUser;
 import com.aj.kindergarten.vo.TKindergartenAlbumVisible;
 import com.frame.core.dao.GenericDAO;
+import com.frame.core.util.EncryptUtils;
 import com.frame.core.util.SystemConfig;
 import com.frame.ifpr.exception.PublicException;
 import com.frame.ifpr.service.PublishService;
@@ -63,7 +64,7 @@ public class KindergartenAlbumListService implements PublishService{
 		}
 		phones = phones.substring(0, phones.length() -1);
 
-		String sql = "select s.kindergarten_id kindergartenId, i.`name` kindergartenName, i.logo logo, s.grade_id gradeId, s.name studentName, s.id studentId, g.series from `t_kindergarten_student`  s, `t_kindergarten_info` i, `t_kindergarten_grade` g where s.`kindergarten_id` = i.id and s.grade_id = g.id and  s.`parents_tel` in ("+ phones +") ";
+		String sql = "select s.kindergarten_id kindergartenId, i.`name` kindergartenName, i.logo logo, i.service_tel, s.grade_id gradeId, s.name studentName, s.id studentId, g.series from `t_kindergarten_student`  s, `t_kindergarten_info` i, `t_kindergarten_grade` g where s.`kindergarten_id` = i.id and s.grade_id = g.id and  s.`parents_tel` in ("+ phones +") ";
 		List<Map<String, Object>> kinderpratenList = baseDAO.getGenericBySQL(sql, null);
         List<Map<String, Object>> kdList = new ArrayList<Map<String, Object>>();
 		for(Map<String, Object> kd : kinderpratenList){
@@ -73,12 +74,14 @@ public class KindergartenAlbumListService implements PublishService{
 			String gradeId = kd.get("gradeId").toString();
 			String studentName = kd.get("studentName").toString();
 			String studentId = kd.get("studentId").toString();
+			String serviceTel = kd.get("service_tel").toString();
 			String series = kd.get("series").toString();   //入学年
-			String logo = kd.get("logo") == null ? "" : imgUrl + kd.get("logo").toString() ;
+		//	String logo = kd.get("logo") == null ? "" : imgUrl + kd.get("logo").toString() ;
 			Map<String, Object> albumInfo = new HashMap<String, Object>();
             String kdName = kindergartenName +"("+ series +"级"+studentName+")";
 			albumInfo.put("kindergartenId", kindergartenId);
 			albumInfo.put("kindergartenName", kdName);
+			albumInfo.put("kindergartenServiceTel", serviceTel);
 			albumInfo.put("studentId", studentId);
 
 			//查询相册
@@ -98,7 +101,11 @@ public class KindergartenAlbumListService implements PublishService{
 				
 				temp.put("albumDesc", album.get(""));
 				temp.put("albumType", album.get("type"));
-				temp.put("downloadUrl", (album.get("download_url") == null || "".equals(album.get("download_url"))) ? "" : resUrl+ album.get("download_url"));
+				
+				
+				String id_encode = EncryptUtils.getInstance().base64_encode(album.get("id")+"");
+				
+				temp.put("downloadUrl", com.frame.core.constant.Constant.kindergartenPhotoZipDownloadAddress +"?"+ id_encode);
 				temp.put("downloadSecret", album.get("download_secret"));
 				//班级照片数量为 班级照片数 + 个人照片数
 				String sql1 = "select id from t_kindergarten_album a where a.shcool_id = ? and a.grade_id = ?  and a.type = 2 and student = ? and current_grade_name =?";

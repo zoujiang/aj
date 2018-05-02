@@ -1,31 +1,31 @@
-package com.aj.shop.service;
+package com.aj.kindergarten.service;
 
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
-import net.sf.json.JSONObject;
-
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
-import com.aj.shop.vo.TShopInfo;
+import com.aj.kindergarten.vo.TKindergartenInfo;
 import com.frame.core.dao.GenericDAO;
 import com.frame.core.util.SystemConfig;
 import com.frame.ifpr.exception.PublicException;
 import com.frame.ifpr.service.PublishService;
 import com.util.Constant;
 
+import net.sf.json.JSONObject;
+
 
 /**
- *5.7.7影楼评价列表查询
+ *幼儿园评价列表查询
  * */
 
-@Service("shopCommentList")
-public class ShopCommentListService implements PublishService{
+@Service("kindergartenCommentList")
+public class KindergartenCommentListService implements PublishService{
 
-	private Logger log = Logger.getLogger(ShopCommentListService.class);
+	private Logger log = Logger.getLogger(KindergartenCommentListService.class);
 	
 	@Resource
 	private GenericDAO baseDAO;
@@ -38,7 +38,7 @@ public class ShopCommentListService implements PublishService{
 		String serviceName = json.optString("serviceName");
 		JSONObject params = json.optJSONObject("params");
 		String userId = params.optString("userId");
-		String shopId = params.optString("shopId");
+		String kindergartenId = params.optString("kindergartenId");
 		String pageSize = params.optString("pageSize");
 		String currentPage = params.optString("currentPage");
 		
@@ -52,10 +52,10 @@ public class ShopCommentListService implements PublishService{
 			return returnJSON.toString();
 		}
 		
-		if(shopId == null || "".equals(shopId)){
+		if(kindergartenId == null || "".equals(kindergartenId)){
 			returnJSON.put("returnCode", Constant.RETURNCODE_FAILED);
 			returnJSON.put("result", result);
-			returnJSON.put("errorMsg", "shopId为空！");
+			returnJSON.put("errorMsg", "kindergartenId为空！");
 			return returnJSON.toString();
 		}
 		if(pageSize == null || "".equals(pageSize)){
@@ -71,15 +71,15 @@ public class ShopCommentListService implements PublishService{
 			return returnJSON.toString();
 		}
 		
-		TShopInfo shop = baseDAO.get(TShopInfo.class, shopId);
+		TKindergartenInfo shop = baseDAO.get(TKindergartenInfo.class, Integer.parseInt(kindergartenId) );
 		
 		JSONObject shopInfo = new JSONObject();
 		shopInfo.put("shopId", shop.getId());
-		shopInfo.put("shopName", shop.getShopName());
+		shopInfo.put("shopName", shop.getName());
 		String showPics = "";
 		String imgPrefix = SystemConfig.getValue("img.http.url");
-		if(shop.getShowPic() != null && !"".equals(shop.getShowPic())){
-			String[] pics = shop.getShowPic().split(",");
+		if(shop.getShowPics() != null && !"".equals(shop.getShowPics())){
+			String[] pics = shop.getShowPics().split(",");
 			for(int i= 0; i< pics.length ; i++){
 				if(i == 0){
 					showPics = imgPrefix + pics[i];
@@ -92,8 +92,8 @@ public class ShopCommentListService implements PublishService{
 		shopInfo.put("shopLogo", (shop.getLogo() != null && !"".equals(shop.getLogo())) ? (imgPrefix+ shop.getLogo()) : "" );
 		result.put("shopInfo", shopInfo);
 		
-		String sql = "SELECT u.id cmtUserId, u.PHOTO cmtUserPhoto, u.NICK_NAME cmtUserNickName, c.cmt_content cmtContent, c.cmt_img cmtImgUrl, c.score cmtScore, c.cmt_time cmtDate FROM t_shop_comment c, t_user u WHERE c.cmt_user_id = u.ID AND c.cmt_shop_id = ? AND c.status = 0 AND c.shop_type = 0 ORDER BY c.cmt_time DESC";
-		List<Map<String, Object>> cmtList = baseDAO.getGenericByPositionToSQL(sql,Integer.parseInt(currentPage) * Integer.parseInt(pageSize), Integer.parseInt(pageSize), new Object[]{shopId});
+		String sql = "SELECT u.id cmtUserId, u.PHOTO cmtUserPhoto, u.NICK_NAME cmtUserNickName, c.cmt_content cmtContent, c.cmt_img cmtImgUrl, c.score cmtScore, c.cmt_time cmtDate FROM t_shop_comment c, t_user u WHERE c.cmt_user_id = u.ID AND c.cmt_shop_id = ? AND c.status = 0  AND c.shop_type =1 ORDER BY c.cmt_time DESC";
+		List<Map<String, Object>> cmtList = baseDAO.getGenericByPositionToSQL(sql,Integer.parseInt(currentPage) * Integer.parseInt(pageSize), Integer.parseInt(pageSize), new Object[]{kindergartenId});
 		if(cmtList != null && cmtList.size() > 0){
 			for(Map<String, Object> cmt : cmtList){
 				if(cmt.get("cmtUserPhoto") != null && !"".equals(cmt.get("cmtUserPhoto").toString())){

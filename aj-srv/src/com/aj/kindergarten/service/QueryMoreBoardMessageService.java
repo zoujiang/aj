@@ -56,7 +56,7 @@ public class QueryMoreBoardMessageService implements PublishService{
 		
 		//留言板
 		List<Map<String, Object>> messageBoard = baseDAO.getGenericBySQL("SELECT message_id messageId, message_content messageContent, message_tye messageType, create_time createTime ," +
-				"m.user_type userType,m.user_id userId,  CASE WHEN user_type != 8 THEN (SELECT CASE TYPE WHEN 1 THEN '园长' WHEN 2 THEN '副园长' ELSE NAME END NAME FROM t_kindergarten_teacher t WHERE t.id = m.user_id)  ELSE (SELECT f.family_name FROM t_user u, t_family_info f WHERE u.familyid = f.id AND u.id = m.user_id) END messageNickName " +
+				"m.user_type userType,m.user_id userId,  CASE WHEN user_type != 8 THEN (SELECT CASE TYPE WHEN 1 THEN '园长' WHEN 2 THEN '副园长' ELSE NAME END NAME FROM t_kindergarten_teacher t WHERE t.user_id = m.user_id)  ELSE (SELECT f.family_name FROM t_user u, t_family_info f WHERE u.familyid = f.id AND u.id = m.user_id) END messageNickName " +
 				"FROM t_kindergarten_message_board m WHERE album_id = ? order by create_time desc limit ?, ?", new Object[]{albumId, pageSize * currentPage , pageSize});
 		for(Map<String, Object> mb : messageBoard){
 			

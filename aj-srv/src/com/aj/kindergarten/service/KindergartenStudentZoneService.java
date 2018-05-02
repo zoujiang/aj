@@ -76,6 +76,7 @@ public class KindergartenStudentZoneService implements PublishService{
 		List<Map<String, Object>> honorZone = new ArrayList<Map<String, Object>>();
 		if(albumList != null && albumList.size() > 0){
 			TKindergartenAlbum album = albumList.get(0);
+			result.put("albumId", album.getId());
 			//照片/视频
 			String sql = "SELECT p.id photoId,p.name name, p.category category, p.photo_url photoUrl, p.video_url videoUrl,  p.dig_num digNum, p.dig_relation_user_id, p.comment_num commentNum FROM t_kindergarten_photo p WHERE  p.ALBUM_ID = ? AND type = 2  ORDER BY p.create_time DESC limit ?";
 			photoList = baseDAO.getGenericBySQL(sql, new Object[]{album.getId(), classLimit});

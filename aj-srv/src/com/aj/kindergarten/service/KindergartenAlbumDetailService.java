@@ -65,6 +65,7 @@ public class KindergartenAlbumDetailService implements PublishService{
 		}
 		//班级返回6个照片或视频   个人返回9个照片或视频
 		int classLimit = 6;
+		TUser user = baseDAO.get(TUser.class, Integer.parseInt(userId));
 		TKindergartenAlbum album = baseDAO.get(TKindergartenAlbum.class, albumId);
 		TKindergartenGrade grade = baseDAO.get(TKindergartenGrade.class, album.getGradeId());
 		TKindergartenStudent student = baseDAO.get(TKindergartenStudent.class, studentId);
@@ -75,7 +76,7 @@ public class KindergartenAlbumDetailService implements PublishService{
 		gradeInfo.put("gradeName", grade.getSeries()+"级"+student.getName()+ album.getAlbumName());
 		result.put("gradeInfo",gradeInfo);
 		List<Map<String, Object>> photoList = new ArrayList<Map<String,Object>>();
-		String sql = "SELECT p.id photoId,p.name name, p.category category, p.photo_url photoUrl, p.video_url videoUrl,  p.dig_num digNum, p.dig_relation_user_id, p.comment_num commentNum FROM t_kindergarten_photo p WHERE  p.ALBUM_ID = ?   ORDER BY p.create_time DESC limit ?";
+		String sql = "SELECT p.id photoId,p.name name, p.category category, p.photo_url photoUrl, p.video_url videoUrl,  p.dig_num digNum, p.dig_relation_user_id, p.comment_num commentNum, case when u.id is null then p.create_user else u.nick_name end createUser FROM t_kindergarten_photo p left join t_user u on p.create_user = u.id WHERE  p.ALBUM_ID = ?   ORDER BY p.create_time DESC limit ?";
 		Integer aId = null;
 		if(type == 1){
 			//班级
@@ -92,6 +93,7 @@ public class KindergartenAlbumDetailService implements PublishService{
 				aId = generAlbumId;
 			}
 		}
+		result.put("albumId", aId);
 		if(aId != null){
 			
 			photoList = baseDAO.getGenericBySQL(sql, new Object[]{aId, classLimit});
@@ -126,7 +128,7 @@ public class KindergartenAlbumDetailService implements PublishService{
 		if(type == 1){
 			//留言板
 			List<Map<String, Object>> messageBoard = baseDAO.getGenericBySQL("SELECT message_id messageId, message_content messageContent, message_tye messageType, create_time createTime ," +
-					"m.user_type userType,m.user_id userId,  CASE WHEN user_type != 8 THEN (SELECT CASE TYPE WHEN 1 THEN '园长' WHEN 2 THEN '副园长' ELSE NAME END NAME FROM t_kindergarten_teacher t WHERE t.id = m.user_id)  ELSE (SELECT f.family_name FROM t_user u, t_family_info f WHERE u.familyid = f.id AND u.id = m.user_id) END messageNickName " +
+					"m.user_type userType,m.user_id userId,  CASE WHEN user_type != 8 THEN (SELECT CASE TYPE WHEN 1 THEN '园长' WHEN 2 THEN '副园长' ELSE NAME END NAME FROM t_kindergarten_teacher t WHERE t.user_id = m.user_id)  ELSE (SELECT f.family_name FROM t_user u, t_family_info f WHERE u.familyid = f.id AND u.id = m.user_id) END messageNickName " +
 					"FROM t_kindergarten_message_board m WHERE album_id = ? order by create_time desc  limit 0, 4", new Object[]{albumId});
 			for(Map<String, Object> mb : messageBoard){
 				
@@ -160,12 +162,13 @@ public class KindergartenAlbumDetailService implements PublishService{
 			result.put("messageBoard", messageBoard);
 
 			//班级成员
+			List<Map<String, Object>> classTeacher = new ArrayList<Map<String, Object>>();
 			List<Map<String, Object>> classMember = new ArrayList<Map<String, Object>>();
 			if(grade != null){
 				//查询学校园长信息
 				 sql = "SELECT id memberId,CASE TYPE  WHEN  1 THEN '园长' WHEN 2 THEN '副园长' WHEN 3 THEN '管理人员'  END memberNickName, CASE WHEN photo is not null THEN  CONCAT('"+imgUrl+"', photo) ELSE '' END memberPhoto , 0 isVip FROM t_kindergarten_teacher t WHERE kindergarten_id = ? AND TYPE IN (1, 2, 3) ORDER BY TYPE ";
 				List<Map<String, Object>>  mgrMember =	baseDAO.getGenericBySQL(sql , new Object[]{grade.getKindergartenId()});
-				classMember.addAll(mgrMember);
+				classTeacher.addAll(mgrMember);
 				//查询班级老师信息
 
 				int firstTeacher = grade.getFirstTeacher();
@@ -177,11 +180,12 @@ public class KindergartenAlbumDetailService implements PublishService{
 					teachers += ","+grade.getNurse();
 				}
 				if(teachers != null && !"".equals(teachers)){
-					sql = "SELECT id memberId,CASE TYPE  WHEN  1 THEN '园长' WHEN 2 THEN '副园长' WHEN 3 THEN '管理人员' WHEN 4 THEN '主教' WHEN 5 THEN '副教' WHEN 6 THEN '保育员' WHEN 7 THEN '其他'  END memberNickName, CASE WHEN photo is not null THEN  CONCAT('"+imgUrl+"', photo) ELSE '' END memberPhoto , 0 isVip FROM t_kindergarten_teacher WHERE id IN ("+ teachers +")";
+					sql = "SELECT id memberId,CASE TYPE  WHEN  1 THEN '园长' WHEN 2 THEN '副园长' WHEN 3 THEN '管理人员' WHEN 4 THEN '主教' WHEN 5 THEN '副教' WHEN 6 THEN '保育员' WHEN 7 THEN '其他'  END memberNickName, CASE WHEN photo is not null THEN  CONCAT('"+imgUrl+"', photo) ELSE '' END memberPhoto , 1 isVip FROM t_kindergarten_teacher WHERE id IN ("+ teachers +")";
 					List<Map<String, Object>>  teacherMember =	baseDAO.getGenericBySQL(sql , null);
-					classMember.addAll(teacherMember);
+					classTeacher.addAll(teacherMember);
 				}
 			}
+			result.put("classTeacher", classTeacher);
 			//查询家长信息
 		/*	sql = "SELECT f.id memberId, f.`family_name` memberNickName, u.`IS_VIP` isVip FROM t_user u , t_kindergarten_student s, t_family_info f WHERE u.`USERTEL` = s.`parents_tel` AND u.`FAMILYID` = f.`id` AND s.`grade_id` = ?";
 			List<Map<String, Object>> parentsFamilyList = baseDAO.getGenericBySQL(sql , new Object[]{grade.getId()});
@@ -223,13 +227,13 @@ public class KindergartenAlbumDetailService implements PublishService{
 			
 			result.put("classMember", classMember);
 			//班级通知
-			sql = "SELECT n.id noticeId, n.notice_content noticeContent,n.status noticeStatus, CASE WHEN t.`photo` IS NOT NULL AND t.`photo` !=''  THEN CONCAT( '"+imgUrl+"',t.`photo`) ELSE '' END reportUserPhoto, t.`name` reportUserNickName FROM t_kindergarten_notice n LEFT JOIN t_kindergarten_teacher t ON n.`report_user_id` = t.`id` WHERE grade_id = ?";
-			List<Map<String, Object>> classNotice = baseDAO.getGenericBySQL(sql, new Object[]{grade.getId()});
+			sql = "SELECT n.id noticeId, n.notice_content noticeContent,n.status noticeStatus, CASE WHEN t.`photo` IS NOT NULL AND t.`photo` !=''  THEN CONCAT( '"+imgUrl+"',t.`photo`) ELSE '' END reportUserPhoto, t.`name` reportUserNickName FROM t_kindergarten_notice n LEFT JOIN t_kindergarten_teacher t ON n.`report_user_id` = t.`id` WHERE grade_id = ? and receive_user_family_id = ? order by report_time desc";
+			List<Map<String, Object>> classNotice = baseDAO.getGenericBySQL(sql, new Object[]{grade.getId(), user.getFamilyId()});
 			result.put("classNotice",classNotice);
 		}
 
 		//荣誉专区
-		sql = "SELECT id honorId, CASE WHEN ( photo_url IS NOT NULL AND photo_url !='' ) THEN  CONCAT('"+imgUrl+"',photo_url) ELSE '' END  honorUrl, create_time createTime,NAME honorName FROM t_kindergarten_honor WHERE album_id = ?";
+		sql = "SELECT h.id honorId, CASE WHEN ( h.photo_url IS NOT NULL AND h.photo_url !='' ) THEN  CONCAT('"+imgUrl+"',h.photo_url) ELSE '' END  honorUrl, h.create_time createTime,NAME honorName, case when u.id is null then h.create_user else u.nick_name end createUser FROM t_kindergarten_honor h left join t_user u on h.create_user = u.id WHERE h.album_id = ?";
 		List<Map<String, Object>> honorZone = new ArrayList<Map<String, Object>>();
 		if(aId != null){
 			honorZone = baseDAO.getGenericBySQL(sql, new Object[]{aId});
