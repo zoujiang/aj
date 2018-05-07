@@ -17,7 +17,7 @@ import org.apache.commons.net.ftp.FTPReply;
 
 import com.frame.core.constant.FtpConstant;
 
-public class FtpUtil {
+public class FtpUtil2 {
 	private FTPClient ftpClient = null;
 	private String hostname;
 	private int port;
@@ -27,7 +27,7 @@ public class FtpUtil {
 
 	// 构造方法
 
-	public FtpUtil(String hostname, int port, String username, String password,
+	public FtpUtil2(String hostname, int port, String username, String password,
 			String remoteDir) {
 		this(hostname, port, username, password);
 		if (remoteDir == null) {
@@ -35,7 +35,7 @@ public class FtpUtil {
 		}
 	}
 
-	public FtpUtil(String hostname, int port, String username, String password) {
+	public FtpUtil2(String hostname, int port, String username, String password) {
 		this.hostname = hostname;
 		this.port = port;
 		this.username = username;

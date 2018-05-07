@@ -155,7 +155,7 @@ if(roleId == null || "".equals(roleId)){
 					$("#btn_save").attr("disabled", false);
 					return false;
 				}
-				if(leftNum > totalNum){
+				if(leftNum - totalNum > 0){
 					layer.msg("兑换券剩余份数不能大于兑换券总份数", {title:'提示', btn: ['确定'],icon: 6}, function(index){
 					});
 					$("#btn_save").attr("disabled", false);

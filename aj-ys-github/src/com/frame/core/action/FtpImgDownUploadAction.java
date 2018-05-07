@@ -13,8 +13,6 @@ import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
-import net.coobird.thumbnailator.Thumbnails;
-
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -24,6 +22,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.alibaba.fastjson.JSONObject;
 import com.frame.core.constant.FtpConstant;
+import com.frame.core.util.FileUtil;
 import com.frame.core.util.FtpUtil;
 import com.frame.core.util.GUID;
 import com.frame.core.util.HttpClient;
@@ -31,6 +30,8 @@ import com.frame.core.util.SystemConfig;
 import com.frame.core.vo.MessageModel;
 import com.frame.ifpr.vo.ThumbnailsVo;
 import com.qm.shop.customer.service.ShopCustomerService;
+
+import net.coobird.thumbnailator.Thumbnails;
 
 /**
  * FTP文件（单文件和多文件）上传,下载 的Action基类
@@ -67,7 +68,7 @@ public class FtpImgDownUploadAction extends FileDownUploadAction {
 		fileName = fileName.substring(fileName.lastIndexOf("\\") + 1);
 		String DBPath = "";// 数据库路径
 		String sDBPath = "";// 数据库路径
-		FtpUtil ftp = null;
+	//	FtpUtil ftp = null;
 		if (StringUtils.isNotEmpty(module)) {
 			if (StringUtils.isNotEmpty(fileName)) {
 				String unique = String.valueOf(System.currentTimeMillis());
@@ -76,13 +77,14 @@ public class FtpImgDownUploadAction extends FileDownUploadAction {
 				//modify by xuec 上传文件名修改 end
 				DBPath = "/" + module+"/"+fileName; //    不能这个路径/upload/wod
 				sDBPath = "/" + module+"/s"+fileName;
-				ftp=new FtpUtil(ftpAddress, Integer.parseInt(port), username, password);
+	//			ftp=new FtpUtil(ftpAddress, Integer.parseInt(port), username, password);
 				boolean flag = false;
 				boolean sflag = false;
 				try {
-					ftp.login();
+		//			ftp.login();
 					log.info("fileUpload("+module+","+file+") -  start");
-					flag = ftp.upload(file.getInputStream(), path + DBPath);
+		//			flag = ftp.upload(file.getInputStream(), path + DBPath);
+					flag = FileUtil.writeToLocal(path + DBPath, file.getInputStream());
 					if(SystemConfig.getValue("pic.needSmall.module").contains(module) && 
 							SystemConfig.getValue("pic.needSmall.module.filetype").indexOf(imageSuffix.toLowerCase()) > 0){
 						log.info("fileUpload("+module+","+file+") - small start");
@@ -93,7 +95,8 @@ public class FtpImgDownUploadAction extends FileDownUploadAction {
 						thumbnailsVo.setFileType(imageSuffix);
 						BufferedImage bufferedImage=Thumbnails.of(file.getInputStream()).size(thumbnailsVo.getSmallWidth(),thumbnailsVo.getSmallHeigth()).outputFormat(imageSuffix).keepAspectRatio(false).outputQuality(1.0f).asBufferedImage();
 						InputStream inputsamall=getImageStream(bufferedImage,imageSuffix);
-						sflag = ftp.upload(inputsamall, path + sDBPath);
+			//			sflag = ftp.upload(inputsamall, path + sDBPath);
+						sflag = FileUtil.writeToLocal(path + sDBPath, inputsamall);
 						log.info("fileUpload("+module+","+file+") - small end");
 						return sDBPath;
 					}
@@ -104,7 +107,7 @@ public class FtpImgDownUploadAction extends FileDownUploadAction {
 					e.printStackTrace();
 					throw new FileUploadException("FTP上传文件出错");
 				} finally{
-					ftp.closeServer();
+				//	ftp.closeServer();
 				}
 				if (!flag) {
 					log.error("FTP文件上传失败");

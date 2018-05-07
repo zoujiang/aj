@@ -15,6 +15,7 @@ import org.apache.commons.net.ftp.FTPFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.frame.core.constant.FtpConstant;
+import com.frame.core.util.FileUtil;
 import com.frame.core.util.FtpUtil;
 import com.frame.core.util.SystemConfig;
 import com.frame.core.vo.MessageModel;
@@ -46,22 +47,23 @@ public class FtpFileDownUploadAction extends FileDownUploadAction {
 		}
 		fileName = fileName.substring(fileName.lastIndexOf("\\") + 1);
 		String DBPath = "";// 数据库路径
-		FtpUtil ftp = null;
+	//	FtpUtil ftp = null;
 		if (StringUtils.isNotEmpty(module)) {
 			if (StringUtils.isNotEmpty(fileName)) {
 				String unique = String.valueOf(System.currentTimeMillis());
 				fileName = unique + fileName;
 				DBPath = "/" + module+"/"+fileName; // 不能这个路径/upload/wod
-				ftp=new FtpUtil(ftpAddress, Integer.parseInt(port), username, password);
+	//			ftp=new FtpUtil(ftpAddress, Integer.parseInt(port), username, password);
 				boolean flag = false;
 				try {
-					ftp.login();
-					flag = ftp.upload(file.getInputStream(), path + DBPath);
+		//			ftp.login();
+		//			flag = ftp.upload(file.getInputStream(), path + DBPath);
+					flag = FileUtil.writeToLocal(path + DBPath, file.getInputStream());
 				} catch (Exception e) {
 					log.error(e.getMessage());
 					throw new FileUploadException("FTP上传文件出错");
 				} finally{
-					ftp.closeServer();
+				//	ftp.closeServer();
 				}
 				if (!flag) {
 					log.error("FTP文件上传失败");

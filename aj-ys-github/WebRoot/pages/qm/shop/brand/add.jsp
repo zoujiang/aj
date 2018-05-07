@@ -91,9 +91,9 @@ if(roleId == null || "".equals(roleId)){
 								<label class="col-sm-4 control-label">类型：</label>
 								<div class="col-sm-7">
 									<select class="form-control" name="type">
-										<option  value="1">像馆</option>
+										<option  value="1">相馆</option>
 										<option  value="2">幼儿园</option>
-										<option  value="3">券商</option>
+										<option  value="3">卡券</option>
 									</select>
 								</div>
 							</div>

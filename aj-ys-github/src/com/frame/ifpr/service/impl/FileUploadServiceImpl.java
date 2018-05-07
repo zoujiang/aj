@@ -8,21 +8,21 @@ import java.io.InputStream;
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageOutputStream;
 
-import net.coobird.thumbnailator.Thumbnails;
-import net.sf.json.JSONObject;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
-import com.frame.core.util.FtpUtil;
+import com.frame.core.util.FileUtil;
 import com.frame.core.util.SystemConfig;
 import com.frame.ifpr.service.FileUploadService;
 import com.frame.ifpr.vo.FileUploadResultVo;
 import com.frame.ifpr.vo.ResponseVo;
 import com.frame.ifpr.vo.ThumbnailsVo;
+
+import net.coobird.thumbnailator.Thumbnails;
+import net.sf.json.JSONObject;
 
 /**
  * 上传文件的业务实现类
@@ -51,7 +51,7 @@ public class FileUploadServiceImpl implements FileUploadService {
 		}
 		//if(jsonObject == null || "".equals(jsonObject.getString("params")) 
 		//JSONObject jsonParams=JSONObject.fromObject(jsonObject.getString("params"));
-		FtpUtil ftp = null;
+	//	FtpUtil ftp = null;
 		long size = file.getSize();
 		 log.info("fileUpload----uploadsize:"+size);
 		String bigSize = (String) SystemConfig.getValue("clt.upload.size");
@@ -111,19 +111,21 @@ public class FileUploadServiceImpl implements FileUploadService {
 		smallFileName=fileName+"_small";
 		ftpPath = path + "/"+imgPath+"/"; // 不能这个路径/upload/wod
 		try{
-		ftp=new FtpUtil(ftpAddress, Integer.parseInt(port), username, password);
-		ftp.login();
+	//	ftp=new FtpUtil(ftpAddress, Integer.parseInt(port), username, password);
+	//	ftp.login();
 		/*
 		if(!ftp.isDirExist(ftpPath)){
 			 log.info("创建FTP目录" + ftpPath);
 			ftp.createDir(ftpPath);
 		}*/
-		boolean flag = ftp.upload(file.getInputStream(), ftpPath+fileName+"."+imageType);
+	//	boolean flag = ftp.upload(file.getInputStream(), ftpPath+fileName+"."+imageType);
+		boolean flag = FileUtil.writeToLocal(ftpPath+fileName+"."+imageType, file.getInputStream());
 		boolean smallFlag = false;
 		if(isNeedSmall){
 			BufferedImage bufferedImage=Thumbnails.of(file.getInputStream()).size(thumbnailsVo.getSmallWidth(),thumbnailsVo.getSmallHeigth()).outputFormat(imageType).keepAspectRatio(false).outputQuality(1.0f).asBufferedImage();
 			InputStream inputsamall=getImageStream(bufferedImage,imageType);
-			smallFlag = ftp.upload(inputsamall,ftpPath+smallFileName+"."+imageType);
+		//	smallFlag = ftp.upload(inputsamall,ftpPath+smallFileName+"."+imageType);
+			FileUtil.writeToLocal(ftpPath+smallFileName+"."+imageType, inputsamall);
 		}
 	    log.info(ftpPath+fileName+"."+imageType + "上传成功?" + flag);
 	    log.info(ftpPath+smallFileName+"."+imageType + "上传成功?" + smallFlag);
@@ -146,7 +148,7 @@ public class FileUploadServiceImpl implements FileUploadService {
 			final String mesg="FTP上传文件错误！";
 			throw new Exception(mesg);
 		}finally{
-			ftp.closeServer();
+		//	ftp.closeServer();
 		}
 		log.debug("fileUpload----service:"+jsonObject+"---------------end");
 		return responseVo;

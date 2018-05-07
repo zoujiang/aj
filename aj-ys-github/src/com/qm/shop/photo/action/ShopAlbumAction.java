@@ -1,10 +1,7 @@
 package com.qm.shop.photo.action;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.Map;
-
-import net.sf.json.JSONObject;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +15,14 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import com.frame.core.action.FtpImgDownUploadAction;
 import com.frame.core.constant.FtpConstant;
 import com.frame.core.util.DateUtil;
-import com.frame.core.util.FtpUtil;
+import com.frame.core.util.FileUtil;
 import com.frame.core.util.GUID;
 import com.frame.core.util.SystemConfig;
 import com.frame.core.vo.DataModel;
 import com.qm.shop.album.service.ShopAlbumService;
 import com.qm.shop.album.vo.ShopAlbumVO;
+
+import net.sf.json.JSONObject;
 
 
 //@Controller
@@ -91,7 +90,7 @@ public class ShopAlbumAction extends FtpImgDownUploadAction {
 		album.setUserId(userId);
 		album.setShopId(shopId);
 		if(photoUrls != null && !"".equals(photoUrls)){
-			FtpUtil ftp = new FtpUtil(ftpAddress, port, username, password);
+	//		FtpUtil ftp = new FtpUtil(ftpAddress, port, username, password);
 			String[] urls = photoUrls.split(",");
 			StringBuffer newUrls = new StringBuffer();
 			for(String url : urls){
@@ -100,8 +99,9 @@ public class ShopAlbumAction extends FtpImgDownUploadAction {
 				newUrls.append("/"+ shopId +"/"+ userId + url.replace(tempPath+"/", ""));
 				newUrls.append(",");
 				try {
-					ftp.login();
-					ftp.move(targetUrl , resourceUrl);
+	//				ftp.login();
+		//			ftp.move(targetUrl , resourceUrl);
+					FileUtil.move(targetUrl, resourceUrl);
 				} catch (Exception e) {
 					logger.info("移动文件失败。。。源地址："+resourceUrl +"---目标地址："+targetUrl);
 				}

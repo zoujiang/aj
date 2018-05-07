@@ -21,7 +21,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.frame.core.action.FtpImgDownUploadAction;
 import com.frame.core.constant.FtpConstant;
 import com.frame.core.util.DateUtil;
-import com.frame.core.util.FtpUtil;
+import com.frame.core.util.FileUtil;
 import com.frame.core.util.SystemConfig;
 import com.frame.system.vo.UserExtForm;
 import com.qm.entities.WorksShow;
@@ -113,19 +113,20 @@ public class WorksShowAction extends FtpImgDownUploadAction {
 			fileName = fileName.substring(fileName.lastIndexOf("\\") + 1);
 			DBPath = "";
 			
-			FtpUtil ftp = null;
+	//		FtpUtil ftp = null;
 			module = "kindergarten";
 			if (StringUtils.isNotEmpty(module)) {
 				if (StringUtils.isNotEmpty(fileName)) {
 					String unique = String.valueOf(System.currentTimeMillis()) + new Random().nextInt(10);
 					fileName = unique+"." + imageSuffix;
 					DBPath = "/" + module+"/"+fileName; //    不能这个路径/upload/wod
-					ftp=new FtpUtil(ftpAddress, Integer.parseInt(port), username, password);
+		//			ftp=new FtpUtil(ftpAddress, Integer.parseInt(port), username, password);
 					boolean flag = false;
 					try {
-						ftp.login();
+		//				ftp.login();
 						log.info("fileUpload("+module+","+file+","+SystemConfig.getValue("pic.needSmall.module.filetype")+") -  start");
-						flag = ftp.upload(file.getInputStream(), path + DBPath);
+		//				flag = ftp.upload(file.getInputStream(), path + DBPath);
+						flag = FileUtil.writeToLocal(path + DBPath, file.getInputStream());
 						int category = 1;
 						//判断文件是否为视频
 						if(BatchFileUploadAction.isVedioFile(fileName)){
@@ -151,7 +152,7 @@ public class WorksShowAction extends FtpImgDownUploadAction {
 						e.printStackTrace();
 						throw new FileUploadException("FTP上传文件出错");
 					} finally{
-						ftp.closeServer();
+					//	ftp.closeServer();
 					}
 					if (!flag) {
 						log.error("FTP文件上传失败");

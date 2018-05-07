@@ -95,11 +95,11 @@
                     title: '类型',
                     formatter:function(value, row, index){
                         if(value == 1){
-                            return "像馆";
+                            return "相馆";
                         }else if(value == 2){
                             return "幼儿园";
                         } else if(value == 3){
-                            return "券商"
+                            return "卡券"
                         }
                     }
                 }, {

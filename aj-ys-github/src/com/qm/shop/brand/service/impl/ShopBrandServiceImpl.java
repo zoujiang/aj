@@ -28,12 +28,17 @@ public class ShopBrandServiceImpl  implements ShopBrandService{
 		
 		String sql = "select id, brand_name, sort_index, status, brand_icon, type, is_recommend from t_shop_brand where 1=1 ";
 		String countSql = "select count(1) from t_shop_brand where 1=1 ";
-		List<String> param = new ArrayList<String>();
+		List<Object> param = new ArrayList<Object>();
 		if(limitKey != null){
 			if(limitKey.getBrandName() != null && !"".equals(limitKey.getBrandName().toString())){
 				sql += " and brand_name like concat ('%',?,'%')";
 				countSql += " and brand_name like concat ('%',?,'%')";
 				param.add(limitKey.getBrandName());
+			}
+			if(limitKey.getType() != null && !"".equals(limitKey.getType().toString())){
+				sql += " and type = ? ";
+				countSql += " and type = ?";
+				param.add(limitKey.getType());
 			}
 		}
 		sql += " order by sort_index ";

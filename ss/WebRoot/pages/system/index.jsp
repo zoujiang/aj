@@ -29,7 +29,7 @@
 			//data = data.children;
 			data = data[0].children;
     	   	$.each(data, function (n, value) {
-    	   		str+="<li class="active">";
+    	   		str+="<li class='active'>";
     		   	str+="<a";
     		   	if(value.children == null || value.children == ""){
     		   		str += " href=\"${ctx}"+value.attributes.href+"?id="+value.code+"\"";

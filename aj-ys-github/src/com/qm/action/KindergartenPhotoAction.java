@@ -1,6 +1,7 @@
 package com.qm.action;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alibaba.fastjson.JSONObject;
 import com.frame.core.action.FtpImgDownUploadAction;
 import com.frame.core.util.EncryptUtils;
+import com.frame.core.util.RandomGUID;
 import com.qm.entities.KindergartenAlbum;
 import com.qm.entities.KindergartenGrade;
 import com.qm.entities.KindergartenPhoto;
@@ -23,6 +25,7 @@ import com.qm.service.KindergartenPhotoService;
 import com.qm.service.KindergartenService;
 import com.qm.service.KindergartenStudentService;
 import com.qm.shop.Constant;
+import com.util.FileZipUtil;
 
 @RestController
 @RequestMapping("/kindergarten/photo")
@@ -77,7 +80,12 @@ public class KindergartenPhotoAction extends FtpImgDownUploadAction{
 		List<KindergartenPhoto> photoList = kindergartenPhotoService.selectByCondition(p);
 		for(KindergartenPhoto photo : photoList){
 			if(photo.getPhotoUrl() != null && !"".equals(photo.getPhotoUrl())){
-				photo.setPhotoUrl(Constant.imgPrefix +photo.getPhotoUrl());
+				String subUrl =  photo.getPhotoUrl().substring(photo.getPhotoUrl().lastIndexOf("/") + 1);
+				if(subUrl.startsWith("s")){
+					photo.setPhotoUrl(Constant.imgPrefix +photo.getPhotoUrl().substring(0, photo.getPhotoUrl().lastIndexOf("/") + 1) + subUrl.substring(1));
+				}else{
+					photo.setPhotoUrl(Constant.imgPrefix +photo.getPhotoUrl());
+				}
 			}
 			if(photo.getVideoUrl() != null && !"".equals(photo.getVideoUrl())){
 				
@@ -89,6 +97,7 @@ public class KindergartenPhotoAction extends FtpImgDownUploadAction{
 		json.put("success", true);
 		return json.toJSONString();
 	}
+	
 	@RequestMapping("/alterPhotoName")
 	public String alterPhotoName(KindergartenPhoto photo){
 		
@@ -110,7 +119,6 @@ public class KindergartenPhotoAction extends FtpImgDownUploadAction{
 		JSONObject json = new JSONObject();
 		json.put("success", false);
 		if(id != null && id > 0){
-			
 			int i = kindergartenPhotoService.deleteByPrimary(id);
 			if(i > 0){
 				json.put("success", true);

@@ -13,9 +13,6 @@ import javax.imageio.stream.ImageOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.coobird.thumbnailator.Thumbnails;
-import net.sf.json.JSONObject;
-
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -30,13 +27,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.frame.core.util.FtpUtil;
+import com.frame.core.util.FileUtil;
 import com.frame.core.util.SystemConfig;
 import com.frame.core.vo.ResultVo;
 import com.frame.ifpr.vo.ErrorVo;
 import com.frame.ifpr.vo.FileUploadResultVo;
 import com.frame.ifpr.vo.ResponseVo;
 import com.frame.ifpr.vo.ThumbnailsVo;
+
+import net.coobird.thumbnailator.Thumbnails;
+import net.sf.json.JSONObject;
 @Controller
 public class DiskFileUploadAction implements ApplicationContextAware{
 		   private ApplicationContext ac;
@@ -85,7 +85,7 @@ public class DiskFileUploadAction implements ApplicationContextAware{
 					}
 					//if(jsonObject == null || "".equals(jsonObject.getString("params")) 
 					//JSONObject jsonParams=JSONObject.fromObject(jsonObject.getString("params"));
-					FtpUtil ftp = null;
+			//		FtpUtil ftp = null;
 					long size = is.available();
 					 System.out.println("upload1111111111111111111>>>" + size);
 
@@ -151,22 +151,24 @@ public class DiskFileUploadAction implements ApplicationContextAware{
 					smallFileName=fileName+"_small";
 					ftpPath = path + "/"+imgPath+"/"; // 不能这个路径/upload/wod
 					try{
-					ftp=new FtpUtil(ftpAddress, Integer.parseInt(port), username, password);
-					ftp.login();
-					 System.out.println("upload1111111111111111111ftp.login>>>" + ftp);
+			//		ftp=new FtpUtil(ftpAddress, Integer.parseInt(port), username, password);
+			//		ftp.login();
+			//		 System.out.println("upload1111111111111111111ftp.login>>>" + ftp);
 
 					/*
 					if(!ftp.isDirExist(ftpPath)){
 						 logger.info("创建FTP目录" + ftpPath);
 						ftp.createDir(ftpPath);
 					}*/
-					boolean flag = ftp.upload(is, ftpPath+fileName+"."+imageType);
+				//	boolean flag = ftp.upload(is, ftpPath+fileName+"."+imageType);
+					boolean flag =FileUtil.writeToLocal(ftpPath+fileName+"."+imageType, is);
 					 System.out.println("upload1111111111111111111flag>>>" + flag);
 					boolean smallFlag = false;
 					if(isNeedSmall){
 						BufferedImage bufferedImage=Thumbnails.of(is).size(thumbnailsVo.getSmallWidth(),thumbnailsVo.getSmallHeigth()).outputFormat(imageType).keepAspectRatio(false).outputQuality(1.0f).asBufferedImage();
 						InputStream inputsamall=getImageStream(bufferedImage,imageType);
-						smallFlag = ftp.upload(inputsamall,ftpPath+smallFileName+"."+imageType);
+					//	smallFlag = ftp.upload(inputsamall,ftpPath+smallFileName+"."+imageType);
+						smallFlag = FileUtil.writeToLocal(ftpPath+smallFileName+"."+imageType, inputsamall);
 					}
 				    logger.info(ftpPath+fileName+"."+imageType + "上传成功?" + flag);
 				    logger.info(ftpPath+smallFileName+"."+imageType + "上传成功?" + smallFlag);
@@ -188,7 +190,7 @@ public class DiskFileUploadAction implements ApplicationContextAware{
 						final String mesg="FTP上传文件错误！";
 						throw new Exception(mesg);
 					}finally{
-						ftp.closeServer();
+					//	ftp.closeServer();
 						is.close();
 					}
 					 System.out.println("XXXXXXXXXXXXXXXXXXXXXX");

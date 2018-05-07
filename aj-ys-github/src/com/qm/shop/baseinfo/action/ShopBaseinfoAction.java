@@ -30,7 +30,7 @@ import com.alibaba.fastjson.JSON;
 import com.frame.core.action.FtpImgDownUploadAction;
 import com.frame.core.util.DateUtil;
 import com.frame.core.util.ExportExcelUtils;
-import com.frame.core.util.FtpUtil;
+import com.frame.core.util.FileUtil;
 import com.frame.core.util.GUID;
 import com.frame.core.vo.DataModel;
 import com.qm.shop.Constant;
@@ -336,22 +336,22 @@ public class ShopBaseinfoAction extends FtpImgDownUploadAction {
 			
 			List<Map<String, Object>> dataList = shopBaseinfoService.getAllDataForExport(shopName);
 			
-			FtpUtil ftp = new FtpUtil(Constant.ftpAddress, Constant.port, Constant.username, Constant.password);
+		//	FtpUtil ftp = new FtpUtil(Constant.ftpAddress, Constant.port, Constant.username, Constant.password);
 			try {
-				ftp.login();
+		//		ftp.login();
 				for(Map<String, Object> data : dataList){
 					String filePath = Constant.path + "/" +data.get("id") ;
 					
-					long size = ftp.getFileSize(filePath);
-					data.put("usedSize", size / (1024 * 1024 * 1024));
-					int count = ftp.getFileCount(filePath);
-					data.put("photoCount", count);
+				//	long size = ftp.getFileSize(filePath);
+					Long[] fileData = FileUtil.getTotalSizeOfFilesInDir(new File(filePath));
+					data.put("usedSize", fileData[0] / (1024 * 1024 * 1024));
+					data.put("photoCount", fileData[1]);
 				}
 			} catch (Exception e1) {
 				logger.info("登录FTP服务器失败！");
 				e1.printStackTrace();
 			}finally{
-				ftp.closeServer();
+			//	ftp.closeServer();
 			}
 			
 			HSSFWorkbook workbook = new ExportExcelUtils().exportExcel2(dataList, headerColumn, fileName);

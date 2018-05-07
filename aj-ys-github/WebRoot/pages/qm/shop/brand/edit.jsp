@@ -126,9 +126,9 @@ String id = request.getParameter("id");
 								<label class="col-sm-4 control-label">类型：</label>
 								<div class="col-sm-7">
 									<select class="form-control" name="type">
-										<option name="type" id="type_1"  value="1">像馆</option>
+										<option name="type" id="type_1"  value="1">相馆</option>
 										<option name="type" id="type_2" value="2">幼儿园</option>
-										<option name="type" id="type_3" value="3">券商</option>
+										<option name="type" id="type_3" value="3">卡券</option>
 									</select>
 								</div>
 							</div>

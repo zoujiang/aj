@@ -27,7 +27,7 @@ import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.ExifDirectoryBase;
 import com.frame.core.action.FtpImgDownUploadAction;
 import com.frame.core.constant.FtpConstant;
-import com.frame.core.util.FtpUtil;
+import com.frame.core.util.FileUtil;
 import com.frame.core.util.SystemConfig;
 
 import net.coobird.thumbnailator.Thumbnails;
@@ -66,20 +66,21 @@ public class BatchImgUploadAction extends FtpImgDownUploadAction{
 			fileName = fileName.substring(fileName.lastIndexOf("\\") + 1);
 			DBPath = "";
 			String sDBPath = "";// 数据库路径
-			FtpUtil ftp = null;
+	//		FtpUtil ftp = null;
 			if (StringUtils.isNotEmpty(module)) {
 				if (StringUtils.isNotEmpty(fileName)) {
 					String unique = String.valueOf(System.currentTimeMillis()) + new Random().nextInt(10);
 					fileName = unique+"." + imageSuffix;
 					DBPath = "/" + module+"/"+fileName; //    不能这个路径/upload/wod
 					sDBPath = "/" + module+"/s"+fileName;
-					ftp=new FtpUtil(ftpAddress, Integer.parseInt(port), username, password);
+	//				ftp=new FtpUtil(ftpAddress, Integer.parseInt(port), username, password);
 					boolean flag = false;
 					boolean sflag = false;
 					try {
-						ftp.login();
+	//					ftp.login();
 						log.info("fileUpload("+module+","+file+","+SystemConfig.getValue("pic.needSmall.module.filetype")+") -  start");
-						flag = ftp.upload(file.getInputStream(), path + DBPath);
+	//					flag = ftp.upload(file.getInputStream(), path + DBPath);
+						flag = FileUtil.writeToLocal(path + DBPath, file.getInputStream());
 						
 						if(from != null && "dynamic".equals(from)){
 							String nDBPath = "/" + module+"/n"+fileName;
@@ -91,13 +92,15 @@ public class BatchImgUploadAction extends FtpImgDownUploadAction{
 				          
 							BufferedImage bufferedImage=zoomImage(file.getInputStream());
 							InputStream inputsamall=getImageStream(bufferedImage,imageSuffix);
-							sflag = ftp.upload(inputsamall, path + nDBPath);
+						//	sflag = ftp.upload(inputsamall, path + nDBPath);
+							sflag = FileUtil.writeToLocal(path + nDBPath, inputsamall);
 							log.info("fileUpload("+module+","+file+") - nomal end");
 						}else if(SystemConfig.getValue("pic.needSmall.module").contains(module) && SystemConfig.getValue("pic.needSmall.module.filetype").indexOf(imageSuffix.toLowerCase()) != -1){
 							log.info("fileUpload("+module+","+file+") - small start");
 							BufferedImage bufferedImage=zoomImage(file.getInputStream(), 0.3f);
 							InputStream inputsamall=getImageStream(bufferedImage,imageSuffix);
-							sflag = ftp.upload(inputsamall, path + sDBPath);
+				//			sflag = ftp.upload(inputsamall, path + sDBPath);
+							sflag = FileUtil.writeToLocal(path + sDBPath, inputsamall);
 							log.info("fileUpload("+module+","+file+") - small end");
 						}
 						
@@ -106,7 +109,7 @@ public class BatchImgUploadAction extends FtpImgDownUploadAction{
 						e.printStackTrace();
 						throw new FileUploadException("FTP上传文件出错");
 					} finally{
-						ftp.closeServer();
+				//		ftp.closeServer();
 					}
 					if (!flag) {
 						log.error("FTP文件上传失败");

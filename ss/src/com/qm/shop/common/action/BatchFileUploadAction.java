@@ -1,9 +1,7 @@
 package com.qm.shop.common.action;
 
+import java.io.File;
 import java.io.IOException;
-import java.net.FileNameMap;
-import java.net.URLConnection;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -13,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.util.TextUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -26,7 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.frame.core.action.FtpImgDownUploadAction;
 import com.frame.core.constant.FtpConstant;
 import com.frame.core.util.DateUtil;
-import com.frame.core.util.FtpUtil;
+import com.frame.core.util.FileUtil;
 import com.frame.core.util.RandomGUID;
 import com.frame.core.util.SystemConfig;
 import com.frame.system.vo.UserExtForm;
@@ -98,19 +95,20 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 			fileName = fileName.substring(fileName.lastIndexOf("\\") + 1);
 			DBPath = "";
 			
-			FtpUtil ftp = null;
+	//		FtpUtil ftp = null;
 			module = "kindergarten";
 			if (StringUtils.isNotEmpty(module)) {
 				if (StringUtils.isNotEmpty(fileName)) {
 					String unique = String.valueOf(System.currentTimeMillis()) + new Random().nextInt(10);
 					fileName = unique+"." + imageSuffix;
 					DBPath = "/" + module+"/"+fileName; //    不能这个路径/upload/wod
-					ftp=new FtpUtil(ftpAddress, Integer.parseInt(port), username, password);
+	//				ftp=new FtpUtil(ftpAddress, Integer.parseInt(port), username, password);
 					boolean flag = false;
 					try {
-						ftp.login();
+		//				ftp.login();
 						log.info("fileUpload("+module+","+file+","+SystemConfig.getValue("pic.needSmall.module.filetype")+") -  start");
-						flag = ftp.upload(file.getInputStream(), path + DBPath);
+			//			flag = ftp.upload(file.getInputStream(), path + DBPath);
+						flag = FileUtil.writeToLocal(path + DBPath, file.getInputStream());
 						int category = 1;
 						//判断文件是否为视频
 						if(isVedioFile(imageSuffix)){
@@ -202,7 +200,7 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 						e.printStackTrace();
 						throw new FileUploadException("FTP上传文件出错");
 					} finally{
-						ftp.closeServer();
+				//		ftp.closeServer();
 					}
 					if (!flag) {
 						log.error("FTP文件上传失败");
@@ -263,7 +261,7 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 		
 	}
 	private void delOldZipFile(String remoteFilePath) {
-		String ftpAddress = (String) SystemConfig.getValue(FtpConstant.FTP_ADDRESS);
+		/*String ftpAddress = (String) SystemConfig.getValue(FtpConstant.FTP_ADDRESS);
 		String username = (String) SystemConfig.getValue(FtpConstant.USERNAME);
 		String password = (String) SystemConfig.getValue(FtpConstant.PASSWORD);
 		String port = (String) SystemConfig.getValue(FtpConstant.PORT);
@@ -274,7 +272,10 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 			ftp.delFile(remoteFilePath);
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
+		}*/
+		
+		File file = new File(remoteFilePath);
+		file.delete();
 		
 	}
 	

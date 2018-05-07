@@ -9,18 +9,13 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import net.coobird.thumbnailator.Thumbnails;
-import net.sf.json.JSONObject;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
@@ -32,12 +27,15 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.frame.core.util.FtpUtil;
+import com.frame.core.util.FileUtil;
 import com.frame.core.util.SystemConfig;
 import com.frame.ifpr.util.JsonUtil;
 import com.frame.ifpr.vo.FileUploadResultVo;
 import com.frame.ifpr.vo.ResponseVo;
 import com.frame.ifpr.vo.ThumbnailsVo;
+
+import net.coobird.thumbnailator.Thumbnails;
+import net.sf.json.JSONObject;
 
 public class MultFileUploadAction {
 	   protected Log logger=LogFactory.getLog(MultFileUploadAction.class);
@@ -104,7 +102,7 @@ public class MultFileUploadAction {
 	  
 	  private String saveFiles(JSONObject jsonObject,List<FileItem> files) throws  Exception{
 		  StringBuffer rtnpath = new StringBuffer();
-		  FtpUtil ftp = null;
+		//  FtpUtil ftp = null;
 		  String ftpAddress = (String) SystemConfig.getValue(FTP_ADDRESS);
 			String username = (String) SystemConfig.getValue(USERNAME);
 			String password = (String) SystemConfig.getValue(PASSWORD);
@@ -113,8 +111,8 @@ public class MultFileUploadAction {
 			String imgUrl= null;
 			
 			try{
-			ftp=new FtpUtil(ftpAddress, Integer.parseInt(port), username, password);
-			ftp.login();
+	//		ftp=new FtpUtil(ftpAddress, Integer.parseInt(port), username, password);
+	//		ftp.login();
 			
 		  for(FileItem file:files){
 			long size = file.getSize();
@@ -185,12 +183,14 @@ public class MultFileUploadAction {
 				 log.info("创建FTP目录" + ftpPath);
 				ftp.createDir(ftpPath);
 			}*/
-			boolean flag = ftp.upload(file.getInputStream(), ftpPath+fileName+"."+imageType);
+	//		boolean flag = ftp.upload(file.getInputStream(), ftpPath+fileName+"."+imageType);
+			boolean flag = FileUtil.writeToLocal(ftpPath+fileName+"."+imageType, file.getInputStream());
 			boolean smallFlag = false;
 			if(isNeedSmall){
 				BufferedImage bufferedImage=Thumbnails.of(file.getInputStream()).size(thumbnailsVo.getSmallWidth(),thumbnailsVo.getSmallHeigth()).outputFormat(imageType).keepAspectRatio(false).outputQuality(1.0f).asBufferedImage();
 				InputStream inputsamall=getImageStream(bufferedImage,imageType);
-				smallFlag = ftp.upload(inputsamall,ftpPath+smallFileName+"."+imageType);
+				//smallFlag = ftp.upload(inputsamall,ftpPath+smallFileName+"."+imageType);
+				smallFlag = FileUtil.writeToLocal(ftpPath+smallFileName+"."+imageType, inputsamall);
 			}
 			logger.info(ftpPath+fileName+"."+imageType + "上传成功?" + flag);
 			logger.info(ftpPath+smallFileName+"."+imageType + "上传成功?" + smallFlag);
@@ -210,7 +210,7 @@ public class MultFileUploadAction {
 				final String mesg="FTP上传文件错误！";
 				throw new Exception(mesg);
 			}finally{
-				ftp.closeServer();
+			//	ftp.closeServer();
 			}
 			logger.debug("fileUpload----service:"+jsonObject+"---------------end");
 			if(rtnpath.length() > 0)rtnpath.deleteCharAt(rtnpath.length() - 1);

@@ -1,10 +1,10 @@
 package com.frame.core.service.impl;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 import javax.servlet.http.HttpServletResponse;
-
-import net.coobird.thumbnailator.Thumbnails;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -12,9 +12,10 @@ import org.springframework.stereotype.Service;
 
 import com.frame.core.constant.FtpConstant;
 import com.frame.core.service.ImageExeService;
-import com.frame.core.util.FtpUtil;
 import com.frame.core.util.SystemConfig;
 import com.frame.core.vo.PreviewImageVo;
+
+import net.coobird.thumbnailator.Thumbnails;
 /**     
  * 
  * @author：caiwen    
@@ -47,23 +48,35 @@ public class ImageExeServiceImpl implements ImageExeService {
 			  
 		  }
 		  OutputStream outputStream=response.getOutputStream();
-		  FtpUtil ftp = null;
+		//  FtpUtil ftp = null;
 		  try{	
 			//开启ftp
-			ftp=new FtpUtil(ftpAddress, Integer.parseInt(port), username, password);
-			ftp.login();
+		//	ftp=new FtpUtil(ftpAddress, Integer.parseInt(port), username, password);
+		//	ftp.login();
 			if("3".equals(previewImageVo.getViewType())){
-			  InputStream in =ftp.getFtpClient().retrieveFileStream(path+newImagepath);
+			 // InputStream in =ftp.getFtpClient().retrieveFileStream(path+newImagepath);
+			  InputStream in =new FileInputStream(new File(path+newImagepath));
 			 Thumbnails.of(in).size(Integer.parseInt(previewImageVo.getWidth()),Integer.parseInt(previewImageVo.getHeigth())).outputFormat(suffixImage(newImagepath)).keepAspectRatio(false).outputQuality(1.0f)
 			 .toOutputStream(outputStream);
 			}else{
-			ftp.getFtpClient().retrieveFile(path+newImagepath, outputStream);
+				//ftp.getFtpClient().retrieveFile(path+newImagepath, outputStream);
+				File afile = new File(path+newImagepath);  
+		        InputStream it = new FileInputStream(afile);  
+
+				byte flush[]  = new byte[1024];  
+		        int len = 0;  
+		        while(0<=(len=it.read(flush))){  
+		        	outputStream.write(flush, 0, len);  
+		        }  
+		        //关闭流的注意 先打开的后关  
+		        outputStream.close();  
+		        it.close();  
 			}
 		  } catch (Exception e) {
 			 logger.error(e.getMessage(), e);
 		  }finally{
-		    if(null!=ftp)
-			ftp.closeServer();
+		   // if(null!=ftp)
+			//ftp.closeServer();
 		  }
 			logger.debug("getImageAsByte("+previewImageVo+")"+"--------- end");
 		    return outputStream;

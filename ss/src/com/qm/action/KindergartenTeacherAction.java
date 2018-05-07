@@ -266,9 +266,7 @@ public class KindergartenTeacherAction extends FtpImgDownUploadAction {
       //验证学校园长，管理人员，教师个数，不能超过个数
         String teacherNumber = SystemConfig.getValue("aj.kindergarten.teacher.number");
         String[] nubs = teacherNumber.split("\\|");
-        KindergartenTeacher validate = new KindergartenTeacher();
-        validate.setTel(account.getTel());
-        validate = kindergartenTeacherService.queryTeacherByTel(validate);
+        KindergartenTeacher validate = kindergartenTeacherService.selectByPrimaryKey(account.getId());
         
         boolean needValidate = true;
         if((validate.getType() == 1 || validate.getType() == 2) &&  (account.getType() == 1 || account.getType() == 2) ){
@@ -319,19 +317,20 @@ public class KindergartenTeacherAction extends FtpImgDownUploadAction {
             }
         }
         //如果教师手机号已经改变
-        KindergartenTeacher info = kindergartenTeacherService.selectByPrimaryKey(account.getId());
         
-        if( !info.getTel().equals(account.getTel())) {
+        if( !validate.getTel().equals(account.getTel())) {
+        	
+        	KindergartenTeacher t = new KindergartenTeacher();
+        	t.setTel(account.getTel());
+        	KindergartenTeacher teacher = kindergartenTeacherService.queryTeacherByTel(t);
+        	
         	 //验证手机号是否已经注册为教师
-            if(validate != null && validate.getId() == account.getId()){
+            if(teacher != null){
             	 json.put("success", false);
                  json.put("message", "该联系电话已经注册为幼儿园教师，编辑失败");
                  return json.toString();
             }
         }
-        
-       
-       
         
          try {
             int i = kindergartenTeacherService.updateByPrimaryKeySelective(account);

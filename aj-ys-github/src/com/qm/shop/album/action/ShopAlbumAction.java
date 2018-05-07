@@ -3,9 +3,9 @@ package com.qm.shop.album.action;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -14,8 +14,6 @@ import java.util.Random;
 
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageOutputStream;
-
-import net.sf.json.JSONObject;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +29,7 @@ import com.frame.core.action.FtpImgDownUploadAction;
 import com.frame.core.constant.FtpConstant;
 import com.frame.core.util.DateUtil;
 import com.frame.core.util.EncryptUtils;
-import com.frame.core.util.FtpUtil;
+import com.frame.core.util.FileUtil;
 import com.frame.core.util.GUID;
 import com.frame.core.util.HttpClient;
 import com.frame.core.util.RandomGUID;
@@ -48,6 +46,8 @@ import com.qm.shop.photo.service.ShopAlbumPhotoService;
 import com.qm.shop.photo.vo.ShopAlbumPhotoDO;
 import com.util.FileZipUtil;
 import com.util.WaterMarkUtil;
+
+import net.sf.json.JSONObject;
 
 
 @Controller
@@ -158,16 +158,17 @@ public class ShopAlbumAction extends FtpImgDownUploadAction {
 		long usedSize = 0;
 		boolean isPay = albumType != null && "1".equals(albumType);  //收费
 		if(photoUrls != null && !"".equals(photoUrls)){
-			FtpUtil ftp = new FtpUtil(ftpAddress, port, username, password);
+		//	FtpUtil ftp = new FtpUtil(ftpAddress, port, username, password);
 			String[] urls = photoUrls.split(",");
 			List<String> targetUrls = new ArrayList<String>();
 			try {
-				ftp.login();
+		//		ftp.login();
 				for(String url : urls){
 					String resourceUrl = path + url;
 					String waterFileName =  url.substring(url.lastIndexOf("/")+1, url.length());
 					String waterMarkUrl = resourceUrl.replace(waterFileName, "w"+waterFileName);
-					long size = ftp.getFileSize(resourceUrl);
+				//	long size = ftp.getFileSize(resourceUrl);
+					long size = FileUtil.getTotalSizeOfFilesInDir(new File(resourceUrl))[0];
 					usedSize += size;
 					//如果相册为收费相册，计算占用的空间,同时生成水印图
 					if(isPay){
@@ -198,7 +199,7 @@ public class ShopAlbumAction extends FtpImgDownUploadAction {
 			} catch (Exception e) {
 				//	logger.info("移动文件失败。。。源地址："+resourceUrl +"---目标地址："+targetUrl);
 			}finally{
-				ftp.closeServer();
+			//	ftp.closeServer();
 			}
 		}
 		album.setAlbumSize(usedSize);
@@ -353,9 +354,9 @@ public class ShopAlbumAction extends FtpImgDownUploadAction {
 		album.setUserId(userId);
 		album.setShopId(shopId);
 		album.setPhotoTime(photoTime);
-		FtpUtil ftp = new FtpUtil(ftpAddress, port, username, password);
+	//	FtpUtil ftp = new FtpUtil(ftpAddress, port, username, password);
 		try {
-			ftp.login();
+	//		ftp.login();
 			
 		} catch (Exception e) {
 			logger.info("登录FTP失败");
@@ -369,20 +370,22 @@ public class ShopAlbumAction extends FtpImgDownUploadAction {
 			String[] urls = photoUrls.split(",");
 			for(String url : urls){
 				String resourceUrl = path + url;
-				addFileSize += ftp.getFileSize(resourceUrl);
+				//addFileSize += ftp.getFileSize(resourceUrl);
+				addFileSize += FileUtil.getTotalSizeOfFilesInDir(new File(resourceUrl))[0];
 			}
 		}
 		//从FTP删除 本次编辑删掉的图片，如果有变化，重新生成压缩包
 		long delFileSize = 0;
 		if(albumType != null && "0".equals(albumType)){
-			delFileSize = moveImgFormFtp(oldAlbumInfo, photoUrls, oldPhotoUrls, ftp, shopId, userId, albumName, album);
+			delFileSize = moveImgFormFtp(oldAlbumInfo, photoUrls, oldPhotoUrls, shopId, userId, albumName, album);
 		}else{
-			delFileSize = moveImgFormFtp(id, oldPhotoUrls, ftp);
+			delFileSize = moveImgFormFtp(id, oldPhotoUrls);
 			//删除压缩包
 			if(oldAlbumInfo.get("downloadAddress") != null && !"".equals(oldAlbumInfo.get("downloadAddress"))){
 				
 				String resPath =Constant.resPath + oldAlbumInfo.get("downloadAddress");
-				ftp.delFile(resPath);
+				//	ftp.delFile(resPath);
+				new File(resPath).delete();
 			}
 			album.setDownloadAddress("");
 			album.setDownloadSecret("");
@@ -403,7 +406,8 @@ public class ShopAlbumAction extends FtpImgDownUploadAction {
 				long leftFileSize = 0; 
 				String[] oldUrls = oldPhotoUrls.split(",");
 				for(String u : oldUrls){
-					leftFileSize += ftp.getFileSize(Constant.path+ u);
+					//leftFileSize += ftp.getFileSize(Constant.path+ u);
+					leftFileSize += new File(Constant.path+ u).length();
 				}
 				changeSize = delFileSize + leftFileSize; //删除的＋剩下的＝ 全部旧相片的大小 
 			}
@@ -415,7 +419,8 @@ public class ShopAlbumAction extends FtpImgDownUploadAction {
 				long leftFileSize = 0; 
 				String[] oldUrls = oldPhotoUrls.split(",");
 				for(String u : oldUrls){
-					leftFileSize += ftp.getFileSize(Constant.path+ u);
+					//leftFileSize += ftp.getFileSize(Constant.path+ u);
+					leftFileSize += new File(Constant.path+ u).length();
 				}
 				//原相册照片加水印
 				addWaterMark(shopLogo, oldPhotoUrls);
@@ -428,7 +433,7 @@ public class ShopAlbumAction extends FtpImgDownUploadAction {
 				//现相册不收费，那么使用空间没有变化
 			}
 		}
-		ftp.closeServer();	
+	//	ftp.closeServer();	
 		logger.info("生成水印完成～～更新相册信息");
 		int i = shopAlbumService.update(album);
 		String hixStr = photoUrls+"," + oldPhotoUrls;
@@ -469,16 +474,16 @@ public class ShopAlbumAction extends FtpImgDownUploadAction {
 		JSONObject modelMap = new JSONObject();
 		int i = shopAlbumService.del(id);
 		
-		FtpUtil ftp = new FtpUtil(ftpAddress, port, username, password);
+	//	FtpUtil ftp = new FtpUtil(ftpAddress, port, username, password);
 		try {
-			ftp.login();
+		//	ftp.login();
 		} catch (Exception e1) {
 			logger.info("移动文件失败,登录FTP失败");
 			e1.printStackTrace();
 		}
 		if(i > 0){
 			//从FTP删除图片文件
-			moveImgFormFtp(id, "", ftp);
+			moveImgFormFtp(id, "");
 			
 			modelMap .put("success", true);
 			modelMap.put("message", "删除成功");
@@ -728,17 +733,17 @@ public class ShopAlbumAction extends FtpImgDownUploadAction {
 		album.setTemplateId(templateId);
 		album.setUserId(userId);
 		album.setShopId(shopId);
-		FtpUtil ftp = new FtpUtil(ftpAddress, port, username, password);
+	//	FtpUtil ftp = new FtpUtil(ftpAddress, port, username, password);
 		//String[] urls = photoUrls.split(",");
 		try {
-			ftp.login();
+	//		ftp.login();
 		} catch (Exception e1) {
 			logger.info("移动文件失败,登录FTP失败");
 			e1.printStackTrace();
 		}
 		//从FTP删除 本次编辑删掉的图片
 		oldPhotoUrls = oldPhotoUrls.replaceAll("shopAlbum/n", "shopAlbum/");
-		moveImgFormFtp(id, oldPhotoUrls, ftp);
+		moveImgFormFtp(id, oldPhotoUrls);
 		
 		/*StringBuffer newUrls = new StringBuffer();
 		if(photoUrls != null && !"".equals(photoUrls)){
@@ -755,7 +760,7 @@ public class ShopAlbumAction extends FtpImgDownUploadAction {
 				}
 			}
 		}*/
-		ftp.closeServer();
+	//	ftp.closeServer();
 		int i = shopDynamicAlbumService.update(album);
 		if(!"".equals(photoUrls) && !photoUrls.endsWith(",")){
 			photoUrls = photoUrls +",";
@@ -777,7 +782,7 @@ public class ShopAlbumAction extends FtpImgDownUploadAction {
 	/**
 	 * 是否有新照片上传或者删除过照片， 重新生成压缩包
 	 * */
-	private long moveImgFormFtp(Map<String,Object> oldAlbum, String newPhotoUrl, String oldPhotoUrls, FtpUtil ftp, String shopId, String userId, String albumName, ShopAlbumVO album) {
+	private long moveImgFormFtp(Map<String,Object> oldAlbum, String newPhotoUrl, String oldPhotoUrls, String shopId, String userId, String albumName, ShopAlbumVO album) {
 		
 		String id = oldAlbum.get("id").toString();
 		boolean oldIsPay = false;
@@ -789,7 +794,7 @@ public class ShopAlbumAction extends FtpImgDownUploadAction {
 			}
 		}
 		
-		long fileSizeChange = moveImgFormFtp(id, oldPhotoUrls, ftp);
+		long fileSizeChange = moveImgFormFtp(id, oldPhotoUrls);
 		if(oldIsPay || fileSizeChange > 0 || (newPhotoUrl != null && !"".equals(newPhotoUrl))){
 			//原照片有编辑 或者有新照片上传 重新打压缩包
 			//String from = path +"/"+ shopId +"/"+ userId +"/Album/" + id;
@@ -822,7 +827,7 @@ public class ShopAlbumAction extends FtpImgDownUploadAction {
 		}
 		return fileSizeChange;
 	}
-	private long moveImgFormFtp(String id, String oldPhotoUrls, FtpUtil ftp) {
+	private long moveImgFormFtp(String id, String oldPhotoUrls) {
 		long delFileSize = 0;
 		List<Map<String, Object>> photoList = shopAlbumPhotoService.queryPhotoByAlbumId(id);
 		if(photoList != null && photoList.size() > 0){
@@ -830,9 +835,11 @@ public class ShopAlbumAction extends FtpImgDownUploadAction {
 				String photoUrl = photo.get("photoUrl").toString();
 				if(!oldPhotoUrls.contains(photoUrl)){
 					//编辑后的照片URL中不包含原有的照片URL时， 从FTP删除照片
-					delFileSize += ftp.getFileSize(Constant.path + photoUrl);
+					File file = new File(Constant.path + photoUrl);
+					delFileSize += file.length();
 					logger.info("从FTP删除照片："+Constant.path + photoUrl);
-					ftp.delFile(Constant.path + photoUrl);
+					//ftp.delFile(Constant.path + photoUrl);
+					file.delete();
 				}
 			}
 		}

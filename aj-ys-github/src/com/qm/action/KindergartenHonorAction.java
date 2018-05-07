@@ -68,7 +68,14 @@ public class KindergartenHonorAction extends FtpImgDownUploadAction{
 		List<KindergartenHonor> photoList = kindergartenHonorMapper.selectByCondition(p);
 		for(KindergartenHonor photo : photoList){
 			if(photo.getPhotoUrl() != null && !"".equals(photo.getPhotoUrl())){
-				photo.setPhotoUrl(Constant.imgPrefix +photo.getPhotoUrl());
+				
+				String subUrl =  photo.getPhotoUrl().substring(photo.getPhotoUrl().lastIndexOf("/") + 1);
+				if(subUrl.startsWith("s")){
+					photo.setPhotoUrl(Constant.imgPrefix +photo.getPhotoUrl().substring(0, photo.getPhotoUrl().lastIndexOf("/") + 1) + subUrl.substring(1));
+				}else{
+					photo.setPhotoUrl(Constant.imgPrefix +photo.getPhotoUrl());
+				}
+				
 			}
 			if(photo.getVideoUrl() != null && !"".equals(photo.getVideoUrl())){
 				

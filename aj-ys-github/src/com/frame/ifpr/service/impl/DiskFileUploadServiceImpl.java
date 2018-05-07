@@ -3,22 +3,14 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import net.coobird.thumbnailator.Thumbnails;
-import net.sf.json.JSONObject;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
@@ -29,12 +21,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
 
-import com.frame.core.util.FtpUtil;
+import com.frame.core.util.FileUtil;
 import com.frame.core.util.SystemConfig;
 import com.frame.ifpr.service.DiskFileUploadService;
 import com.frame.ifpr.vo.FileUploadResultVo;
 import com.frame.ifpr.vo.ResponseVo;
 import com.frame.ifpr.vo.ThumbnailsVo;
+
+import net.coobird.thumbnailator.Thumbnails;
+import net.sf.json.JSONObject;
 
 /**
  * 上传文件的业务实现类
@@ -85,7 +80,7 @@ public class DiskFileUploadServiceImpl implements DiskFileUploadService {
 		}
 		//if(jsonObject == null || "".equals(jsonObject.getString("params")) 
 		//JSONObject jsonParams=JSONObject.fromObject(jsonObject.getString("params"));
-		FtpUtil ftp = null;
+	//	FtpUtil ftp = null;
 		long size = is.available();
 		 System.out.println("upload1111111111111111111>>>" + size);
 
@@ -151,22 +146,24 @@ public class DiskFileUploadServiceImpl implements DiskFileUploadService {
 		smallFileName=fileName+"_small";
 		ftpPath = path + "/"+imgPath+"/"; // 不能这个路径/upload/wod
 		try{
-		ftp=new FtpUtil(ftpAddress, Integer.parseInt(port), username, password);
-		ftp.login();
-		 System.out.println("upload1111111111111111111ftp.login>>>" + ftp);
+	//	ftp=new FtpUtil(ftpAddress, Integer.parseInt(port), username, password);
+	//	ftp.login();
+	//	 System.out.println("upload1111111111111111111ftp.login>>>" + ftp);
 
 		/*
 		if(!ftp.isDirExist(ftpPath)){
 			 log.info("创建FTP目录" + ftpPath);
 			ftp.createDir(ftpPath);
 		}*/
-		boolean flag = ftp.upload(is, ftpPath+fileName+"."+imageType);
+		//boolean flag = ftp.upload(is, ftpPath+fileName+"."+imageType);
+		boolean flag = FileUtil.writeToLocal(ftpPath+fileName+"."+imageType, is);
 		 System.out.println("upload1111111111111111111flag>>>" + flag);
 		boolean smallFlag = false;
 		if(isNeedSmall){
 			BufferedImage bufferedImage=Thumbnails.of(is).size(thumbnailsVo.getSmallWidth(),thumbnailsVo.getSmallHeigth()).outputFormat(imageType).keepAspectRatio(false).outputQuality(1.0f).asBufferedImage();
 			InputStream inputsamall=getImageStream(bufferedImage,imageType);
-			smallFlag = ftp.upload(inputsamall,ftpPath+smallFileName+"."+imageType);
+		//	smallFlag = ftp.upload(inputsamall,ftpPath+smallFileName+"."+imageType);
+			smallFlag = FileUtil.writeToLocal(ftpPath+smallFileName+"."+imageType, inputsamall);
 		}
 	    log.info(ftpPath+fileName+"."+imageType + "上传成功?" + flag);
 	    log.info(ftpPath+smallFileName+"."+imageType + "上传成功?" + smallFlag);
@@ -188,7 +185,7 @@ public class DiskFileUploadServiceImpl implements DiskFileUploadService {
 			final String mesg="FTP上传文件错误！";
 			throw new Exception(mesg);
 		}finally{
-			ftp.closeServer();
+			//ftp.closeServer();
 			is.close();
 		}
 		 System.out.println("XXXXXXXXXXXXXXXXXXXXXX");

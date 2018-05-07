@@ -1,6 +1,9 @@
 package com.qm.shop.common.action;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,7 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.frame.core.action.FtpImgDownUploadAction;
 import com.frame.core.constant.FtpConstant;
 import com.frame.core.util.DateUtil;
-import com.frame.core.util.FtpUtil;
+import com.frame.core.util.FileUtil;
 import com.frame.core.util.RandomGUID;
 import com.frame.core.util.SystemConfig;
 import com.frame.system.vo.UserExtForm;
@@ -73,6 +76,7 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 		UserExtForm userExtForm = (UserExtForm) request.getSession().getAttribute(com.frame.core.constant.Constant.LoginAdminUser);
 
 		String DBPath;
+		String sDBPath;
 		try {
 			String ftpAddress = (String) SystemConfig.getValue(FtpConstant.FTP_ADDRESS);
 			String username = (String) SystemConfig.getValue(FtpConstant.USERNAME);
@@ -93,34 +97,48 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 			
 			fileName = fileName.substring(fileName.lastIndexOf("\\") + 1);
 			DBPath = "";
+			sDBPath = "";
 			
-			FtpUtil ftp = null;
+		//	FtpUtil ftp = null;
 			module = "kindergarten";
 			if (StringUtils.isNotEmpty(module)) {
 				if (StringUtils.isNotEmpty(fileName)) {
 					String unique = String.valueOf(System.currentTimeMillis()) + new Random().nextInt(10);
 					fileName = unique+"." + imageSuffix;
 					DBPath = "/" + module+"/"+fileName; //    不能这个路径/upload/wod
-					ftp=new FtpUtil(ftpAddress, Integer.parseInt(port), username, password);
+					sDBPath = "/" + module+"/s"+fileName; //    不能这个路径/upload/wod
+		//			ftp=new FtpUtil(ftpAddress, Integer.parseInt(port), username, password);
 					boolean flag = false;
 					try {
-						ftp.login();
+		//				ftp.login();
 						log.info("fileUpload("+module+","+file+","+SystemConfig.getValue("pic.needSmall.module.filetype")+") -  start");
-						flag = ftp.upload(file.getInputStream(), path + DBPath);
+					//	flag = ftp.upload(file.getInputStream(), path + DBPath);
+						FileUtil.writeToLocal(path + DBPath, file.getInputStream());
 						int category = 1;
 						//判断文件是否为视频
 						if(isVedioFile(imageSuffix)){
 							category = 2;
+						}
+						if(category == 1){
+							//生成缩略图
+							try {
+								BufferedImage bufferedImage=FileUtil.zoomImage(file.getInputStream(), 0.3f);
+								InputStream inputsamall=FileUtil.getImageStream(bufferedImage,imageSuffix);
+								FileUtil.writeToLocal(path + sDBPath, inputsamall);
+							} catch (Exception e) {
+								log.info("生成缩略图失败："+e);
+							}
 						}
 						
 						KindergartenAlbum album = new KindergartenAlbum();
 						String currentClass = null;
 						Integer gradeId  = null;
 						Integer kindergartenId  = null;
+						KindergartenGrade grade = null;
 						if(type == 1){
 							gradeId =Integer.parseInt(ownerId);
 							//班级
-							KindergartenGrade grade = kindergartenGradeMapper.selectByPrimaryKey(Integer.parseInt(ownerId));
+							grade = kindergartenGradeMapper.selectByPrimaryKey(Integer.parseInt(ownerId));
 							album.setShcoolId(grade.getKindergartenId());
 							album.setGradeId(Integer.parseInt(ownerId));
 							currentClass = GradeNameUtil.getGradeName(grade);
@@ -132,7 +150,7 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 							album.setShcoolId( student.getKindergartenId());
 							album.setGradeId(student.getGradeId());
 							album.setStudent(Integer.parseInt(ownerId));
-							KindergartenGrade grade = kindergartenGradeMapper.selectByPrimaryKey(student.getGradeId());
+							grade = kindergartenGradeMapper.selectByPrimaryKey(student.getGradeId());
 							currentClass = GradeNameUtil.getGradeName(grade);
 							
 							gradeId = student.getGradeId();
@@ -146,7 +164,7 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 						if(albumList == null || albumList.size() == 0){
 							album.setAlbumDesc("");
 							album.setAlbumName(currentClass);
-							album.setAlbumUrl(DBPath);
+							album.setAlbumUrl(grade.getLogo());
 							album.setCreateTime(DateUtil.dateFromatYYYYMMddHHmmss(new Date()));
 							album.setCreateUser(userExtForm.getAccount());
 							kindergartenAlbumMapper.insertSelective(album);
@@ -167,7 +185,7 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 							photo.setGradeId(gradeId);
 							photo.setKindergartenId(kindergartenId);
 							if(category == 1){
-								photo.setPhotoUrl(DBPath);
+								photo.setPhotoUrl(sDBPath);
 							}else{
 								photo.setVideoUrl(DBPath);
 							}
@@ -188,7 +206,7 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 							honor.setAlbumId(album.getId());
 							honor.setType(type);
 							honor.setGradeId(gradeId);
-							honor.setPhotoUrl(DBPath);
+							honor.setPhotoUrl(sDBPath);
 							honor.setKindergartenId(kindergartenId);
 							kindergartenHonorMapper.insertSelective(honor);
 						}
@@ -196,9 +214,9 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 					} catch (Exception e) {
 						log.error(e.getMessage());
 						e.printStackTrace();
-						throw new FileUploadException("FTP上传文件出错");
+						throw new FileUploadException("上传文件出错");
 					} finally{
-						ftp.closeServer();
+				//		ftp.closeServer();
 					}
 					if (!flag) {
 						log.error("FTP文件上传失败");
@@ -245,7 +263,7 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 				String to ="/kindergarten/Album/"+ albumId +".zip" ;
 				String targetUrl = Constant.resPath + to ;
 				String[] arr = {};
-				delOldZipFile(to);
+				delOldZipFile(targetUrl);
 				FileZipUtil.zip(urlList.toArray(arr), targetUrl);
 				
 				KindergartenAlbum album = new KindergartenAlbum();
@@ -264,10 +282,11 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 		String password = (String) SystemConfig.getValue(FtpConstant.PASSWORD);
 		String port = (String) SystemConfig.getValue(FtpConstant.PORT);
 		String path = (String) SystemConfig.getValue(FtpConstant.FTP_PATH);
-		FtpUtil ftp = new FtpUtil(ftpAddress, Integer.parseInt(port), username, password);
+	//	FtpUtil ftp = new FtpUtil(ftpAddress, Integer.parseInt(port), username, password);
 		try {
-			ftp.login();
-			ftp.delFile(remoteFilePath);
+	//		ftp.login();
+		//	ftp.delFile(remoteFilePath);
+			new File(remoteFilePath).delete();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

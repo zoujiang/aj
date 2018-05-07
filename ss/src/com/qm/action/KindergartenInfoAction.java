@@ -34,7 +34,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.frame.core.action.FtpImgDownUploadAction;
 import com.frame.core.util.DateUtil;
 import com.frame.core.util.ExportExcelUtils;
-import com.frame.core.util.FtpUtil;
 import com.frame.system.vo.UserExtForm;
 import com.qm.entities.KindergartenDailyStatistics;
 import com.qm.entities.KindergartenGrade;

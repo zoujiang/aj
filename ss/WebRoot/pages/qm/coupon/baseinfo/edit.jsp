@@ -14,7 +14,7 @@ String id = request.getParameter("id");
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
-    <title>管理平台-编辑幼儿园</title>
+    <title>管理平台-编辑优惠券</title>
 
 	<%@ include file="/pages/comm/jsp/inc.jsp"%>
 	
@@ -233,7 +233,7 @@ String id = request.getParameter("id");
 					$("#btn_save").attr("disabled", false);
 					return false;
 				}
-				if(leftNum > totalNum){
+				if(leftNum - totalNum > 0){
 					layer.msg("兑换券剩余份数不能大于兑换券总份数", {title:'提示', btn: ['确定'],icon: 6}, function(index){
 					});
 					$("#btn_save").attr("disabled", false);

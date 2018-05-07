@@ -64,6 +64,7 @@
                 queryParams: function(params) {
                 	return{
                 		brandName : $('#brandname').val(),
+                		type : $('#brandType').val(),
 	                	limit:params.limit,
 	                	offset:params.offset
 	                };
@@ -95,11 +96,11 @@
                     title: '品牌类型',
                     formatter:function(value, row, index){
                         if(value == 1){
-                            return "像馆";
+                            return "相馆";
                         }else if(value == 2){
                             return "幼儿园";
                         } else if(value== 3){
-                            return "券商"
+                            return "卡券"
                         }
                     }
                 },{
@@ -173,8 +174,14 @@
             <div class="ibox-content"  style="height: 100%;">
             	<div class="btn-group hidden-xs" id="toolbar" role="group" style="margin-top: 10px;">
                     <div class="form-inline" style="width: 480px;float: left;">
-                    	 品牌名称：<input type="text" placeholder="品牌名称" class="form-control input-inline"  id="brandname" name="brandname" width="280px"> 
-                           <button  id="btn_search" type="button" class="btn btn-inline btn-default" style="margin-top: 4px;"> 搜索</button> 
+                    	 品牌名称：<input type="text" placeholder="品牌名称" class="form-control input-inline"  id="brandname" name="brandname" width="280px">
+                    	 品牌类型：<select id="brandType" class="form-control input-inline">
+                    	 			<option value="">---请选择---</option>
+                    	 			<option value="1">相馆</option>
+                    	 			<option value="2">幼儿园</option>
+                    	 			<option value="3">卡券</option>
+                    	 		</select> 
+                           &nbsp;&nbsp;&nbsp;&nbsp;<button  id="btn_search" type="button" class="btn btn-inline btn-default" style="margin-top: 4px;"> 搜索</button> 
 	                    <button id="btn_new" type="button" style="margin-left: 10px;margin-top: 4px;" class="btn btn-inline btn-default"  title="添加">
 	                        <i class="glyphicon glyphicon-plus" aria-hidden="true" ></i>
 	                    </button>

@@ -1,4 +1,6 @@
 package com.frame.core.service.impl;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -10,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import com.frame.core.constant.FtpConstant;
 import com.frame.core.service.ResExeService;
-import com.frame.core.util.FtpUtil;
 import com.frame.core.util.SystemConfig;
 import com.frame.core.vo.PreviewResVo;
 import com.qm.shop.Constant;
@@ -33,17 +34,29 @@ public class ResExeServiceImpl implements ResExeService {
 		  String path = (String) SystemConfig.getValue(FtpConstant.FTP_PATH);
 		  String newImagepath=previewResVo.getRes();
 		  OutputStream outputStream=response.getOutputStream();
-		  FtpUtil ftp = null;
+		//  FtpUtil ftp = null;
 		  try{	
 			//开启ftp
-			ftp=new FtpUtil(ftpAddress, Integer.parseInt(port), username, password);
-			ftp.login();
-			ftp.getFtpClient().retrieveFile(path+newImagepath, outputStream);
+		//	ftp=new FtpUtil(ftpAddress, Integer.parseInt(port), username, password);
+		//	ftp.login();
+		//	ftp.getFtpClient().retrieveFile(path+newImagepath, outputStream);
+			
+			File afile = new File(path+newImagepath);  
+	        InputStream it = new FileInputStream(afile);  
+
+			byte flush[]  = new byte[1024];  
+	        int len = 0;  
+	        while(0<=(len=it.read(flush))){  
+	        	outputStream.write(flush, 0, len);  
+	        }  
+	        //关闭流的注意 先打开的后关  
+	        outputStream.close();  
+	        it.close();  
 		  } catch (Exception e) {
 			 logger.error(e.getMessage(), e);
 		  }finally{
-		    if(null!=ftp)
-			ftp.closeServer();
+		//    if(null!=ftp)
+		//	ftp.closeServer();
 		  }
 			logger.debug("getImageAsByte("+previewResVo+")"+"--------- end");
 		    return outputStream;
@@ -99,17 +112,18 @@ public class ResExeServiceImpl implements ResExeService {
 			  String path = (String) SystemConfig.getValue(FtpConstant.FTP_PATH);
 			  String newImagepath=previewResVo.getRes();
 			  InputStream inputStream=null;
-			  FtpUtil ftp = null;
+		//	  FtpUtil ftp = null;
 			  try{	
 				//开启ftp
-				ftp=new FtpUtil(ftpAddress, Integer.parseInt(port), username, password);
-				ftp.login();
-				inputStream = ftp.getFtpClient().retrieveFileStream(path+newImagepath);
+		//		ftp=new FtpUtil(ftpAddress, Integer.parseInt(port), username, password);
+		//		ftp.login();
+		//		inputStream = ftp.getFtpClient().retrieveFileStream(path+newImagepath);
+				inputStream = new FileInputStream(new File(path+newImagepath));
 			  } catch (Exception e) {
 				 logger.error(e.getMessage(), e);
 			  }finally{
-			    if(null!=ftp)
-				ftp.closeServer();
+			  //  if(null!=ftp)
+				//ftp.closeServer();
 			  }
 				logger.debug("getImageAsByte("+previewResVo+")"+"--------- end");
 			    return inputStream;
@@ -125,18 +139,18 @@ public class ResExeServiceImpl implements ResExeService {
 			  String path = (String) SystemConfig.getValue(FtpConstant.FTP_PATH);
 			  String newImagepath=previewResVo.getRes();
 			  InputStream inputStream=null;
-			  FtpUtil ftp = null;
+		//	  FtpUtil ftp = null;
 			  try{	
 				//开启ftp
-				ftp=new FtpUtil(ftpAddress, Integer.parseInt(port), username, password);
-				ftp.login();
-				ftp.download(localAddr, path+newImagepath);
+		//		ftp=new FtpUtil(ftpAddress, Integer.parseInt(port), username, password);
+		//		ftp.login();
+		//		ftp.download(localAddr, path+newImagepath);
 				return true;
 			  } catch (Exception e) {
 				 logger.error(e.getMessage(), e);
 			  }finally{
-			    if(null!=ftp)
-				ftp.closeServer();
+		//	    if(null!=ftp)
+		//		ftp.closeServer();
 			  }
 				logger.debug("getImageAsByte("+previewResVo+")"+"--------- end");
 				return false;
@@ -147,18 +161,18 @@ public class ResExeServiceImpl implements ResExeService {
 			 logger.debug("downFile2Local("+localAddr+")"+"--------- begin");
 			  String path = Constant.resPath;
 			  String newImagepath = previewResVo.getRes();
-			  FtpUtil ftp = null;
+			//  FtpUtil ftp = null;
 			  try{	
 				//开启ftp
-				ftp=new FtpUtil(Constant.ftpAddress,  Constant.port, Constant.username, Constant.password);
-				ftp.login();
-				ftp.download(localAddr, path+newImagepath);
+			//	ftp=new FtpUtil(Constant.ftpAddress,  Constant.port, Constant.username, Constant.password);
+			//	ftp.login();
+			//	ftp.download(localAddr, path+newImagepath);
 				return true;
 			  } catch (Exception e) {
 				 logger.error(e.getMessage(), e);
 			  }finally{
-			    if(null!=ftp)
-				ftp.closeServer();
+			 //   if(null!=ftp)
+			//	ftp.closeServer();
 			  }
 				logger.debug("getImageAsByte("+previewResVo+")"+"--------- end");
 				return false;

@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.frame.core.constant.FtpConstant;
 import com.frame.core.util.ExportExcelUtils;
 import com.frame.core.util.ExportTextUtils;
-import com.frame.core.util.FtpUtil;
+import com.frame.core.util.FileUtil;
 import com.frame.core.util.SystemConfig;
 /**     
  * 
@@ -172,15 +172,16 @@ public class CommonAction extends FileDownUploadAction {
 	 * @throws Exception 
 	 */
 	public String fileUpload(String DBPath, InputStream input) throws Exception {
-		String ftpAddress = (String) SystemConfig.getValue(FtpConstant.FTP_ADDRESS);
-		String username = (String) SystemConfig.getValue(FtpConstant.USERNAME);
-		String password = (String) SystemConfig.getValue(FtpConstant.PASSWORD);
-		String port = (String) SystemConfig.getValue(FtpConstant.PORT);
+	//	String ftpAddress = (String) SystemConfig.getValue(FtpConstant.FTP_ADDRESS);
+	//	String username = (String) SystemConfig.getValue(FtpConstant.USERNAME);
+	//	String password = (String) SystemConfig.getValue(FtpConstant.PASSWORD);
+	//	String port = (String) SystemConfig.getValue(FtpConstant.PORT);
 		String path = (String) SystemConfig.getValue(FtpConstant.FTP_PATH);
-		FtpUtil ftp = new FtpUtil(ftpAddress, Integer.parseInt(port), username, password);
-		ftp.login();
-		ftp.upload(input, path + DBPath);
-		ftp.closeServer();
+	//	FtpUtil ftp = new FtpUtil(ftpAddress, Integer.parseInt(port), username, password);
+	//	ftp.login();
+	//	ftp.upload(input, path + DBPath);
+		FileUtil.writeToLocal(path + DBPath, input);
+	//	ftp.closeServer();
 		return DBPath;
 	}
 	public String getRealGePath() {

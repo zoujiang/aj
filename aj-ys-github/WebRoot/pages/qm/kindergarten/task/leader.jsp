@@ -20,6 +20,9 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
     function AppMgr(){
 
     	var $table=$("#user_table");
+    	AppMgr.view = function(teacherId,taskDate,e){
+    		layer_show("查看明细", getProjectName() +"/pages/qm/kindergarten/task/viewdetails.jsp?teacherId="+teacherId+"&taskDate="+taskDate,"930","500");
+		};
     	AppMgr.send = function(id,valid,e){
     		parent.layer.confirm('确定已经发放奖励？', {
     		    btn: ['确定','取消'], //按钮
@@ -143,7 +146,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
     		    	field: 'action',
     		    	title : '操作',
     		        formatter : function(value, row, index){
-   		        		var edit="<span  height = '23px'  width = '23px'><a style='color:blue;' href='#' onclick=\"AppMgr.edit('" + row.id + "','0',event)\" style='cursor: pointer' >查看明细&nbsp;</a></span>";
+    		        	var edit="<span  height = '23px'  width = '23px'><a style='color:blue;' href='#' onclick=\"AppMgr.view('" + row.teacherId + "','"+row.taskDate+"',event)\" style='cursor: pointer' >查看明细&nbsp;</a></span>";
    		        		if(row.isGetReward ==0 && row.isSend == 1){
    		        			edit += "<span  height = '23px'  width = '23px'><a style='color:blue;' href='#' onclick=\"AppMgr.send('" + row.id + "','0',event)\" style='cursor: pointer' >发放</a></span>";
    		        		}

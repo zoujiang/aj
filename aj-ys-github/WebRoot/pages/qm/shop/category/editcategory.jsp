@@ -120,9 +120,9 @@ String id = request.getParameter("id");
 								<label class="col-sm-4 control-label">类型：</label>
 								<div class="col-sm-8">
 									<select name="type" class="form-control">
-										<option id="type_1" value="1">影楼</option>
+										<option id="type_1" value="1">相馆</option>
 										<option id="type_2" value="2">幼儿园</option>
-										<option id="type_3" value="3">券商</option>
+										<option id="type_3" value="3">卡券</option>
 									</select>
 								</div>
 							</div>

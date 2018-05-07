@@ -133,7 +133,7 @@ String type = request.getParameter("type");
 			 }else{
 				 
 				 $.ajax({
-		             type: "GET",
+		             type: "POST",
 		             url: "<%=path %>/admin/kindergarten/honor/alterPhotoName",
 		             data: "id="+pId+"&name="+pName,
 		             dataType: "json",

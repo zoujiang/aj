@@ -112,7 +112,7 @@ public class TeacherTaskStatisticsThread extends Thread{
 				//存放gradeId- kindergartenId对应关系
 				Map<String, Integer> gradeKindergartenMap = new HashMap<String, Integer>();
 				
-				List<String> dateList = getNPreMonth(3);
+				List<String> dateList = getNPreMonth(1);
 				//某月完成N个班级
 				List<Map<String, Object>> complateList = new ArrayList<Map<String, Object>>();
 				
