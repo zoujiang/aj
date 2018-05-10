@@ -36,4 +36,9 @@ public interface KindergartenPhotoMapper {
 	 * @param  kindergartenId 
 	 * */
 	int queryVideoNumber(Map<String, Object> param);
+	
+	/**
+	 * 根据老师ID和日期查询当然上传照片和视频数量
+	 * */
+	List<Map<String, Object>> statistics(Map<String, Object> queryParam);
 }

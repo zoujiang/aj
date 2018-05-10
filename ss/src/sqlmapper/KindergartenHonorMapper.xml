@@ -16,10 +16,11 @@
     <result column="album_id" jdbcType="INTEGER" property="albumId" />
     <result column="grade_id" jdbcType="INTEGER" property="gradeId" />
     <result column="kindergarten_id" jdbcType="INTEGER" property="kindergartenId" />
+    <result column="create_user_name" jdbcType="VARCHAR" property="createUserName" />
   </resultMap>
   <sql id="Base_Column_List">
     id, type, category, photo_url, video_url, create_time, create_user, dig_num, comment_num, 
-    name, owner_id,album_id ,grade_id, kindergarten_id
+    name, owner_id,album_id ,grade_id, kindergarten_id,create_user_name
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -35,11 +36,11 @@
     insert into t_kindergarten_honor (id, type, category, 
       photo_url, video_url, create_time, 
       create_user, dig_num, comment_num, 
-      name, owner_id, album_id, grade_id, kindergarten_id)
+      name, owner_id, album_id, grade_id, kindergarten_id,create_user_name)
     values (#{id,jdbcType=INTEGER}, #{type,jdbcType=INTEGER}, #{category,jdbcType=INTEGER}, 
       #{photoUrl,jdbcType=VARCHAR}, #{videoUrl,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, 
       #{createUser,jdbcType=VARCHAR}, #{digNum,jdbcType=INTEGER}, #{commentNum,jdbcType=INTEGER}, 
-      #{name,jdbcType=VARCHAR}, #{ownerId,jdbcType=VARCHAR}, #{albumId,jdbcType=INTEGER}, #{gradeId,jdbcType=INTEGER}, #{kindergartenId,jdbcType=INTEGER})
+      #{name,jdbcType=VARCHAR}, #{ownerId,jdbcType=VARCHAR}, #{albumId,jdbcType=INTEGER}, #{gradeId,jdbcType=INTEGER}, #{kindergartenId,jdbcType=INTEGER}, #{createUserName,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.qm.entities.KindergartenHonor">
     insert into t_kindergarten_honor
@@ -86,6 +87,9 @@
       <if test="kindergartenId != null">
          kindergarten_id,
       </if>
+      <if test="createUserName != null">
+         create_user_name,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -129,6 +133,9 @@
       </if>
       <if test="kindergartenId != null">
         #{kindergartenId,jdbcType=INTEGER},
+      </if>
+      <if test="createUserName != null">
+        #{createUserName,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -174,6 +181,9 @@
       <if test="kindergartenId != null">
         kindergarten_id = #{kindergartenId,jdbcType=INTEGER},
       </if>
+      <if test="kindergartenId != null">
+        create_user_name = #{createUserName,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -191,7 +201,8 @@
       owner_id = #{ownerId,jdbcType=VARCHAR},
       album_id = #{albumId,jdbcType=INTEGER},
       grade_id = #{gradeId,jdbcType=INTEGER},
-      kindergarten_id = #{kindergartenId,jdbcType=INTEGER}
+      kindergarten_id = #{kindergartenId,jdbcType=INTEGER},
+      create_user_name = #{createUserName,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
   <select id="selectByCondition" parameterType="com.qm.entities.KindergartenHonor" resultMap="BaseResultMap">

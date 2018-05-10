@@ -32,6 +32,8 @@ public class KindergartenPhoto extends LimitKey{
     private Integer gradeId;
     
     private Integer kindergartenId;
+    
+    private String createUserName;
 
     public Integer getId() {
         return id;
@@ -151,6 +153,14 @@ public class KindergartenPhoto extends LimitKey{
 
 	public void setKindergartenId(Integer kindergartenId) {
 		this.kindergartenId = kindergartenId;
+	}
+
+	public String getCreateUserName() {
+		return createUserName;
+	}
+
+	public void setCreateUserName(String createUserName) {
+		this.createUserName = createUserName;
 	}
 	
     

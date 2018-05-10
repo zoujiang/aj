@@ -17,11 +17,12 @@
     <result column="owner_id" jdbcType="VARCHAR" property="ownerId" />
     <result column="dig_relation_user_id" jdbcType="VARCHAR" property="digRelationUserId" />
     <result column="kindergarten_id" jdbcType="INTEGER" property="kindergartenId" />
+    <result column="create_user_name" jdbcType="VARCHAR" property="createUserName" />
     
   </resultMap>
   <sql id="Base_Column_List">
     id, type, category, photo_url, video_url, create_time, create_user, dig_num, comment_num, 
-    name, owner_id, dig_relation_user_id,album_id,grade_id,kindergarten_id
+    name, owner_id, dig_relation_user_id,album_id,grade_id,kindergarten_id,create_user_name
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -37,13 +38,13 @@
     insert into t_kindergarten_photo (id, type, category, 
       photo_url, video_url, create_time, 
       create_user, dig_num, comment_num, 
-      name, owner_id, dig_relation_user_id,album_id,grade_id,kindergarten_id
+      name, owner_id, dig_relation_user_id,album_id,grade_id,kindergarten_id,create_user_name
       )
     values (#{id,jdbcType=INTEGER}, #{type,jdbcType=INTEGER}, #{category,jdbcType=INTEGER}, 
       #{photoUrl,jdbcType=VARCHAR}, #{videoUrl,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, 
       #{createUser,jdbcType=VARCHAR}, #{digNum,jdbcType=INTEGER}, #{commentNum,jdbcType=INTEGER}, 
       #{name,jdbcType=VARCHAR}, #{ownerId,jdbcType=VARCHAR}, #{digRelationUserId,jdbcType=VARCHAR},
-       #{albumId,jdbcType=INTEGER},#{gradeId,jdbcType=INTEGER},#{kindergartenId,jdbcType=INTEGER}
+       #{albumId,jdbcType=INTEGER},#{gradeId,jdbcType=INTEGER},#{kindergartenId,jdbcType=INTEGER},#{createUserName,jdbcType=INTEGER}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.qm.entities.KindergartenPhoto">
@@ -94,6 +95,9 @@
       <if test="kindergartenId != null">
         kindergarten_id,
       </if>
+      <if test="createUserName != null">
+        create_user_name,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -140,6 +144,9 @@
       </if>
       <if test="kindergartenId != null">
         #{kindergartenId,jdbcType=INTEGER},
+      </if>
+      <if test="createUserName != null">
+        #{createUserName,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -188,6 +195,9 @@
       <if test="kindergartenId != null">
         kindergarten_id = #{kindergartenId,jdbcType=INTEGER},
       </if>
+      <if test="createUserName != null">
+        create_user_name = #{createUserName,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -206,7 +216,8 @@
       dig_relation_user_id = #{digRelationUserId,jdbcType=VARCHAR},
       album_id = #{albumId,jdbcType=INTEGER},
       grade_id = #{gradeId,jdbcType=INTEGER},
-      kindergarten_id = #{kindergartenId,jdbcType=INTEGER}
+      kindergarten_id = #{kindergartenId,jdbcType=INTEGER},
+      create_user_name = #{createUserName,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
   <select id="queryPhotoByOwerId" parameterType="String" resultMap="BaseResultMap">
@@ -257,5 +268,8 @@
     count(1)
     from t_kindergarten_photo
     where category = 2 and kindergarten_id = #{kindergartenId,jdbcType=INTEGER} and left(create_time, 10) = #{queryDate,jdbcType=VARCHAR}
+  </select>
+  <select id="statistics" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+  		select category, count(category) total from t_kindergarten_photo where   create_user = #{teacherId} and left(create_time, 10) = #{preDayStr} group by grade_id, category
   </select>
 </mapper>

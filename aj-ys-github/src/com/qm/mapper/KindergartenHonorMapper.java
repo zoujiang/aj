@@ -25,4 +25,8 @@ public interface KindergartenHonorMapper {
 	 * @param  kindergartenId 
 	 * */
 	int queryHonorNumber(Map<String, Object> param);
+	/**
+	 * 根据老师ID和日期查询当然上传荣誉数量
+	 * */
+	int statistics(Map<String, Object> queryParam);
 }

@@ -1,7 +1,6 @@
 package com.qm.action;
 
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alibaba.fastjson.JSONObject;
 import com.frame.core.action.FtpImgDownUploadAction;
 import com.frame.core.util.EncryptUtils;
-import com.frame.core.util.RandomGUID;
 import com.qm.entities.KindergartenAlbum;
 import com.qm.entities.KindergartenGrade;
 import com.qm.entities.KindergartenPhoto;
@@ -25,7 +23,6 @@ import com.qm.service.KindergartenPhotoService;
 import com.qm.service.KindergartenService;
 import com.qm.service.KindergartenStudentService;
 import com.qm.shop.Constant;
-import com.util.FileZipUtil;
 
 @RestController
 @RequestMapping("/kindergarten/photo")

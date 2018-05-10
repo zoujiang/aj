@@ -150,7 +150,7 @@ String id = request.getParameter("id");
 	                    console.info("----00000----"+data.returnCode)
 						if(data.returnCode == '000000'){
 							 console.info("----data.result.picPath----"+data.result.picPath)
-		                    $('#user-work-content').summernote('insertImage', data.result.picPath);
+							 $("#summernote").summernote('insertImage', data.result.picPath, 'image name');
 						}
 	                },
 	                error:function(){

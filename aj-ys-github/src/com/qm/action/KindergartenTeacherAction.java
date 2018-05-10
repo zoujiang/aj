@@ -23,8 +23,9 @@ import com.frame.core.util.SystemConfig;
 import com.frame.system.vo.UserExtForm;
 import com.qm.entities.KindergartenInfo;
 import com.qm.entities.KindergartenTeacher;
+import com.qm.entities.KindergartenTeacherDailyUploadStatistics;
 import com.qm.entities.UserInfo;
-import com.qm.mapper.KindergartenTeacherMapper;
+import com.qm.mapper.KindergartenTeacherDailyUploadStatisticsMapper;
 import com.qm.mapper.UserInfoMapper;
 import com.qm.service.KindergartenService;
 import com.qm.service.KindergartenTeacherService;
@@ -46,6 +47,8 @@ public class KindergartenTeacherAction extends FtpImgDownUploadAction {
 	private KindergartenService kindergartenService;
 	@Autowired
 	private UserInfoMapper userInfoMapper;
+	@Autowired
+	private KindergartenTeacherDailyUploadStatisticsMapper kindergartenTeacherDailyUploadStatisticsMapper;
 	
 	@RequestMapping("/list")
     public String list(String name, Integer kindergartenId, Integer type,  int limit, int offset) {
@@ -382,6 +385,30 @@ public class KindergartenTeacherAction extends FtpImgDownUploadAction {
         }
 
         return json.toJSONString();
+    }
+    @RequestMapping("/uploadDailyStatistics")
+    public String uploadDailyStatistics(Integer kindergartenId, String username, String statisticsDate, int limit, int offset){
+    	
+    	JSONObject json = new JSONObject();
+    	try {
+    		KindergartenTeacherDailyUploadStatistics statistics = new KindergartenTeacherDailyUploadStatistics();
+    		statistics.setKindergartenId(kindergartenId);
+    		statistics.setTeacherName(username);
+    		statistics.setStaticticsDate(statisticsDate);
+    		List<KindergartenTeacherDailyUploadStatistics> list = kindergartenTeacherDailyUploadStatisticsMapper.selectByParam(statistics);
+    		int total = kindergartenTeacherDailyUploadStatisticsMapper.getTotal(statistics);
+            json.put("rows",list );
+            json.put("total", total);
+            return json.toJSONString();
+    		
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    		logger.info("初始化幼儿园教师日报异常："+ e);
+    		json.put("success",false );
+    		json.put("message", "初始化幼儿园教师日报异常："+e.getMessage());
+    	}
+    	
+    	return json.toJSONString();
     }
    
 }

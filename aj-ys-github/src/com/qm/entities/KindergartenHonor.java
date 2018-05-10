@@ -28,6 +28,8 @@ public class KindergartenHonor {
     private Integer albumId;
     
     private Integer kindergartenId;
+    
+    private String createUserName;
 
     public Integer getId() {
         return id;
@@ -139,6 +141,14 @@ public class KindergartenHonor {
 
 	public void setKindergartenId(Integer kindergartenId) {
 		this.kindergartenId = kindergartenId;
+	}
+
+	public String getCreateUserName() {
+		return createUserName;
+	}
+
+	public void setCreateUserName(String createUserName) {
+		this.createUserName = createUserName;
 	}
     
 }

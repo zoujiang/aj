@@ -162,6 +162,7 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 							photo.setCommentNum(0);
 							photo.setCreateTime(DateUtil.dateFromatYYYYMMddHHmmss(new Date()));
 							photo.setCreateUser(userExtForm.getAccount());
+							photo.setCreateUserName(userExtForm.getName());
 							photo.setDigNum(0);
 							photo.setOwnerId(ownerId);
 							photo.setAlbumId(album.getId());
@@ -185,6 +186,7 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 							honor.setCommentNum(0);
 							honor.setCreateTime(DateUtil.dateFromatYYYYMMddHHmmss(new Date()));
 							honor.setCreateUser(userExtForm.getAccount());
+							honor.setCreateUserName(userExtForm.getName());
 							honor.setDigNum(0);
 							honor.setOwnerId(ownerId);
 							honor.setAlbumId(album.getId());

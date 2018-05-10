@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qm.mapper.KindergartenTeacherDailyUploadStatisticsMapper">
+  <resultMap id="BaseResultMap" type="com.qm.entities.KindergartenTeacherDailyUploadStatistics">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="teacher_id" jdbcType="INTEGER" property="teacherId" />
+    <result column="teacher_name" jdbcType="VARCHAR" property="teacherName" />
+    <result column="photo_num" jdbcType="INTEGER" property="photoNum" />
+    <result column="video_num" jdbcType="INTEGER" property="videoNum" />
+    <result column="honor_num" jdbcType="INTEGER" property="honorNum" />
+    <result column="statictics_date" jdbcType="VARCHAR" property="staticticsDate" />
+    <result column="kindergarten_id" jdbcType="INTEGER" property="kindergartenId" />
+    <result column="grade_id" jdbcType="INTEGER" property="gradeId" />
+    <result column="kindergarten_name" jdbcType="VARCHAR" property="kindergartenName" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, teacher_id, teacher_name, photo_num, video_num, honor_num, statictics_date, kindergarten_id, 
+    grade_id, kindergarten_name
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_kindergarten_teacher_daily_upload_statistics
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_kindergarten_teacher_daily_upload_statistics
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.qm.entities.KindergartenTeacherDailyUploadStatistics">
+    insert into t_kindergarten_teacher_daily_upload_statistics (id, teacher_id, teacher_name, 
+      photo_num, video_num, honor_num, 
+      statictics_date, kindergarten_id, grade_id
+      )
+    values (#{id,jdbcType=INTEGER}, #{teacherId,jdbcType=INTEGER}, #{teacherName,jdbcType=VARCHAR}, 
+      #{photoNum,jdbcType=INTEGER}, #{videoNum,jdbcType=INTEGER}, #{honorNum,jdbcType=INTEGER}, 
+      #{staticticsDate,jdbcType=VARCHAR}, #{kindergartenId,jdbcType=INTEGER}, #{gradeId,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.qm.entities.KindergartenTeacherDailyUploadStatistics">
+    insert into t_kindergarten_teacher_daily_upload_statistics
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="teacherId != null">
+        teacher_id,
+      </if>
+      <if test="teacherName != null">
+        teacher_name,
+      </if>
+      <if test="photoNum != null">
+        photo_num,
+      </if>
+      <if test="videoNum != null">
+        video_num,
+      </if>
+      <if test="honorNum != null">
+        honor_num,
+      </if>
+      <if test="staticticsDate != null">
+        statictics_date,
+      </if>
+      <if test="kindergartenId != null">
+        kindergarten_id,
+      </if>
+      <if test="gradeId != null">
+        grade_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="teacherId != null">
+        #{teacherId,jdbcType=INTEGER},
+      </if>
+      <if test="teacherName != null">
+        #{teacherName,jdbcType=VARCHAR},
+      </if>
+      <if test="photoNum != null">
+        #{photoNum,jdbcType=INTEGER},
+      </if>
+      <if test="videoNum != null">
+        #{videoNum,jdbcType=INTEGER},
+      </if>
+      <if test="honorNum != null">
+        #{honorNum,jdbcType=INTEGER},
+      </if>
+      <if test="staticticsDate != null">
+        #{staticticsDate,jdbcType=VARCHAR},
+      </if>
+      <if test="kindergartenId != null">
+        #{kindergartenId,jdbcType=INTEGER},
+      </if>
+      <if test="gradeId != null">
+        #{gradeId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.qm.entities.KindergartenTeacherDailyUploadStatistics">
+    update t_kindergarten_teacher_daily_upload_statistics
+    <set>
+      <if test="teacherId != null">
+        teacher_id = #{teacherId,jdbcType=INTEGER},
+      </if>
+      <if test="teacherName != null">
+        teacher_name = #{teacherName,jdbcType=VARCHAR},
+      </if>
+      <if test="photoNum != null">
+        photo_num = #{photoNum,jdbcType=INTEGER},
+      </if>
+      <if test="videoNum != null">
+        video_num = #{videoNum,jdbcType=INTEGER},
+      </if>
+      <if test="honorNum != null">
+        honor_num = #{honorNum,jdbcType=INTEGER},
+      </if>
+      <if test="staticticsDate != null">
+        statictics_date = #{staticticsDate,jdbcType=VARCHAR},
+      </if>
+      <if test="kindergartenId != null">
+        kindergarten_id = #{kindergartenId,jdbcType=INTEGER},
+      </if>
+      <if test="gradeId != null">
+        grade_id = #{gradeId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qm.entities.KindergartenTeacherDailyUploadStatistics">
+    update t_kindergarten_teacher_daily_upload_statistics
+    set teacher_id = #{teacherId,jdbcType=INTEGER},
+      teacher_name = #{teacherName,jdbcType=VARCHAR},
+      photo_num = #{photoNum,jdbcType=INTEGER},
+      video_num = #{videoNum,jdbcType=INTEGER},
+      honor_num = #{honorNum,jdbcType=INTEGER},
+      statictics_date = #{staticticsDate,jdbcType=VARCHAR},
+      kindergarten_id = #{kindergartenId,jdbcType=INTEGER},
+      grade_id = #{gradeId,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <insert id="batchInsert" parameterType="java.util.List">
+   insert into t_kindergarten_teacher_daily_upload_statistics (id, teacher_id, teacher_name, 
+      photo_num, video_num, honor_num, 
+      statictics_date, kindergarten_id, grade_id,kindergarten_name)
+    values 
+     <foreach collection="list" item="item" index="index" separator="," >
+	    (#{id,jdbcType=INTEGER}, #{teacherId,jdbcType=INTEGER}, #{teacherName,jdbcType=VARCHAR}, 
+	      #{photoNum,jdbcType=INTEGER}, #{videoNum,jdbcType=INTEGER}, #{honorNum,jdbcType=INTEGER}, 
+	      #{staticticsDate,jdbcType=VARCHAR}, #{kindergartenId,jdbcType=INTEGER}, #{gradeId,jdbcType=INTEGER},#{kindergartenName,jdbcType=VARCHAR })
+      </foreach>
+  </insert>
+  <select id="selectByParam" parameterType="com.qm.entities.KindergartenTeacherDailyUploadStatistics" resultMap="BaseResultMap">
+  
+  	select 
+    <include refid="Base_Column_List" />
+    from t_kindergarten_teacher_daily_upload_statistics
+    where 1=1
+    <if test="kindergartenId != null and kindergartenId > 0">
+    	and kindergarten_id = #{kindergartenId,jdbcType=INTEGER}
+    </if>
+    <if test="teacherName != null and teacherName != ''">
+    	and teacher_name like concat('%', #{teacherName} ,'%')
+    </if>
+  	<if test="staticticsDate != null and staticticsDate != ''">
+  		and statictics_date = #{staticticsDate}
+  	</if>
+  	order by teacher_id limit #{offset}, #{pageSize}
+  </select>
+  <select id="getTotal" parameterType="com.qm.entities.KindergartenTeacherDailyUploadStatistics" resultType="java.lang.Integer" >
+  		select
+  		 	count(1) 
+  		from t_kindergarten_teacher_daily_upload_statistics
+	    where 1=1
+	    <if test="kindergartenId != null and kindergartenId > 0">
+	    	and kindergarten_id = #{kindergartenId,jdbcType=INTEGER}
+	    </if>
+	    <if test="teacherName != null and teacherName != ''">
+	    	and teacher_name like concat('%', #{teacherName} ,'%')
+	    </if>
+	  	<if test="staticticsDate != null and staticticsDate != ''">
+	  		and statictics_date = #{staticticsDate}
+	  	</if>
+  </select>
+</mapper>
