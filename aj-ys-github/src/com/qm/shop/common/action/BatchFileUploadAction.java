@@ -6,8 +6,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -41,6 +43,7 @@ import com.qm.mapper.KindergartenPhotoMapper;
 import com.qm.mapper.KindergartenStudentMapper;
 import com.qm.shop.Constant;
 import com.util.FileZipUtil;
+import com.util.FrameGrabberKit;
 import com.util.GradeNameUtil;
 
 import net.sf.json.JSONObject;
@@ -119,6 +122,7 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 						if(isVedioFile(imageSuffix)){
 							category = 2;
 						}
+						String videoImgUrl = null;
 						if(category == 1){
 							//生成缩略图
 							try {
@@ -127,6 +131,16 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 								FileUtil.writeToLocal(path + sDBPath, inputsamall);
 							} catch (Exception e) {
 								log.info("生成缩略图失败："+e);
+							}
+						}else if(category == 2){
+							//获取视频第一帧设置为封面图片
+							String targerFilePath = path + "/" + module+"/";
+							String targetFileName  = unique +".jpg" ;
+							try {
+								FrameGrabberKit.randomGrabberFFmpegImage(path + DBPath, targerFilePath, targetFileName);
+								videoImgUrl = "/" + module+"/" + targetFileName;
+							} catch (Exception e) {
+								e.printStackTrace();
 							}
 						}
 						
@@ -188,6 +202,7 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 							if(category == 1){
 								photo.setPhotoUrl(sDBPath);
 							}else{
+								photo.setPhotoUrl(videoImgUrl);
 								photo.setVideoUrl(DBPath);
 							}
 							kindergartenPhotoMapper.insertSelective(photo);
@@ -220,10 +235,10 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 					} finally{
 				//		ftp.closeServer();
 					}
-					if (!flag) {
-						log.error("FTP文件上传失败");
-						throw new IOException("FTP文件上传失败");
-					}
+				//	if (!flag) {
+				//		log.error("FTP文件上传失败");
+				//		throw new IOException("FTP文件上传失败");
+				//	}
 				} else {
 					// 当文件上传的文本框为空时，对应返回的路径为空。
 					DBPath = "";
@@ -254,7 +269,7 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 			//	photo.setOwnerId(ownerId);
 				photo.setAlbumId(albumId);
 				List<KindergartenPhoto> photoList = kindergartenPhotoMapper.selectByCondition(photo);
-				List<String> urlList = new ArrayList<String>();
+				Set<String> urlList = new HashSet<String>();
 				for(KindergartenPhoto p : photoList){
 					if(p.getCategory() == 1){
 						urlList.add(Constant.path + p.getPhotoUrl());

@@ -1,11 +1,15 @@
 package com.qm.shop.common.action;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -39,6 +43,7 @@ import com.qm.mapper.KindergartenPhotoMapper;
 import com.qm.mapper.KindergartenStudentMapper;
 import com.qm.shop.Constant;
 import com.util.FileZipUtil;
+import com.util.FrameGrabberKit;
 import com.util.GradeNameUtil;
 
 import net.sf.json.JSONObject;
@@ -74,6 +79,7 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 		UserExtForm userExtForm = (UserExtForm) request.getSession().getAttribute(com.frame.core.constant.Constant.LoginAdminUser);
 
 		String DBPath;
+		String sDBPath;
 		try {
 			String ftpAddress = (String) SystemConfig.getValue(FtpConstant.FTP_ADDRESS);
 			String username = (String) SystemConfig.getValue(FtpConstant.USERNAME);
@@ -102,6 +108,7 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 					String unique = String.valueOf(System.currentTimeMillis()) + new Random().nextInt(10);
 					fileName = unique+"." + imageSuffix;
 					DBPath = "/" + module+"/"+fileName; //    不能这个路径/upload/wod
+					sDBPath = "/" + module+"/s"+fileName; //    不能这个路径/upload/wod
 	//				ftp=new FtpUtil(ftpAddress, Integer.parseInt(port), username, password);
 					boolean flag = false;
 					try {
@@ -114,7 +121,27 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 						if(isVedioFile(imageSuffix)){
 							category = 2;
 						}
-						
+						String videoImgUrl = null;
+						if(category == 1){
+							//生成缩略图
+							try {
+								BufferedImage bufferedImage=FileUtil.zoomImage(file.getInputStream(), 0.3f);
+								InputStream inputsamall=FileUtil.getImageStream(bufferedImage,imageSuffix);
+								FileUtil.writeToLocal(path + sDBPath, inputsamall);
+							} catch (Exception e) {
+								log.info("生成缩略图失败："+e);
+							}
+						}else if(category == 2){
+							//获取视频第一帧设置为封面图片
+							String targerFilePath = path + "/" + module+"/";
+							String targetFileName  = unique +".jpg";
+							try {
+								FrameGrabberKit.randomGrabberFFmpegImage(path + DBPath, targerFilePath, targetFileName);
+								videoImgUrl = "/" + module+"/" + targetFileName;
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
 						KindergartenAlbum album = new KindergartenAlbum();
 						String currentClass = null;
 						Integer gradeId  = null;
@@ -172,6 +199,7 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 							if(category == 1){
 								photo.setPhotoUrl(DBPath);
 							}else{
+								photo.setPhotoUrl(videoImgUrl);
 								photo.setVideoUrl(DBPath);
 							}
 							kindergartenPhotoMapper.insertSelective(photo);
@@ -204,10 +232,10 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 					} finally{
 				//		ftp.closeServer();
 					}
-					if (!flag) {
-						log.error("FTP文件上传失败");
-						throw new IOException("FTP文件上传失败");
-					}
+			//		if (!flag) {
+			//			log.error("FTP文件上传失败");
+			//			throw new IOException("FTP文件上传失败");
+			//		}
 				} else {
 					// 当文件上传的文本框为空时，对应返回的路径为空。
 					DBPath = "";
@@ -238,7 +266,7 @@ public class BatchFileUploadAction extends FtpImgDownUploadAction{
 			//	photo.setOwnerId(ownerId);
 				photo.setAlbumId(albumId);
 				List<KindergartenPhoto> photoList = kindergartenPhotoMapper.selectByCondition(photo);
-				List<String> urlList = new ArrayList<String>();
+				Set<String> urlList = new HashSet<String>();
 				for(KindergartenPhoto p : photoList){
 					if(p.getCategory() == 1){
 						urlList.add(Constant.path + p.getPhotoUrl());

@@ -139,5 +139,18 @@
 			<attribute name="owner.project.facets" value="jst.web.jstl"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/javacv-platform-1.3.1.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/opencv.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/javacv.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/artoolkitplus.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/flandmark.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/flycapture.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/javacpp.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/libdc1394.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/libfreenect.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/videoinput.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/ffmpeg.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/ffmpeg-macosx-x86_64.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/opencv-macosx-x86_64.jar"/>
 	<classpathentry kind="output" path="WebRoot/WEB-INF/classes"/>
 </classpath>
